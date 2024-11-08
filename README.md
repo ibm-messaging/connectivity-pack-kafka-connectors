@@ -1,1 +1,2 @@
-# connectivity-pack-kafka-connectors
+# connectivity-pack-
+IBM Connectivity Pack
