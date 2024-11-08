@@ -1,2 +1,2 @@
-# connectivity-pack-
+# connectivity-pack
 IBM Connectivity Pack
