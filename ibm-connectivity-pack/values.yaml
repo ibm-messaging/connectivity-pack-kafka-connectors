@@ -1,0 +1,111 @@
+###############################################################################
+#
+# © Copyright IBM Corp. 2024
+#
+###############################################################################
+# Default values for IBM Connectivity pack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+acceptLicense: false
+replicaCount: 1 # Replica of the POD
+bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
+environmentVariables: {} # Yaml object ENV to be added on action and event pods
+annotations:
+  productName: IBM Connectivity pack
+image:
+  registry: us.icr.io # Image registry base URL
+  path: conn-pack-prod-ns
+  imagePullSecretName: '' # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
+  imagePullEmail: dummyEmail # Image pull secret email ID
+  imagePullUsername: iamapikey # Image pull username 
+  imagePullPassword: dummyPassword # Image pull password 
+certificate:
+  MTLSenable: false # Enable MTLS if true else fallback to TLS
+  generate: false # generate new certificates use this for certificate rotation
+  clientSecretName: '' # If MTLS/TLS secret for client already exist please specify here
+  clientCertPropertyName: 'tls.crt'
+  clientCertKeyPropertyName: 'tls.key'
+  clientCertPKCSPropertyName: 'pkcs.p12'
+  serverSecretName: '' # If MTLS/TLS secret for server already exist please specify here
+  serverCertPropertyName: 'tls.crt'
+  serverCertKeyPropertyName: 'tls.key'
+  caCertPropertyName: 'ca.crt'
+  pkcsPassword: admin123 # pkcs.p12 password
+route:
+  enable: false # generate OpenShift route for external access
+  domain: 'example.com' # subdomain of OpenShift cluster where connector service is being deployed
+basicAuth:
+  enable: false # Enable basic auth for service 
+  username: 'csuser'
+preHook:
+  image: connectivity-pack-prehook
+  digest: sha256:cf0682b73583a985958f689df2d67dae6a99b8e1e078866fa3e078cf0edf196b
+  tag: 20241104-100946-amd64
+proxy:
+  name: connectivity-pack-proxy
+  image: connectivity-pack-proxy
+  digest: sha256:a7170aac62a1e55d9a4cbf9a80b8f9015d5696d7c5076545867651b18b9f5bb2
+  tag: 20241104-100946-amd64
+action:
+  name: action-connectors
+  image: action-connectors
+  digest: sha256:77ee5619e70911c9fd9570ac9da8552e0fa6862334f4a7b26afe4fc7a2ed2889
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 256Mi
+  tag: 20241108-003113-amd64
+event:
+  enable: false # Set to true if Event container is needed
+  name: event-connectors
+  image: event-connectors # Update image
+  digest: sha256:e9a4bed5e8fc49443ea5f77dc309309b9dacb4484dbef15ae85fbbbf0f6cb633
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 750Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 400Mi
+  tag: 20241108-030033-amd64
+jdbcservice:
+  enable: false # Set to true if JDBC container is needed
+  name: java-tech-connectors
+  image: java-tech-connectors # Update image
+  digest: sha256:3034080702df7b43adc4c336a69196966ceb1f918e3dc9309bbf1aed2b810654
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 750Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 400Mi
+  tag: 20241022-050714-amd64
+autoScaling:
+  enable: false # Update this to true to enable autoScaling
+  minReplicas: 1 # What is the minimum replica needed
+  maxReplicas: 5 # What is the maximum replica needed
+  cpuUtilization: 70 # % of CPU utilization after which POD to be replicated 
+  memoryUtilization: 70 # % of Memory utilization after which POD to be replicated 
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+csCommon:
+  eventList: "['salesforceevent']"
