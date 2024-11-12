@@ -1,4 +1,4 @@
-FROM us.icr.io/conn-pack-prod-ns/connectivity-pack-prehook@sha256:cf0682b73583a985958f689df2d67dae6a99b8e1e078866fa3e078cf0edf196b
+FROM us.icr.io/conn-pack-prod-ns/action-connectors@sha256:e9a4bed5e8fc49443ea5f77dc309309b9dacb4484dbef15ae85fbbbf0f6cb633
 
 USER root
 
