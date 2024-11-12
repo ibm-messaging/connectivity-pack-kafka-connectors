@@ -83,6 +83,11 @@ docker ${BUILDX} -f build/Dockerfile.connectivity-pack-prehook \
     -t "${IMAGE_REGISTRY}/connectivity-pack-prehook:${IMAGE_TAG}" \
     .
 
+digest=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-prehook:${TIMESTAMPED_TAG} --format '{{json .Manifest}}' | jq -r .digest)
+echo "${IMAGE_REGISTRY}/connectivity-pack-prehook:${IMAGE_TAG} <br> " >> published_images.txt
+echo "${IMAGE_REGISTRY}/connectivity-pack-prehook@${digest} <br> " >> published_images.txt
+
+
 echo "*** Building and pushing connectivity-pack-proxy images ***"
 docker ${BUILDX} -f build/Dockerfile.connectivity-pack-proxy \
     --label release=${RELEASE_VERSION} \
@@ -98,6 +103,10 @@ docker ${BUILDX} -f build/Dockerfile.connectivity-pack-proxy \
     -t "${IMAGE_REGISTRY}/connectivity-pack-proxy:${JENKINS_BUILD_TAG}" \
     -t "${IMAGE_REGISTRY}/connectivity-pack-proxy:${IMAGE_TAG}" \
     .
+
+digest=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-proxy:${TIMESTAMPED_TAG} --format '{{json .Manifest}}' | jq -r .digest)
+echo "${IMAGE_REGISTRY}/connectivity-pack-proxy:${IMAGE_TAG} <br> " >> published_images.txt
+echo "${IMAGE_REGISTRY}/connectivity-pack-proxy@${digest} <br> " >> published_images.txt
 
 echo "*** Building and pushing action-connectors images ***"
 docker ${BUILDX} -f build/Dockerfile.action-connectors \
@@ -115,6 +124,10 @@ docker ${BUILDX} -f build/Dockerfile.action-connectors \
     -t "${IMAGE_REGISTRY}/action-connectors:${IMAGE_TAG}" \
     .
 
+digest=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/action-connectors:${TIMESTAMPED_TAG} --format '{{json .Manifest}}' | jq -r .digest)
+echo "${IMAGE_REGISTRY}/action-connectors:${IMAGE_TAG} <br> " >> published_images.txt
+echo "${IMAGE_REGISTRY}/action-connectors@${digest} <br> " >> published_images.txt
+
 echo "*** Building and pushing event-connectors images ***"
 docker ${BUILDX} -f build/Dockerfile.event-connectors \
     --label release=${RELEASE_VERSION} \
@@ -130,5 +143,9 @@ docker ${BUILDX} -f build/Dockerfile.event-connectors \
     -t "${IMAGE_REGISTRY}/event-connectors:${JENKINS_BUILD_TAG}" \
     -t "${IMAGE_REGISTRY}/event-connectors:${IMAGE_TAG}" \
     .
+
+digest=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/event-connectors:${TIMESTAMPED_TAG} --format '{{json .Manifest}}' | jq -r .digest)
+echo "${IMAGE_REGISTRY}/event-connectors:${IMAGE_TAG} <br> " >> published_images.txt
+echo "${IMAGE_REGISTRY}/event-connectors@${digest} <br> " >> published_images.txt
 
 echo "Note : export LOAD_OR_PUSH=push to push image to artifactory"
