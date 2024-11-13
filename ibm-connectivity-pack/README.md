@@ -83,10 +83,10 @@ event.enable | Enable event container | false
 event.image | Event service container image name | event-connectors
 event.digest | Event service container image digest | ''
 event.resources | Event service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
-jdbcservice.enable | Enable java-service container | false
-jdbcservice.image | java-service container image name | connector-service-jdbc
-jdbcservice.digest | java-service container image digest | ''
-jdbcservice.resources | java-service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
+javaservice.enable | Enable java-service container | false
+javaservice.image | java-service container image name | connector-service-java
+javaservice.digest | java-service container image digest | ''
+javaservice.resources | java-service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
 autoScaling.enable | Enable auto-scaling | false
 autoScaling.minReplicas | Minimum replicas for auto-scaling | 1
 autoScaling.maxReplicas | Maximum replicas for auto-scaling | 5

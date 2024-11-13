@@ -50,7 +50,7 @@ proxy:
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:77ee5619e70911c9fd9570ac9da8552e0fa6862334f4a7b26afe4fc7a2ed2889
+  digest: sha256:7d6929a79d9958d0c444fa46980e1cd7e1262f9f9dfe88338a37592e4fef14ed
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -60,12 +60,12 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 256Mi
-  tag: 20241108-003113-amd64
+  tag: 20241110-003112-amd64
 event:
   enable: false # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:e9a4bed5e8fc49443ea5f77dc309309b9dacb4484dbef15ae85fbbbf0f6cb633
+  digest: sha256:f8ebc4d44f886f8807caeb32a4b7053da8560caab05768851b5ef6f69b632579
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -75,9 +75,9 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 20241108-030033-amd64
-jdbcservice:
-  enable: false # Set to true if JDBC container is needed
+  tag: 20241111-030029-amd64
+javaservice:
+  enable: false # Set to true if Java container is needed
   name: java-tech-connectors
   image: java-tech-connectors # Update image
   digest: sha256:3034080702df7b43adc4c336a69196966ceb1f918e3dc9309bbf1aed2b810654

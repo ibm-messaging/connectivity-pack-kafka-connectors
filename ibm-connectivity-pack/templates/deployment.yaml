@@ -268,10 +268,10 @@ spec:
             {{ end }}
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.event.image }}@{{ .Values.event.digest }}
         {{ end }}
-        {{ if .Values.jdbcservice.enable -}}
-        - name: {{ .Values.jdbcservice.name }}
+        {{ if .Values.javaservice.enable -}}
+        - name: {{ .Values.javaservice.name }}
           resources: 
-            {{- toYaml .Values.jdbcservice.resources | nindent 12 }}
+            {{- toYaml .Values.javaservice.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}           
           env:
@@ -282,7 +282,7 @@ spec:
               containerPort: 9080
               protocol: TCP
           imagePullPolicy: IfNotPresent
-          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.jdbcservice.image }}@{{ .Values.jdbcservice.digest }}
+          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.javaservice.image }}@{{ .Values.javaservice.digest }}
         {{ end }}
         - name: {{ .Values.proxy.name }}
           resources: # Update below value for vertical scaling of container

@@ -8,4 +8,4 @@ metadata:
   annotations:
     {{- toYaml .Values.annotations | nindent 4 }}
 data:
-  CS_SERVICE_URL: {{ include "ibm-connectivity-pack.service" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  CONNECTIVITYPACK_SERVICE_URL: {{ include "ibm-connectivity-pack.service" . }}.{{ .Release.Namespace }}.svc.cluster.local
