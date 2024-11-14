@@ -1,6 +1,6 @@
 private:
   repo: cp.icr.io
-  path: cp/
+  path: cp/ibm-eventstreams/
 images:
   preHook: connectivity-pack-prehook@sha256:219d126accd869ea3658a2f046a2d0391b2fca75316efada57582879aea9011a
   proxy: connectivity-pack-proxy@sha256:cea91a6d03e511b60329262f48b495be7c21527f2157641724b1c34fda9d8535
