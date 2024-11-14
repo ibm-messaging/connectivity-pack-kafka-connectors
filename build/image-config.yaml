@@ -2,7 +2,7 @@ private:
   repo: cp.icr.io
   path: cp/
 images:
-  preHook: connectivity-pack-prehook@sha256:cf0682b73583a985958f689df2d67dae6a99b8e1e078866fa3e078cf0edf196b
-  proxy: connectivity-pack-proxy@sha256:a7170aac62a1e55d9a4cbf9a80b8f9015d5696d7c5076545867651b18b9f5bb2
-  action: action-connectors@sha256:7d6929a79d9958d0c444fa46980e1cd7e1262f9f9dfe88338a37592e4fef14ed
-  event: event-connectors@sha256:f8ebc4d44f886f8807caeb32a4b7053da8560caab05768851b5ef6f69b632579
+  preHook: connectivity-pack-prehook@sha256:219d126accd869ea3658a2f046a2d0391b2fca75316efada57582879aea9011a
+  proxy: connectivity-pack-proxy@sha256:cea91a6d03e511b60329262f48b495be7c21527f2157641724b1c34fda9d8535
+  action: action-connectors@sha256:383fc93bd45184b63b52a7c1cc1f20e3efaefc76f2cdfa4674ae7f6e3c7082b2
+  event: event-connectors@sha256:7682c11531ba5c71cee09b72400d75f96859c02c25e181157c0a6610d3f9ff6a
