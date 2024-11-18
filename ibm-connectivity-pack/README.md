@@ -1,75 +1,84 @@
-# IBM Connectivity pack Helm Chart
-This Helm chart deploys the IBM Connectivity pack application, which consists of multiple components such as proxy, action, connector-java-services and event services, with options to configure MTLS, basic authentication, auto-scaling, and more. This application is designed to run in Kubernetes and OpenShift environments.
+# Installing IBM Connectivity Pack
+
+IBM Connectivity Pack acts as an interface to communicate with your data source.
+
+The Connectivity Pack can be deployed by using the `ibm-connectivity-pack` Helm chart. You can deploy the Connectivity Pack on OpenShift and other Kubernetes platforms.
 
 ## Prerequisites
-- Kubernetes 1.16+
-- Helm 3.0+
-- Optional: OpenShift 4.x (for Route and OpenShift-specific features)
 
-## Installation
-Add Helm Repository
-```bash
-export VERSION='1.0.0'
-helm pull oci://us.icr.io/csa-helm-charts/ibm-connectivity-pack --version $VERSION
-`tar -xzf ibm-connectivity-pack-${VERSION}.tgz `
-`rm ibm-connectivity-pack-${VERSION}.tgz`
-```
+Ensure that you have installed the following platforms:
 
-## Install the Chart
-To install the chart with the release name `my-release`:
-```bash
-helm install my-release connector-service/ibm-connectivity-pack
-```
+- Kubernetes version 1.16 or later
+- Helm 3.0 or later
+- OpenShift 4.x (for Route and OpenShift-specific features)
 
-You can also customize the chart by passing values through the `--set` flag or by using a custom values.yaml file.
-```bash
-helm install my-release connector-service/ibm-connectivity-pack -f values.yaml --set replicaCount=3
-```
+## Installing
 
-## Upgrade the Chart
+
+1. To install the Helm chart with the release name `my-release`, run the following command:
+
+  ```bash
+  helm install my-release connector-service/ibm-connectivity-pack
+  ```
+
+  You can also configure your Helm chart to enable features such as mutual Transport Layer Security (mTLS), basic authentication, and auto-scaling by passing parameters through the `--set` flag or by using a custom YAML file. For more information, see [Configuring](#configuring-your-helm-chart). 
+  
+  For example, if you added your parameters to the `values.yaml` file and to set the `replicaCount` as `3`, you can run the following command:
+
+  ```bash
+  helm install my-release connector-service/ibm-connectivity-pack -f values.yaml --set replicaCount=3
+  ```
+
+1. After you install the Connectivity Pack, follow the instructions in the [Connectivity Pack source connector] to connect with Salesforce.
+
+<!-- ## Upgrade the Chart
 
 To upgrade an existing release with new values:
+
 ```bash
 helm upgrade my-release connector-service/ibm-connectivity-pack -f values.yaml
-```
+``` -->
 
 ## Uninstallation
 
-To uninstall/delete the `my-release` deployment:
+To uninstall the Helm deployment with the release name `my-release`, run the following command:
+
 ```bash
 helm uninstall my-release
 ```
 
-## Configuration
+## Configuring your Helm chart
 
-The following table lists the configurable parameters of the **IBM Connectivity pack** chart and their default values:
+You can configure your Helm chart by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
+
+The following table lists the configurable parameters of the **IBM Connectivity pack** Helm chart and their default values:
 
 Parameter | Description | Default
 -- | -- | --
-acceptLicense | Set acceptLicense to true. Accept the license before insatlling or updating HELM else prehook will throw error | false
+acceptLicense | Set acceptLicense to true. Accept the license before installing or updating HELM else prehook will throw error | false
 replicaCount | Number of replicas of the pod | 1
-bunyan | Log configuration for the application | See [values.yaml](values.yaml). Possible values [Logging](#logging)
-annotations | Override with product specific annotations | See [values.yaml](values.yaml) refer k8's annotation for more info
+bunyan | Log configuration for the application | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information.
+annotations | Override with product specific annotations | See [values.yaml](values.yaml) Refer Kubernetes annotation for more information
 environmentVariables | Yaml object of environment variables to be added in action and event services | {}
 image.registry | Image registry URL | us.icr.io
-image.path | Image namespace/path under image registry before image name and digest | conn-pack-prod-ns
-image.imagePullSecretName| K8's image pull secrete if it already exist in namespace if not add below image pull details to create new secret | ''
+image.path | Image namespace or the path under image registry before image name and digest | conn-pack-prod-ns
+image.imagePullSecretName| Kubernetes image pull secret if it already exists in the namespace, if not add the following image pull details to create new secret | ''
 image.imagePullEmail | Image pull secret email ID | dummyEmail
 image.imagePullUsername | Image pull username | iamapikey
 image.imagePullPassword | Image pull password | dummyPassword
-certificate.MTLSenable | Enable MTLS else fallback to TLS | false
-certificate.generate | Generate new certificates for MTLS/TLS, this should be used for Certificate rotation and this is not honoured if certificate.serverSecretName and / or certificate.clientSecretName is given | false
-certificate.clientSecretName | Already existing MTLS client certificate k8 secret name, If kept empty new certificate will be generated on helm install | '' 
-certificate.clientCertPropertyName | Property name in secrete which holds MTLS client certificate | 'tls.crt' 
-certificate.clientCertKeyPropertyName | Property name in secrete which holds MTLS client certificate key | 'tls.key'
-certificate.clientCertPKCSPropertyName | Property name in secrete which holds PKCS12 client certificate | 'pkcs.p12'
+certificate.MTLSenable | Enable mTLS else fallback to TLS | false
+certificate.generate | Generate new certificates for mTLS/TLS, this should be used for Certificate rotation and this is not honored if certificate.serverSecretName and / or certificate.clientSecretName is given | false
+certificate.clientSecretName | Already existing mTLS client certificate Kubernetes secret name, if left empty new certificate will be generated on helm install | '' 
+certificate.clientCertPropertyName | Property name in secret which holds mTLS client certificate | 'tls.crt' 
+certificate.clientCertKeyPropertyName | Property name in secret which holds mTLS client certificate key | 'tls.key'
+certificate.clientCertPKCSPropertyName | Property name in secret which holds PKCS12 client certificate | 'pkcs.p12'
 certificate.pkcsPassword | PKCS12 file password | admin123
-certificate.serverSecretName | Already existing MTLS/TLS server certificate k8 secret name, If kept empty new certificate will be generated on helm install | '' 
-certificate.serverCertPropertyName | Property name in secrete which holds MTLS/TLS server certificate | 'tls.crt'
-certificate.serverCertKeyPropertyName | Property name in secrete which holds MTLS/TLS server certificate key |'tls.key'
-certificate.caCertPropertyName | Property name in secrete which holds certificate authority certificate | 'ca.crt'
+certificate.serverSecretName | Already existing mTLS/TLS server certificate Kubernetes secret name, if left empty new certificate is generated on `helm install` | '' 
+certificate.serverCertPropertyName | Property name in secret which holds mTLS/TLS server certificate | 'tls.crt'
+certificate.serverCertKeyPropertyName | Property name in secret which holds mTLS/TLS server certificate key |'tls.key'
+certificate.caCertPropertyName | Property name in secret which holds certificate authority certificate | 'ca.crt'
 route.enable | Enable OpenShift Route for external access update domain and make `certificate.generate` to true so that certificate has the domain entry, *Enable only for OpenShift cluster*  | false
-route.domain | Domain or subdoamin of cluster | 'example.com' 
+route.domain | Domain or subdomain of cluster | 'example.com' 
 basicAuth.enable | Enable basic authentication for service | false
 basicAuth.username | Basic auth username | csuser
 preHook.image | Prehook job image name | connectivity-pack-prehook
@@ -78,40 +87,46 @@ proxy.image | Proxy service container image name | connectivity-pack-proxy
 proxy.digest | Proxy service container image digest | ''
 action.image | Action service container image name | action-connectors
 action.digest | Action service container image digest | ''
-action.resources | Action service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
+action.resources | Action service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
 event.enable | Enable event container | false
 event.image | Event service container image name | event-connectors
 event.digest | Event service container image digest | ''
-event.resources | Event service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
+event.resources | Event service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
 javaservice.enable | Enable java-service container | false
 javaservice.image | java-service container image name | connector-service-java
 javaservice.digest | java-service container image digest | ''
-javaservice.resources | java-service container resources Check k8's deployment resources for more details | See [values.yaml](values.yaml)
+javaservice.resources | java-service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
 autoScaling.enable | Enable auto-scaling | false
 autoScaling.minReplicas | Minimum replicas for auto-scaling | 1
 autoScaling.maxReplicas | Maximum replicas for auto-scaling | 5
 autoScaling.cpuUtilization | Target CPU utilization percentage for auto-scaling | 70
 autoScaling.memoryUtilization | Target memory utilization percentage for auto-scaling | 70
 
-## MTLS Configuration
-The chart supports both MTLS and TLS:
+### Configuring your mTLS
 
-**MTLS Enabled:** Certificates are generated and stored in a Kubernetes secret. To regenerate certificates, set `certificate.generate` to `true`.
-**TLS Fallback:** If MTLS is disabled, the service defaults to TLS.
+The Helm chart supports both mTLS and TLS. Set `certificate.MTLSenable` to `true` to enable mTLS:
 
-## To view or manage the MTLS secrets:
+**mTLS Enabled:** Certificates are generated and stored in a Kubernetes secret. To regenerate certificates, set `certificate.generate` to `true`.
+
+**mTLS disabled:** If not enabled, the service defaults to TLS.
+
+To view or manage the mTLS secrets, run the following command:
+
 ```bash
-kubectl get secret my-release-mtls-secret -o yaml -n <namespace>
+kubectl get secret <name-of-the-release>-mtls-secret -o yaml -n <namespace>
 ```
 
-## OpenShift Route
-To enable an OpenShift Route for external access, set `route.enable` to `true` in the values.yaml file. This will expose your application outside of the cluster via an OpenShift route.
+### OpenShift Route
 
-## Basic Authentication
-Basic authentication can be enabled for services by setting `basicAuth.enable` to `true`
+To enable an OpenShift Route for external access, set `route.enable` to `true`. This exposes your application outside the cluster through an OpenShift route.
 
-## Auto-Scaling
-The chart supports horizontal pod auto-scaling based on CPU and memory utilization. Configure the settings in `values.yaml`:
+### Basic authentication
+
+Basic authentication can be enabled for services by setting `basicAuth.enable` to `true`.
+
+### Auto-Scaling
+
+The chart supports horizontal pod auto-scaling based on CPU and memory utilization. Add and modify the following snippet in the `values.yaml` file:
 
 ```yaml
 autoScaling:
@@ -120,13 +135,13 @@ autoScaling:
   maxReplicas: 5
   cpuUtilization: 70
   memoryUtilization: 70
-
 ```
-## Logging
-You can configure detailed logging using the `bunyan` configuration in the `values.yaml` file. This supports various logging levels (`info`, `debug`, `trace`, etc.) and output formats.
+
+### Logging
+
+You can configure detailed logging by using the `bunyan` configuration in the `values.yaml` file. This supports various logging levels such as `info`, `debug`, and `trace`, and output formats.
 
 ```js
-
   {
       "loglevel": 'trace'|'debug'|'info'|'warn'|'error'|'fatal', //  default logging level of all streams (string)
       "logsrc": true|false, // include the source filename and line-number (boolean)
@@ -156,3 +171,5 @@ You can configure detailed logging using the `bunyan` configuration in the `valu
       }
     }
 ```
+
+
