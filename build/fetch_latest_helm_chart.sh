@@ -1,7 +1,9 @@
 #!/bin/bash
 
-if [ -z "$ARTIFACTORY_USERNAME" ]; then
-    echo "ARTIFACTORY_USERNAME and ARTIFACTORY_PASSWORD not set. Aborting build..."
+# This Script fetches the ibm-connectivity-pack AppConnect Helm Chart with version <CHART_VERSION>
+
+if [ -z "$US_ICR_IO_KEY" ]; then
+    echo "US_ICR_IO_USERID and US_ICR_IO_KEY not set. Aborting build..."
     exit 1
 fi
 
@@ -14,42 +16,22 @@ fi
 HELM_REPO_URL="us.icr.io"
 HELM_REPO_PATH="conn-pack-prod-ns"
 CHART_NAME="ibm-connectivity-pack"
-
-# Docker login
-echo "Logging into Docker..."
-echo "$ARTIFACTORY_PASSWORD" | docker login -u "$ARTIFACTORY_USERNAME" --password-stdin "$HELM_REPO_URL"
-if [ $? -ne 0 ]; then
-  echo "Docker login failed."
-  exit 1
-fi
+TEMP_DIR="${TEMP_DIR:-temp-helm-chart}"
 
 # Helm registry login
 echo "Logging into Helm registry..."
-echo "$ARTIFACTORY_PASSWORD" | helm registry login --username "$ARTIFACTORY_USERNAME" --password-stdin "$HELM_REPO_URL"
+echo "$US_ICR_IO_KEY" | helm registry login --username "$US_ICR_IO_USERID" --password-stdin "$HELM_REPO_URL"
 if [ $? -ne 0 ]; then
   echo "Helm registry login failed."
   exit 1
 fi
 
 # Pull the Helm chart
-echo "Pulling Helm chart $CHART_NAME version $CHART_VERSION from $HELM_REPO_URL..."
-helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$CHART_VERSION"
+echo "Pulling Helm chart ${CHART_NAME} version ${CHART_VERSION} from ${HELM_REPO_URL}"
+helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$CHART_VERSION" --untar --untardir "${TEMP_DIR}"
 if [ $? -ne 0 ]; then
   echo "Failed to pull Helm chart."
   exit 1
 fi
 
-# Extract the tarball
-TARBALL="${CHART_NAME}-${CHART_VERSION}.tgz"
-echo "Extracting $TARBALL ..."
-tar -xzf "$TARBALL"
-if [ $? -ne 0 ]; then
-  echo "Failed to extract Helm chart."
-  exit 1
-fi
-
-# Remove the tarball after extraction
-echo "Removing the downloaded tarball $TARBALL..."
-rm -f "$TARBALL"
-
-echo "Helm chart pulled and extracted successfully."
+echo "Helm chart pulled and extracted successfully to directory ${TEMP_DIR}"
