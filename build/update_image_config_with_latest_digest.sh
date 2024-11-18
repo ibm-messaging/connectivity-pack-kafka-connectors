@@ -28,11 +28,11 @@ fi
 echo "IMAGE_TAG......................[${IMAGE_TAG}]"
 echo "IMAGE_REGISTRY.................[${IMAGE_REGISTRY}]"
 
-Identifying digest values from Artifactory and using the same to update image-config.yaml as well as values.yaml
+# Identifying digest values from Artifactory and using the same to update image-config.yaml as well as values.yaml
 
 PREHOOK_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-prehook:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.preHook=\"connectivity-pack-prehook@${PREHOOK_DIGEST}\"" "build/image-config.yaml"
-yq -i ".preHook.digest=\"${PREHOOK_DIGEST} | cut -f 2 -d '@'\"" "ibm-connectivity-pack/values.yaml"
+yq -i ".preHook.digest=\"${PREHOOK_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".preHook.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
 PROXY_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-proxy:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
@@ -42,10 +42,10 @@ yq -i ".proxy.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
 ACTION_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/action-connectors:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.action=\"action-connectors@${ACTION_DIGEST}\"" "build/image-config.yaml"
-yq -i ".action.digest=\"${ACTION_DIGEST} | cut -f 2 -d '@'\"" "ibm-connectivity-pack/values.yaml"
+yq -i ".action.digest=\"${ACTION_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".action.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
 EVENT_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/event-connectors:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.event=\"event-connectors@${EVENT_DIGEST}\"" "build/image-config.yaml"
-yq -i ".event.digest=\"${EVENT_DIGEST} | cut -f 2 -d '@'\"" "ibm-connectivity-pack/values.yaml"
+yq -i ".event.digest=\"${EVENT_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".event.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
