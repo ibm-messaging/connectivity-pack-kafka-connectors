@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "ibm-connectivity-pack.eaPreHookJob" . }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    {{- toYaml .Values.annotations | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      serviceAccountName: {{ include "ibm-connectivity-pack.preHookJob" . }}-sa
+      restartPolicy: Never
+      imagePullSecrets:
+        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
+      containers:
+        - name: mtls-cert-generator
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.preHook.image }}@{{ .Values.preHook.digest }}
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+            {{- if not .Values.license.licenseId }}
+            {{- fail " \n\nYou must provide a valid license ID. See https://ibm.biz/ea-license for valid licenses." }}
+            {{- end }}
+            {{- include "ibm-connectivity-pack.validateLicense" (dict "licenseId" .Values.license.licenseId) }}
