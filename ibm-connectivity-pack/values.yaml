@@ -42,17 +42,17 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:cf0682b73583a985958f689df2d67dae6a99b8e1e078866fa3e078cf0edf196b
-  tag: 20241104-100946-amd64
+  digest: sha256:5230748eb61fb18cf42354dbb3631ca0ac860eab309e2263bde38ec400ad7426
+  tag: 1.0.0
 proxy:
   name: connectivity-pack-proxy
   image: connectivity-pack-proxy
-  digest: sha256:a7170aac62a1e55d9a4cbf9a80b8f9015d5696d7c5076545867651b18b9f5bb2
-  tag: 20241104-100946-amd64
+  digest: sha256:7867e37fcfd6a286f6962d1fde8d72495d48ae48d717ec59e389037d6f30ea43
+  tag: 1.0.0
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:7d6929a79d9958d0c444fa46980e1cd7e1262f9f9dfe88338a37592e4fef14ed
+  digest: sha256:1b9ba92739498b9b5673d8a8dce56f76a1441bae22a8fb302931a90b31c5f164
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -62,12 +62,12 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 256Mi
-  tag: 20241110-003112-amd64
+  tag: 1.0.0
 event:
   enable: false # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:f8ebc4d44f886f8807caeb32a4b7053da8560caab05768851b5ef6f69b632579
+  digest: sha256:3c98899c9cf91fef78c50b98686de7411a733a6d794119cc173ee90ab5d7a25b
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -77,7 +77,7 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 20241111-030029-amd64
+  tag: 1.0.0
 javaservice:
   enable: false # Set to true if Java container is needed
   name: java-tech-connectors

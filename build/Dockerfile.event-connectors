@@ -1,4 +1,4 @@
-FROM us.icr.io/conn-pack-prod-ns/event-connectors@sha256:f8ebc4d44f886f8807caeb32a4b7053da8560caab05768851b5ef6f69b632579
+FROM us.icr.io/conn-pack-prod-ns/event-connectors@sha256:bedc7aa6a4735050a164694dfb16350a97baa809a1a4fef56bbb9951b8a62acb
 
 USER root
 

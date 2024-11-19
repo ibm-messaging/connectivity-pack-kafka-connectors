@@ -1,4 +1,4 @@
-FROM us.icr.io/conn-pack-prod-ns/connectivity-pack-proxy@sha256:a7170aac62a1e55d9a4cbf9a80b8f9015d5696d7c5076545867651b18b9f5bb2
+FROM us.icr.io/conn-pack-prod-ns/connectivity-pack-proxy@sha256:624e235d5008796434c53fe82750e51e85a47d40e6156eae9948e8a9f042acb1
 
 USER root
 
