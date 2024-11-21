@@ -30,27 +30,43 @@ echo "IMAGE_REGISTRY.................[${IMAGE_REGISTRY}]"
 
 # Identifying digest values from Artifactory and using the same to update image-config.yaml as well as values.yaml
 
-echo "Updating image-config.yaml and values.yaml"
+echo "Updating build/image-config.yaml, ibm-connectivity-pack/values.yaml and ibm-connectivity-pack/connector-config.json"
 
 PREHOOK_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-prehook:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.preHook=\"connectivity-pack-prehook@${PREHOOK_DIGEST}\"" "build/image-config.yaml"
+
 yq -i ".preHook.digest=\"${PREHOOK_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".preHook.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
+yq -i ".connectivity-pack-prehook.digest=\"${PREHOOK_DIGEST}\"" "ibm-connectivity-pack/connector-config.json"
+yq -i ".connectivity-pack-prehook.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/connector-config.json"
+
 PROXY_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/connectivity-pack-proxy:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.proxy=\"connectivity-pack-proxy@${PROXY_DIGEST}\"" "build/image-config.yaml"
+
 yq -i ".proxy.digest=\"${PROXY_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".proxy.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
+yq -i ".connectivity-pack-proxy.digest=\"${PROXY_DIGEST}\"" "ibm-connectivity-pack/connector-config.json"
+yq -i ".connectivity-pack-proxy.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/connector-config.json"
+
 ACTION_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/action-connectors:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.action=\"action-connectors@${ACTION_DIGEST}\"" "build/image-config.yaml"
+
 yq -i ".action.digest=\"${ACTION_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".action.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
 
+yq -i ".action-connectors.digest=\"${ACTION_DIGEST}\"" "ibm-connectivity-pack/connector-config.json"
+yq -i ".action-connectors.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/connector-config.json"
+
 EVENT_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/event-connectors:${JENKINS_BUILD_TAG} --format '{{json .Manifest}}' | jq -r .digest)
 yq -i ".images.event=\"event-connectors@${EVENT_DIGEST}\"" "build/image-config.yaml"
+
 yq -i ".event.digest=\"${EVENT_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".event.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
+
+yq -i ".event-connectors.digest=\"${EVENT_DIGEST}\"" "ibm-connectivity-pack/connector-config.json"
+yq -i ".event-connectors.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/connector-config.json"
 
 # Update values.yaml with registry and namespace path
 echo "Updating values.yaml with registry and namespace path"
@@ -61,6 +77,7 @@ yq -i '.image.path="cp/ibm-eventstreams"' "ibm-connectivity-pack/values.yaml"
 echo "Update javaservice image details to minimal info"
 yq -i '.javaservice = {}' "ibm-connectivity-pack/values.yaml"
 yq e -i '.javaservice += {"enable": false}' "ibm-connectivity-pack/values.yaml"
+yq -i '.java-tech-connectors = {}' "ibm-connectivity-pack/connector-config.json"
 
 # Update Chart Version and appVersion
 echo "Update Chart Version and appVersion"
