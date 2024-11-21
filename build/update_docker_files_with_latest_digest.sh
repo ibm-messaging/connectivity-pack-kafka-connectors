@@ -7,7 +7,7 @@ if [ "$(uname -s)" == "Darwin" ]; then
   SED=gsed
 fi
 
-TEMP_DIR="${TEMP_DIR:-temp-helm-chart}"
+TEMP_DIR="${TEMP_DIR:-ibm-connectivity-pack}"
 
 echo "Read digest values from Helm Chart"
 #Variables

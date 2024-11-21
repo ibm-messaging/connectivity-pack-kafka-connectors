@@ -1,0 +1,27 @@
+name: Checkstyle and Tests
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+    types: [opened, synchronize, reopened]
+
+jobs:
+  verify-commits:
+    name: Verify Commits
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+
+    - name: Verify Signed-off-by
+      run: |
+        for commit in $(git rev-list --no-merges HEAD^..HEAD); do
+          if ! git log -1 --format=%B "$commit" | grep -q "^Signed-off-by: "; then
+            echo "Commit $commit is missing Signed-off-by line."
+            exit 1
+          fi
+        done

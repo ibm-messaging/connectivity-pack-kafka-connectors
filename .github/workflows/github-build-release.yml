@@ -1,0 +1,47 @@
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Push events to matching semver, i.e. 1.0.0
+
+name: Build and create release
+
+jobs:
+  build:
+    name: Build and upload release binary
+    #if: github.event.base_ref == 'refs/heads/master' # only run if on master branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Package Helm Chart
+        run: tar -czvf ibm-connectivity-pack-${{env.VERSION}}.tgz -C ibm-connectivity-pack .
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset Connector JAR With Dependencies
+        id: upload-release-asset-connector-jar-with-dependencies
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./connectors/connectivity-pack-source-connector-${{env.VERSION}}-jar-with-dependencies.jar
+          asset_name: connectivity-pack-source-connector-${{env.VERSION}}-jar-with-dependencies.jar
+          asset_content_type: application/java-archive
+      - name: Upload Release Asset Helm Chart
+        id: upload-release-asset-helm-chart
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ibm-connectivity-pack-${{env.VERSION}}.tgz
+          asset_name: ibm-connectivity-pack-${{env.VERSION}}.tgz
+          asset_content_type: application/tgz

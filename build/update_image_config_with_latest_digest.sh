@@ -49,3 +49,15 @@ EVENT_DIGEST=$(docker buildx imagetools inspect ${IMAGE_REGISTRY}/event-connecto
 yq -i ".images.event=\"event-connectors@${EVENT_DIGEST}\"" "build/image-config.yaml"
 yq -i ".event.digest=\"${EVENT_DIGEST}\"" "ibm-connectivity-pack/values.yaml"
 yq -i ".event.tag=\"${CHART_VERSION}\"" "ibm-connectivity-pack/values.yaml"
+
+# Update values.yaml with registry and namespace path
+yq -i '.image.registry="cp.icr.io"' "ibm-connectivity-pack/values.yaml"
+yq -i '.image.path="cp/ibm-eventstreams"' "ibm-connectivity-pack/values.yaml"
+
+# Remove java connectors image details
+yq -i '.javaservice = {}' "ibm-connectivity-pack/values.yaml"
+yq e -i '.javaservice += {"enable": false}' "ibm-connectivity-pack/values.yaml"
+
+# Update Chart Version and appVersion
+yq -i ".version=\"${CHART_VERSION}\"" "ibm-connectivity-pack/Chart.yaml"
+yq -i ".appVersion=\"${CHART_VERSION}\"" "ibm-connectivity-pack/Chart.yaml"
