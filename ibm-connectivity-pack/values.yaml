@@ -7,17 +7,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-license:
-  accept: false
-  licenseId: ''
+acceptLicense: false
 replicaCount: 1 # Replica of the POD
 bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
 environmentVariables: {} # Yaml object ENV to be added on action and event pods
 annotations:
   productName: IBM Connectivity pack
 image:
-  registry: us.icr.io # Image registry base URL
-  path: conn-pack-prod-ns
+  registry: cp.icr.io # Image registry base URL
+  path: cp/ibm-eventstreams
   imagePullSecretName: '' # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
   imagePullEmail: dummyEmail # Image pull secret email ID
   imagePullUsername: iamapikey # Image pull username 
@@ -42,17 +40,17 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:5230748eb61fb18cf42354dbb3631ca0ac860eab309e2263bde38ec400ad7426
+  digest: sha256:85eab9c5f1ed9b033cc34611159d574aa6e9f3c01d7a87a15d0ee330bf0462ad
   tag: 1.0.0
 proxy:
   name: connectivity-pack-proxy
   image: connectivity-pack-proxy
-  digest: sha256:7867e37fcfd6a286f6962d1fde8d72495d48ae48d717ec59e389037d6f30ea43
+  digest: sha256:123faae2ea15b39f22e74ddadc23bd0e0685c56ba85477d948960c8efd41950e
   tag: 1.0.0
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:1b9ba92739498b9b5673d8a8dce56f76a1441bae22a8fb302931a90b31c5f164
+  digest: sha256:4a6ce7e98e2d5110b1f5f6a7fe9bfec7ade15b21b0e4e4c1ada706bc395d2dc7
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -67,7 +65,7 @@ event:
   enable: false # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:3c98899c9cf91fef78c50b98686de7411a733a6d794119cc173ee90ab5d7a25b
+  digest: sha256:e52a00438b1dd4d3ef67ee2a494aa5c96ec592d5d762bbc8e10808307a342f4c
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -79,20 +77,7 @@ event:
       memory: 400Mi
   tag: 1.0.0
 javaservice:
-  enable: false # Set to true if Java container is needed
-  name: java-tech-connectors
-  image: java-tech-connectors # Update image
-  digest: sha256:3034080702df7b43adc4c336a69196966ceb1f918e3dc9309bbf1aed2b810654
-  resources: # Update below value for vertical scaling of container
-    limits:
-      cpu: '1'
-      ephemeral-storage: 10Gi
-      memory: 750Mi
-    requests:
-      cpu: 250m
-      ephemeral-storage: 5Gi
-      memory: 400Mi
-  tag: 20241022-050714-amd64
+  enable: false
 autoScaling:
   enable: false # Update this to true to enable autoScaling
   minReplicas: 1 # What is the minimum replica needed
