@@ -1,22 +1,19 @@
 {
   "action-connectors": {
-    "tag": "20241112-115016-amd64",
-    "digest": "sha256:f967881eba29ba104ebc0cd8012cfb68fc1952e24c906f03eb25f2875535816a"
+    "tag": "1.0.0",
+    "digest": "sha256:77e5d93c2b296caca73aebe920ba6a1f0f9887bcc90bb76e6269f3a7a39610a1"
   },
   "event-connectors": {
-    "tag": "20241112-141325-amd64",
-    "digest": "sha256:bedc7aa6a4735050a164694dfb16350a97baa809a1a4fef56bbb9951b8a62acb"
+    "tag": "1.0.0",
+    "digest": "sha256:ef14071820119fdffd6661e11a3f5e4a81e2e0028a134fa45cc9ec4aeed3a65b"
   },
-  "java-tech-connectors": {
-    "tag": "20241113-131243-amd64",
-    "digest": "sha256:aa7da2ac09608b4a1aa02c736d889bdef4e6678189fe2fd87db406035adcadd1"
-    },
+  "java-tech-connectors": {},
   "connectivity-pack-proxy": {
-    "tag": "20241113-103215-amd64",
-    "digest": "sha256:624e235d5008796434c53fe82750e51e85a47d40e6156eae9948e8a9f042acb1"
+    "tag": "1.0.0",
+    "digest": "sha256:8d4701758c1064c7733f5785c0d032a0a2de809d924152a3f1356fc3b2f7223f"
   },
   "connectivity-pack-prehook": {
-    "tag": "20241113-103215-amd64",
-    "digest": "sha256:6f27bea82e0ab82e063ca1fbbe90c82db29432fcbb5d934b04f30785cf8bf479"
+    "tag": "1.0.0",
+    "digest": "sha256:9031499a810c1f452e55c7dd4e2dc42051fb8af19cdc5e3699b89f899ccc9a7c"
   }
 }
