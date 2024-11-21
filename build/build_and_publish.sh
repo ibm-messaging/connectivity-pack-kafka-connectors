@@ -9,7 +9,7 @@
 rm -rf license/*
 rm -rf ibm-connectivity-pack/license/*
 # Copy new licenses under root directory and helm chart
-cp build/licenses/* license/
+cp -r build/licenses/* license/
 cp -r build/licenses/* ibm-connectivity-pack/license/*
 
 # Remove existing connector JAR and fetch the latest
