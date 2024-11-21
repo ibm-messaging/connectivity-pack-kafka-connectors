@@ -18,7 +18,7 @@ HELM_REPO_PATH="conn-pack-prod-ns"
 CHART_NAME="ibm-connectivity-pack"
 
 # Helm registry login
-echo "Logging into Helm registry..."
+echo "Logging into Helm registry $HELM_REPO_URL"
 echo "$US_ICR_IO_KEY" | helm registry login --username "$US_ICR_IO_USERID" --password-stdin "$HELM_REPO_URL"
 if [ $? -ne 0 ]; then
   echo "Helm registry login failed."

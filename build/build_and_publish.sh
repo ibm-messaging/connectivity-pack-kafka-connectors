@@ -6,11 +6,13 @@
 . ${0%/*}/update_image_config_with_latest_digest.sh
 
 # Remove existing licenses under root directory and helm chart
-rm -rf license/*
-rm -rf ibm-connectivity-pack/license/*
+rm -rf license
+rm -rf ibm-connectivity-pack/license
 # Copy new licenses under root directory and helm chart
-cp -r build/licenses/* license/
-cp -r build/licenses/* ibm-connectivity-pack/license/*
+mkdir -p license
+cp -r build/licenses/ license/
+mkdir -p ibm-connectivity-pack/license
+cp -r build/licenses/ ibm-connectivity-pack/license/
 
 # Remove existing connector JAR and fetch the latest
 . ${0%/*}/fetch_latest_connector_jar.sh

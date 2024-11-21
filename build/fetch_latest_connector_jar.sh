@@ -13,7 +13,13 @@ if [ -z "$CHART_VERSION" ]; then
 fi
 
 #Remove existing connector JAR
-find ./connectors -name "*.jar" | xargs rm -r
+echo "Remove existing connector JAR"
+find ./connectors -name "*.jar" | xargs -r rm
 
+echo "Download Latest connector JAR from artifactory hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies-latest.jar"
 # Connectivity Pack Source Connector
 curl -sSf -u "${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}" "https://eu-public.artifactory.swg-devops.com/artifactory/hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies-latest.jar" --output connectors/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies.jar
+if [ $? -ne 0 ]; then
+  echo "Connector JAR Download failed."
+  exit 1
+fi
