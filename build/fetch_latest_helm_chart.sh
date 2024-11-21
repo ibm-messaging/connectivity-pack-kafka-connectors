@@ -26,12 +26,26 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+
 # Pull the Helm chart
 echo "Pulling Helm chart ${CHART_NAME} version ${CHART_VERSION} from ${HELM_REPO_URL}"
-helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$CHART_VERSION" --untar --untardir "${TEMP_DIR}"
+helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$CHART_VERSION"
 if [ $? -ne 0 ]; then
   echo "Failed to pull Helm chart."
   exit 1
 fi
 
-echo "Helm chart pulled and extracted successfully to directory ${TEMP_DIR}"
+# Extract the tarball
+TARBALL="${CHART_NAME}-${CHART_VERSION}.tgz"
+echo "Extracting $TARBALL ..."
+tar -xzf "$TARBALL"
+if [ $? -ne 0 ]; then
+  echo "Failed to extract Helm chart."
+  exit 1
+fi
+
+# Remove the tarball after extraction
+echo "Removing the downloaded tarball $TARBALL..."
+rm -f "$TARBALL"
+
+echo "Helm chart pulled and extracted successfully."
