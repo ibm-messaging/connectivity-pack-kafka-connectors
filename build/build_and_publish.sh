@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export TEMP_DIR="${TEMP_DIR:-ibm-connectivity-pack}" # incase if we want to fetch the latest helm chart to a new folder instead of merging with the existing helm directory
-
 . ${0%/*}/fetch_latest_helm_chart.sh
 . ${0%/*}/update_docker_files_with_latest_digest.sh
 . ${0%/*}/build_images.sh

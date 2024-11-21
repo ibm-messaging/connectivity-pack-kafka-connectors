@@ -7,15 +7,13 @@ if [ "$(uname -s)" == "Darwin" ]; then
   SED=gsed
 fi
 
-TEMP_DIR="${TEMP_DIR:-ibm-connectivity-pack}"
-
 echo "Read digest values from Helm Chart"
 #Variables
 IMAGE_PREFIX="us.icr.io/conn-pack-prod-ns/"
-PREHOOK_DIGEST="connectivity-pack-prehook@$(yq eval '.preHook.digest' "${TEMP_DIR}/ibm-connectivity-pack/values.yaml")"
-PROXY_DIGEST="connectivity-pack-proxy@$(yq eval '.proxy.digest' "${TEMP_DIR}/ibm-connectivity-pack/values.yaml")"
-ACTION_DIGEST="action-connectors@$(yq eval '.action.digest' "${TEMP_DIR}/ibm-connectivity-pack/values.yaml")"
-EVENT_DIGEST="event-connectors@$(yq eval '.event.digest' "${TEMP_DIR}/ibm-connectivity-pack/values.yaml")"
+PREHOOK_DIGEST="connectivity-pack-prehook@$(yq eval '.preHook.digest' "ibm-connectivity-pack/values.yaml")"
+PROXY_DIGEST="connectivity-pack-proxy@$(yq eval '.proxy.digest' "ibm-connectivity-pack/values.yaml")"
+ACTION_DIGEST="action-connectors@$(yq eval '.action.digest' "ibm-connectivity-pack/values.yaml")"
+EVENT_DIGEST="event-connectors@$(yq eval '.event.digest' "ibm-connectivity-pack/values.yaml")"
 
 echo "Replacing digest values in Dockerfiles"
 
