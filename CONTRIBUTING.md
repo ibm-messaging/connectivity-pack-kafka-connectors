@@ -1,19 +1,18 @@
-# Contributing to the Kafka Connect source connector for IBM MQ
-
+# Contributing to the IBM Connectivity Pack Kafka Connectors
 Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Pull requests are always welcome
 
 We are always thrilled to receive pull requests, and do our best to process them as fast as possible. Not sure if that typo is worth a pull request? Do it! We will appreciate it.
 
-To contribute code or documentation, please submit a [pull request](https://github.com/ibm-messaging/kafka-connect-mq-source/pulls).
+To contribute code or documentation, please submit a [pull request](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/pulls).
 
 A good way to familiarize yourself with the codebase and contribution process is
-to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/ibm-messaging/kafka-connect-mq-source/issues).
+to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/issues).
 
 ## Create issues
 
-If you would like to implement a new feature, please [raise an issue](https://github.com/ibm-messaging/kafka-connect-mq-source/issues)
+If you would like to implement a new feature, please [raise an issue](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/issues)
 before sending a pull request so the feature can be discussed before you start working on it.
 
 > Note: We appreciate your effort, and want to avoid a situation where a contribution
