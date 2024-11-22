@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+  name: {{ include "ibm-connectivity-pack.eaPostHookJobRole" . }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    {{- toYaml .Values.annotations | nindent 4 }}
+rules:
+  - apiGroups: ["apps"] # For Deployment objects
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"] # Permissions for editing Deployments
+  - apiGroups: [""] # For Pods or other core resources if needed
+    resources: ["pods"]
+    verbs: ["get", "list"]
