@@ -3,7 +3,7 @@ Define the name of the Event Automation Helm Chart Prehook Job for validating th
 */}}
 {{- define "ibm-connectivity-pack.eaPreHookJob" -}}
 {{- if .Release.Name }}
-{{- default  .Release.Name }}-prehook-job
+{{- default  .Release.Name }}-ea-prehook-job
 {{- end }}
 {{- end }}
 
@@ -12,7 +12,7 @@ Define the name of the Event Automation Helm Chart Prehook Job for validating th
 */}}
 {{- define "ibm-connectivity-pack.eaPostHookJob" -}}
 {{- if .Release.Name }}
-{{- default  .Release.Name }}-posthook-job
+{{- default  .Release.Name }}-ea-posthook-job
 {{- end }}
 {{- end }}
 

@@ -26,11 +26,41 @@ spec:
             - /bin/sh
             - "-c"
             - |
+              kubectl patch configMap {{ include "ibm-connectivity-pack.config" .}} \
+                -n {{ .Release.Namespace }} \
+                --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.config" . }}"}}}'
+              kubectl patch secret {{ include "ibm-connectivity-pack.stunnelClient" .}} \
+                -n {{ .Release.Namespace }} \
+                --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.stunnelClient" . }}"}}}'
+
+            
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productChargedContainers=''
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productMetric='FREE'
+
+              PRODUCT_ID=""
+
               {{- $licenseType := include "ibm-connectivity-pack.fetchLicense" (dict "licenseId" .Values.license.licenseId) }}
               {{- if eq $licenseType "CP4I" }}
-              kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID='2cba508800504d0abfa48a0e2c4ecbe2'
+              PRODUCT_ID="2cba508800504d0abfa48a0e2c4ecbe2"
               {{- else if eq $licenseType "EA" }}
-              kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID='682b6db3fed247a098d85da5ab905b46'
+              PRODUCT_ID="682b6db3fed247a098d85da5ab905b46"
               {{- end }}
+
+              kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID="$PRODUCT_ID"
+
+               kubectl patch deployment {{ include "ibm-connectivity-pack.deploymentName" . }} \
+                -n {{ .Release.Namespace }} \
+                --patch '{
+                  "spec": {
+                    "template": {
+                      "metadata": {
+                        "annotations": {
+                          "productID":"$PRODUCT_ID"
+                        },
+                        "labels": {
+                          "eventstreams.ibm.com/name": "{{ include "ibm-connectivity-pack.deploymentName" . }}"
+                        }
+                      }
+                    }
+                  }
+                }'

@@ -21,8 +21,8 @@ image:
   imagePullUsername: iamapikey # Image pull username 
   imagePullPassword: dummyPassword # Image pull password 
 certificate:
-  MTLSenable: false # Enable MTLS if true else fallback to TLS
-  generate: false # generate new certificates use this for certificate rotation
+  MTLSenable: true # Enable MTLS if true else fallback to TLS
+  generate: true # generate new certificates use this for certificate rotation
   clientSecretName: '' # If MTLS/TLS secret for client already exist please specify here
   clientCertPropertyName: 'tls.crt'
   clientCertKeyPropertyName: 'tls.key'
@@ -31,7 +31,7 @@ certificate:
   serverCertPropertyName: 'tls.crt'
   serverCertKeyPropertyName: 'tls.key'
   caCertPropertyName: 'ca.crt'
-  pkcsPassword: admin123 # pkcs.p12 password
+  pkcsPassword: "" # pkcs.p12 password
 route:
   enable: false # generate OpenShift route for external access
   domain: 'example.com' # subdomain of OpenShift cluster where connector service is being deployed
@@ -62,7 +62,7 @@ action:
       memory: 256Mi
   tag: 1.0.0
 event:
-  enable: false # Set to true if Event container is needed
+  enable: true # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
   digest: sha256:ef14071820119fdffd6661e11a3f5e4a81e2e0028a134fa45cc9ec4aeed3a65b
