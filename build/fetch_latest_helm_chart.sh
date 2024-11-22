@@ -48,3 +48,5 @@ echo "Removing the downloaded tarball $TARBALL..."
 rm -f "$TARBALL"
 
 echo "Helm chart pulled and extracted successfully."
+
+echo 'license/' >> ibm-connectivity-pack/.helmignore
