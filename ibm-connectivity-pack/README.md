@@ -1,6 +1,6 @@
-# IBM Connectivity Pack Helm Chart
+# IBM Connectivity Pack Helm chart
 
-This Helm chart installs IBM Connectivity Pack which acts as an interface to communicate with your data sources.
+This Helm chart installs IBM Connectivity Pack, which acts as an interface to communicate with your data sources.
 
 ## Prerequisites
 
@@ -9,22 +9,23 @@ Ensure that you have installed the following prerequisites:
 - Red Hat OpenShift Container Platform versions 4.12 or later or Kubernetes version 1.25 or later, running on Linux 64-bit (x86_64) systems.
 - Helm CLI 3.0 or later.
 
-## Install
+## Installing
 
-1. To install IBM Connectivity Pack, run the following command:
+To install IBM Connectivity Pack, run the following command:
 
-  ```bash
-  helm install --set license.licenseId=<license-id>,license.accept=true <release-name> <chart> 
-  ```
+```bash
+helm install --set license.licenseId=<license-id>,license.accept=true <release-name> <chart-path> 
+```
 
-where:
-- <license-id> specifies a vali license Id from https://ibm.biz/ea-license.
-- <release-name> is a release name that you pick.
-- <chart> is the URL or path to the chart you want to install. 
+Where:
 
-To override the default installation options, pass additional [configuration](#configuration) from the command line. 
+- `<license-id>` specifies a valid license ID from https://ibm.biz/ea-license.
+- `<release-name>` is a release name that you want.
+- `<chart-path>` is the URL or path to the Helm chart that you want to install. 
 
-## Uninstall
+**Note:** To override the default installation options, set additional [configurations](#configuring) from the CLI.
+
+## Uninstalling
 
 To uninstall the IBM Connectivity Pack release, run the following command:
 
@@ -32,7 +33,7 @@ To uninstall the IBM Connectivity Pack release, run the following command:
 helm uninstall <release-name>
 ```
 
-## Configuration
+## Configuring
 
 You can configure your installation by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
 
@@ -89,7 +90,7 @@ autoScaling.memoryUtilization | Target memory utilization percentage for auto-sc
 
 ### Configuring your mTLS
 
-The Helm chart supports both mTLS and TLS via `certificate.MTLSenable` option:
+The Helm chart supports both mTLS and TLS through `certificate.MTLSenable`:
 
 **mTLS Enabled:** Certificates are generated and stored in a Kubernetes secret. To regenerate certificates, set `certificate.generate` to `true`.
 
