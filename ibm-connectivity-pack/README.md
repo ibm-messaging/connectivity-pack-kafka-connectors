@@ -1,57 +1,42 @@
-# Installing IBM Connectivity Pack
+# IBM Connectivity Pack Helm Chart
 
-IBM Connectivity Pack acts as an interface to communicate with your data source.
-
-The Connectivity Pack can be deployed by using the `ibm-connectivity-pack` Helm chart. You can deploy the Connectivity Pack on OpenShift and other Kubernetes platforms.
+This Helm chart installs IBM Connectivity Pack which acts as an interface to communicate with your data sources.
 
 ## Prerequisites
 
-Ensure that you have installed the following platforms:
+Ensure that you have installed the following prerequisites:
 
-- Kubernetes version 1.16 or later
-- Helm 3.0 or later
-- OpenShift 4.x (for Route and OpenShift-specific features)
+- Red Hat OpenShift Container Platform versions 4.12 or later or Kubernetes version 1.25 or later, running on Linux 64-bit (x86_64) systems.
+- Helm CLI 3.0 or later.
 
-## Installing
+## Install
 
-
-1. To install the Helm chart with the release name `my-release`, run the following command:
+1. To install IBM Connectivity Pack, run the following command:
 
   ```bash
-  helm install my-release connector-service/ibm-connectivity-pack
+  helm install --set license.licenseId=<license-id>,license.accept=true <release-name> <chart> 
   ```
 
-You can also configure your Helm chart to enable features such as mutual Transport Layer Security (mTLS), basic authentication, and auto-scaling by passing parameters through the `--set` flag or by using a custom YAML file. For more information, see [Configuring](#configuring-your-helm-chart).
+where:
+- <license-id> specifies a vali license Id from https://ibm.biz/ea-license.
+- <release-name> is a release name that you pick.
+- <chart> is the URL or path to the chart you want to install. 
 
-For example, if you added your parameters to the `values.yaml` file and to set the `replicaCount` as `3`, you can run the following command:
+To override the default installation options, pass additional [configuration](#configuration) from the command line. 
 
-  ```bash
-  helm install my-release connector-service/ibm-connectivity-pack -f values.yaml --set replicaCount=3
-  ```
+## Uninstall
 
-1. After you install the Connectivity Pack, follow the instructions in the [Connectivity Pack source connector] to connect with Salesforce.
-
-<!-- ## Upgrade the Chart
-
-To upgrade an existing release with new values:
+To uninstall the IBM Connectivity Pack release, run the following command:
 
 ```bash
-helm upgrade my-release connector-service/ibm-connectivity-pack -f values.yaml
-``` -->
-
-## Uninstallation
-
-To uninstall the Helm deployment with the release name `my-release`, run the following command:
-
-```bash
-helm uninstall my-release
+helm uninstall <release-name>
 ```
 
-## Configuring your Helm chart
+## Configuration
 
-You can configure your Helm chart by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
+You can configure your installation by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
 
-The following table lists the configurable parameters of the **IBM Connectivity pack** Helm chart and their default values:
+The following table lists the configurable parameters of the **IBM Connectivity Pack** Helm chart and their default values:
 
 Parameter | Description | Default
 -- | -- | --
@@ -104,17 +89,11 @@ autoScaling.memoryUtilization | Target memory utilization percentage for auto-sc
 
 ### Configuring your mTLS
 
-The Helm chart supports both mTLS and TLS. Set `certificate.MTLSenable` to `true` to enable mTLS:
+The Helm chart supports both mTLS and TLS via `certificate.MTLSenable` option:
 
 **mTLS Enabled:** Certificates are generated and stored in a Kubernetes secret. To regenerate certificates, set `certificate.generate` to `true`.
 
 **mTLS disabled:** If not enabled, the service defaults to TLS.
-
-To view or manage the mTLS secrets, run the following command:
-
-```bash
-kubectl get secret <name-of-the-release>-mtls-secret -o yaml -n <namespace>
-```
 
 ### OpenShift Route
 

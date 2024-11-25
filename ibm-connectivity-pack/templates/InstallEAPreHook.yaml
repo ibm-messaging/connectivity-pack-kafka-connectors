@@ -27,6 +27,6 @@ spec:
             - "-c"
             - |
             {{- if not .Values.license.licenseId }}
-            {{- fail " \nYou have not provided a valid license. To continue the installation, set 'license.licenseId' and provide a valid license from https://ibm.biz/ea-license." }}
+            {{- fail " \nYou have not provided a valid license. To continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license." }}
             {{- end }}
             {{- include "ibm-connectivity-pack.validateLicense" (dict "licenseId" .Values.license.licenseId) }}

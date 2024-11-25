@@ -39,11 +39,15 @@ spec:
 
               PRODUCT_ID=""
 
-              {{- $licenseType := include "ibm-connectivity-pack.fetchLicense" (dict "licenseId" .Values.license.licenseId) }}
-              {{- if eq $licenseType "CP4I" }}
-              PRODUCT_ID="2cba508800504d0abfa48a0e2c4ecbe2"
-              {{- else if eq $licenseType "EA" }}
-              PRODUCT_ID="682b6db3fed247a098d85da5ab905b46"
+              {{- if ((.Values.license).licenseId) }}
+                {{- $licenseType := include "ibm-connectivity-pack.fetchLicense" (dict "licenseId" .Values.license.licenseId) }}
+                {{- if eq $licenseType "CP4I" }}
+                PRODUCT_ID="2cba508800504d0abfa48a0e2c4ecbe2"
+                {{- else if eq $licenseType "EA" }}
+                PRODUCT_ID="682b6db3fed247a098d85da5ab905b46"
+                {{- end }}
+              {{else}}
+                {{- fail " \nYou have not provided a valid license. To continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license." }}
               {{- end }}
 
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID="$PRODUCT_ID"

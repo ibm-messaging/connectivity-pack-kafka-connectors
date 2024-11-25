@@ -27,16 +27,16 @@ spec:
             - "-c"
             - |
               {{- if not .Values.acceptLicense }}
-              {{- fail (printf "Please accept the license before installing or updating Helm. Set acceptLicense to true") }}
+              {{- fail (printf "\nYou have not accepted the terms of the license. To continue the installation, accept the license by setting 'acceptLicense' to 'true'.") }}
               {{- end }}
               {{- if and .Values.image.imagePullSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.image.imagePullSecretName)) }}
-              {{- fail (printf "Failed to find image pull secret '%s' in namespace '%s'" .Values.image.imagePullSecretName .Release.Namespace) }}
+              {{- fail (printf "\nFailed to find image pull secret '%s' in namespace '%s'" .Values.image.imagePullSecretName .Release.Namespace) }}
               {{- end }}
               {{- if and .Values.certificate.serverSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.certificate.serverSecretName)) }}
-              {{- fail (printf "Failed to find certificate secret '%s' in namespace '%s'" .Values.certificate.serverSecretName .Release.Namespace) }}
+              {{- fail (printf "\nFailed to find certificate secret '%s' in namespace '%s'" .Values.certificate.serverSecretName .Release.Namespace) }}
               {{- end }}
               {{- if and .Values.certificate.MTLSenable .Values.certificate.clientSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.certificate.clientSecretName)) }}
-              {{- fail (printf "Failed to find certificate secret '%s' in namespace '%s'" .Values.certificate.clientSecretName .Release.Namespace) }}
+              {{- fail (printf "\nFailed to find certificate secret '%s' in namespace '%s'" .Values.certificate.clientSecretName .Release.Namespace) }}
               {{- end }}
               {{- if and (not .Values.certificate.serverSecretName) (not .Values.certificate.clientSecretName) }}
               export IS_CERT_GENERATE={{ .Values.certificate.generate }}
