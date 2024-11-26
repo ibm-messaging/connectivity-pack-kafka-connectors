@@ -7,8 +7,8 @@ if [ -z "$ARTIFACTORY_USERNAME" ]; then
     exit 1
 fi
 
-if [ -z "$CHART_VERSION" ]; then
-    echo "CHART_VERSION not set. Aborting build"
+if [ -z "$CONNECTOR_JAR_VERSION" ]; then
+    echo "CONNECTOR_JAR_VERSION not set. Aborting build"
     exit 1
 fi
 
@@ -16,9 +16,9 @@ fi
 echo "Remove existing connector JAR"
 find ./connectors -name "*.jar" | xargs -r rm
 
-echo "Download Latest connector JAR from artifactory hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies-latest.jar"
+echo "Download Latest connector JAR from artifactory hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CONNECTOR_JAR_VERSION}-jar-with-dependencies-latest.jar"
 # Connectivity Pack Source Connector
-curl -sSf -u "${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}" "https://eu-public.artifactory.swg-devops.com/artifactory/hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies-latest.jar" --output connectors/connectivity-pack-source-connector-${CHART_VERSION}-jar-with-dependencies.jar
+curl -sSf -u "${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD}" "https://eu-public.artifactory.swg-devops.com/artifactory/hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector-${CONNECTOR_JAR_VERSION}-jar-with-dependencies-latest.jar" --output connectors/connectivity-pack-source-connector-${CONNECTOR_JAR_VERSION}-jar-with-dependencies.jar
 if [ $? -ne 0 ]; then
   echo "Connector JAR Download failed."
   exit 1
