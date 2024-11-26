@@ -1,4 +1,4 @@
-FROM us.icr.io/conn-pack-prod-ns/action-connectors@sha256:f967881eba29ba104ebc0cd8012cfb68fc1952e24c906f03eb25f2875535816a
+FROM us.icr.io/conn-pack-prod-ns/action-connectors@sha256:18ceb549bf664b7ade5e19970a35bec36b377ee79cac59c55833a09a2f80c882
 
 USER root
 

@@ -21,7 +21,7 @@ Where:
 
 - `<license-id>` specifies a valid license ID from https://ibm.biz/ea-license.
 - `<release-name>` is a release name that you want.
-- `<chart-path>` is the URL or path to the Helm chart that you want to install. 
+- `<chart-path>` is the URL or path to the Helm chart that you want to install.
 
 **Note:** To override the default installation options, set additional [configurations](#configuring) from the CLI.
 

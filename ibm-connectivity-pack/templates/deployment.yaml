@@ -106,7 +106,7 @@ spec:
             - name: CONNECTOR_SERVICE_EVENTS_ALLOWLIST
               value: {{- toYaml .Values.csCommon.eventList | indent 2 }}
             - name: CONNECTOR_SERVICE_EVENTS
-              value: 'true'
+              value: {{ .Values.event.enable | quote }}
             - name: SUBSCRIBE_PERSISTENCE
               value: k8s
             - name: MUTUAL_AUTH
@@ -184,7 +184,7 @@ spec:
             - name: FEATURE_TOGGLES_OVERRIDE
               value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1 }"
             - name: CONNECTOR_SERVICE_EVENTS
-              value: 'true'
+              value: {{ .Values.event.enable | quote }}
             - name: DESIGNER_FLOWS_OPERATION_MODE
               value: local
             - name: FIREFLY_USERID

@@ -20,14 +20,22 @@ spec:
       containers:
         - name: mtls-cert-generator
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.preHook.image }}@{{ .Values.preHook.digest }}
           command:
             - /bin/sh
             - "-c"
             - |
-              {{- if not .Values.acceptLicense }}
-              {{- fail (printf "\nYou have not accepted the terms of the license. To continue the installation, accept the license by setting 'acceptLicense' to 'true'.") }}
+              {{- if not .Values.license.accept }}
+              {{- fail (printf "\nYou have not accepted the terms of the license. To continue the installation, accept the license by setting 'license.accept' to true.") }}
               {{- end }}
               {{- if and .Values.image.imagePullSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.image.imagePullSecretName)) }}
               {{- fail (printf "\nFailed to find image pull secret '%s' in namespace '%s'" .Values.image.imagePullSecretName .Release.Namespace) }}

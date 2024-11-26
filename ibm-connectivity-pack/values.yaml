@@ -7,7 +7,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-acceptLicense: false
+license:
+  accept: false
 replicaCount: 1 # Replica of the POD
 bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
 environmentVariables: {} # Yaml object ENV to be added on action and event pods
@@ -19,7 +20,7 @@ image:
   imagePullSecretName: '' # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
   imagePullEmail: dummyEmail # Image pull secret email ID
   imagePullUsername: iamapikey # Image pull username 
-  imagePullPassword: dummyPassword # Image pull password 
+  imagePullPassword: ibm-entitlement-key # Image pull password
 certificate:
   MTLSenable: true # Enable MTLS if true else fallback to TLS
   generate: true # generate new certificates use this for certificate rotation
@@ -40,17 +41,17 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:9031499a810c1f452e55c7dd4e2dc42051fb8af19cdc5e3699b89f899ccc9a7c
-  tag: 1.0.0
+  digest: sha256:8afeb815d0f561e301202e3e172cbca6203b7ac07e51cbd530bdabd2d627bfd1
+  tag: 1.0.1
 proxy:
   name: connectivity-pack-proxy
   image: connectivity-pack-proxy
-  digest: sha256:8d4701758c1064c7733f5785c0d032a0a2de809d924152a3f1356fc3b2f7223f
-  tag: 1.0.0
+  digest: sha256:52742e0590c341dc133aa83c07afddcdb8723b5368028e6f1122ffd5e8882300
+  tag: 1.0.1
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:77e5d93c2b296caca73aebe920ba6a1f0f9887bcc90bb76e6269f3a7a39610a1
+  digest: sha256:e83c2136687205e86d0535d76b73ce258ef8cf115e6143f8281b89e188c2975f
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -60,12 +61,12 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 256Mi
-  tag: 1.0.0
+  tag: 1.0.1
 event:
   enable: true # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:ef14071820119fdffd6661e11a3f5e4a81e2e0028a134fa45cc9ec4aeed3a65b
+  digest: sha256:05d28ddbd76ac49ca55b1672be084f3a4d50eb8f6f4aec020ce83fb6a8c153ca
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -75,7 +76,7 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 1.0.0
+  tag: 1.0.1
 javaservice:
   enable: false
 autoScaling:
@@ -90,7 +91,7 @@ securityContext:
       - ALL
   privileged: false
   runAsNonRoot: true
-  readOnlyRootFilesystem: false
+  readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
   seccompProfile:
     type: RuntimeDefault

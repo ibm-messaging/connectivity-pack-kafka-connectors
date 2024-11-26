@@ -71,11 +71,11 @@ metadata:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   name: {{ include "ibm-connectivity-pack.preHookJobRole" . }}
   annotations:
-    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook": pre-install, pre-upgrade, post-delete
     "helm.sh/hook-weight": "-1"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
     {{- toYaml .Values.annotations | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["create", "get", "list", "update", "patch"]
+    verbs: ["create", "get", "list", "update", "patch", "delete"]

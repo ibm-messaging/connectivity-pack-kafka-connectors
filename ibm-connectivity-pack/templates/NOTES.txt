@@ -1,84 +1,18 @@
-{{- if .Values.route.enable }}
-Your connector service has been deployed successfully and is accessible externally via an OpenShift Route.
-
-To get Route:
-  oc -n {{ .Release.Namespace }} get routes/{{- include "ibm-connectivity-pack.service" . }} --output custom-columns=NODE:.spec.host
-
-{{- else }}
-Your connector service has been deployed successfully but no external Route has been created. You can enable the OpenShift Route by setting `route.enable` to `true` in the `values.yaml` file and re-deploying the chart and set `certificate.generate` to `true` and update domain in `route.domain` .
-
-Internal Access:
-  Service: {{- include "ibm-connectivity-pack.service" . }}
-  Namespace: {{ .Release.Namespace }}
-  Use the following ports:
-    - HTTPS: 3020 (Action Service)
-    {{- if .Values.event.enable }}
-    - HTTPS (webhook): 3008 (Event Service)
-    - Websocket Target: 3042 (Event Service)
-    {{- end }}
-{{- end }}
-
+IBM Connectivity Pack deployed successfully.
 
 {{- if .Values.certificate.MTLSenable }}
-MTLS is enabled for secure communication. New certificates have been generated and stored in a Kubernetes Secret.
 
-To view the client certificate Secret:
-  kubectl get secret {{- include "ibm-connectivity-pack.stunnelClient" . }} -o yaml -n {{ .Release.Namespace }}
-
-To view the server certificate Secret:
-  kubectl get secret {{- include "ibm-connectivity-pack.stunnelServer" . }} -o yaml -n {{ .Release.Namespace }}
-
-If you need to rotate the certificates, set `certificate.generate` to `true` in the `values.yaml` file and re-install the chart.
-
-{{- else }}
-MTLS is disabled. TLS is being used instead.
+MTLS is enabled for secure communication. New certificates have been generated and stored in a Kubernetes Secret.  
+To view the client certificate, key, and CA, run:  
+kubectl get secret {{ include "ibm-connectivity-pack.stunnelClient" . }} -o yaml -n {{ .Release.Namespace }}
 {{- end }}
 
-Service Details:
-  Proxy Service: {{ .Values.proxy.name }}
-  Action Service: {{ .Values.action.name }}
-  {{- if .Values.event.enable }}
-  Event Service: {{ .Values.event.name }}
-  {{- end }}
+{{- if .Values.basicAuth.enable }}
 
-The following ports have been configured:
-  - Proxy Service Port: 3001
-  - Action HTTP Port: 3020
-  {{- if .Values.event.enable }}  
-  - Event Service Leader Election Port: 3003
-  - Event Service Webhook Port: 3009
-  - Event Service Websocket Source Port: 3022
-  - Event Service Websocket Target Port: 3042
-  {{- end }}
-
-Auto-Scaling:
-  Auto-scaling is {{ if .Values.autoScaling.enable }}enabled{{ else }}disabled{{ end }}.
-  {{- if .Values.autoScaling.enable }}
-  Minimum Replicas: {{ .Values.autoScaling.minReplicas }}
-  Maximum Replicas: {{ .Values.autoScaling.maxReplicas }}
-  Target CPU Utilization: {{ .Values.autoScaling.cpuUtilization }}%
-  Target Memory Utilization: {{ .Values.autoScaling.memoryUtilization }}%
-  {{- end }}
-
-BASIC Authentication:
-  Basic Authentication is {{ if .Values.basicAuth.enable }}enabled{{ else }}disabled{{ end }}.
-  {{- if .Values.basicAuth.enable }}
-  To view the BASIC Authentication Secret:
-    kubectl get secret {{- include "ibm-connectivity-pack.basicAuthCreds" . }} -o yaml -n {{ .Release.Namespace }}
-  {{- end }}
-
-Log Configuration:
-  Log level has been set to `{{ .Values.bunyan }}`. You can update this by modifying the `bunyan` section in `values.yaml`.
-
-To view configMap having exposed service:
-  kubectl get configmap {{- include "ibm-connectivity-pack.config" . }} -o yaml -n {{ .Release.Namespace }}  
-
-{{- if not (eq (toJson .Values.environmentVariables) "{}") }}
-To view configMap having override environment variables:
-  kubectl get configmap {{- include "ibm-connectivity-pack.envConfig" . }} -o yaml -n {{ .Release.Namespace }} 
+BASIC authentication is enabled. To view the BASIC Authentication Secret, run:  
+kubectl get secret {{ include "ibm-connectivity-pack.basicAuthCreds" . }} -o yaml -n {{ .Release.Namespace }}
 {{- end }}
 
-{{- if .Values.image.imagePullSecretName }}
-Image Pull:
-   Using {{ .Values.image.imagePullSecretName  }} image pull secret
-{{- end }}
+To view the ConfigMap containing the exposed internal service URL, run:  
+kubectl get configmap {{ include "ibm-connectivity-pack.config" . }} -o yaml -n {{ .Release.Namespace }}
+

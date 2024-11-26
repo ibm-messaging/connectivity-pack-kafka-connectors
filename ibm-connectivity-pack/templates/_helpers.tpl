@@ -212,7 +212,7 @@ Create the name for stunnel server cert secret
 {{- if .Values.certificate.serverSecretName }}
 {{- .Values.certificate.serverSecretName }}
 {{- else }}
-{{- default  .Release.Name }}-server-stunnel
+{{- default  .Release.Name }}-server-certificate
 {{- end }}
 {{- end }}
 
@@ -223,7 +223,7 @@ Create the name for stunnel client cert secret
 {{- if .Values.certificate.clientSecretName }}
 {{- .Values.certificate.clientSecretName }}
 {{- else }}
-{{- default  .Release.Name }}-stunnel
+{{- default  .Release.Name }}-client-certificate
 {{- end }}
 {{- end }}
 
