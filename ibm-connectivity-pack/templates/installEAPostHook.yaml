@@ -32,8 +32,10 @@ spec:
               kubectl patch secret {{ include "ibm-connectivity-pack.stunnelClient" .}} \
                 -n {{ .Release.Namespace }} \
                 --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.stunnelClient" . }}"}}}'
-
-            
+              kubectl patch configMap {{ include "ibm-connectivity-pack.proxy" .}} \
+              -n {{ .Release.Namespace }} \
+              --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.proxy" . }}"}}}'
+              
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productChargedContainers=''
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productMetric='FREE'
 
