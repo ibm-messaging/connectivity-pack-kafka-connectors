@@ -101,7 +101,7 @@ Create the name of the service
 {{- end }}
 
 {{- if not (or $foundCP4ILicense $foundEALicense )}}
-  {{- fail (printf "\nYou have provided an invalid license: %s.\nSTo continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license.\nValid Event Automation licenses are:\n  %s\nValid Cloud Pak for Integration licenses are:\n  %s" $licenseId $licenseListEA $licenseListCP4I) }}
+  {{- fail (printf "\nYou have provided an invalid license: %s.\nTo continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license.\nValid Event Automation licenses are:\n  %s\nValid Cloud Pak for Integration licenses are:\n  %s" $licenseId $licenseListEA $licenseListCP4I) }}
 {{- end }}
 
 {{- end }}
