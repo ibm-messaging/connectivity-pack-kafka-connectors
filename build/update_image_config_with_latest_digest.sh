@@ -82,6 +82,6 @@ yq -i '.java-tech-connectors = {}' "ibm-connectivity-pack/connector-config.json"
 # Update Chart Version and appVersion
 echo "Update Chart Version and appVersion"
 yq -i ".version=\"${CHART_VERSION}\"" "ibm-connectivity-pack/Chart.yaml"
-yq -i ".appVersion=\"${CHART_VERSION}\"" "ibm-connectivity-pack/Chart.yaml"
+yq -i ".appVersion=\"${APP_CONNECT_CHART_VERSION}\"" "ibm-connectivity-pack/Chart.yaml"
 
 yq e '.replicaCount=1 | .certificate.generate=true | .image.imagePullPassword="ibm-entitlement-key" | .certificate.pkcsPassword="" | .certificate.MTLSenable=true | .event.enable=true' -i ibm-connectivity-pack/values.yaml
