@@ -7,8 +7,8 @@ if [ -z "$US_ICR_IO_KEY" ]; then
     exit 1
 fi
 
-if [ -z "$CHART_VERSION" ]; then
-    echo "CHART_VERSION not set. Aborting build"
+if [ -z "$APP_CONNECT_CHART_VERSION" ]; then
+    echo "APP_CONNECT_CHART_VERSION not set. Aborting build"
     exit 1
 fi
 
@@ -27,15 +27,15 @@ fi
 
 
 # Pull the Helm chart
-echo "Pulling Helm chart ${CHART_NAME} version ${CHART_VERSION} from ${HELM_REPO_URL}"
-helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$CHART_VERSION"
+echo "Pulling Helm chart ${CHART_NAME} version ${APP_CONNECT_CHART_VERSION} from ${HELM_REPO_URL}"
+helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$APP_CONNECT_CHART_VERSION"
 if [ $? -ne 0 ]; then
   echo "Failed to pull Helm chart."
   exit 1
 fi
 
 # Extract the tarball
-TARBALL="${CHART_NAME}-${CHART_VERSION}.tgz"
+TARBALL="${CHART_NAME}-${APP_CONNECT_CHART_VERSION}.tgz"
 echo "Extracting $TARBALL ..."
 tar -xzf "$TARBALL"
 if [ $? -ne 0 ]; then
