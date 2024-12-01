@@ -7,8 +7,8 @@ rm -rf ibm-connectivity-pack/
 . ${0%/*}/build_images.sh
 . ${0%/*}/update_image_config_with_latest_digest.sh
 
-cp -r ea_files/helm-templates/* ibm-connectivity-pack/templates
-cp -r ea_files/docs/* ibm-connectivity-pack/
+cp -r build/ea_files/helm-templates/* ibm-connectivity-pack/templates
+cp -r build/ea_files/docs/* ibm-connectivity-pack/
 
 # Remove existing licenses under root directory and helm chart
 rm -rf license
