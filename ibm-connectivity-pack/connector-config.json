@@ -1,19 +1,19 @@
 {
   "action-connectors": {
-    "tag": "1.0.1",
-    "digest": "sha256:e83c2136687205e86d0535d76b73ce258ef8cf115e6143f8281b89e188c2975f"
+    "tag": "1.0.0",
+    "digest": "sha256:4068f1e0ba627e8237c08c8e5a2ba62e3c0d1ab1fa3ca983b22adc7d427fbc62"
   },
   "event-connectors": {
-    "tag": "1.0.1",
-    "digest": "sha256:05d28ddbd76ac49ca55b1672be084f3a4d50eb8f6f4aec020ce83fb6a8c153ca"
+    "tag": "1.0.0",
+    "digest": "sha256:1c575f3e7658c186723fb490c9513bcda666a4f823a2d56b11ae22ac1a6c37d3"
   },
   "java-tech-connectors": {},
   "connectivity-pack-proxy": {
-    "tag": "1.0.1",
-    "digest": "sha256:52742e0590c341dc133aa83c07afddcdb8723b5368028e6f1122ffd5e8882300"
+    "tag": "1.0.0",
+    "digest": "sha256:8ee2b1fe96f00fb90bd25df122097f3653ba7b83eb6808a5a3971e21548a5fe4"
   },
   "connectivity-pack-prehook": {
-    "tag": "1.0.1",
-    "digest": "sha256:8afeb815d0f561e301202e3e172cbca6203b7ac07e51cbd530bdabd2d627bfd1"
+    "tag": "1.0.0",
+    "digest": "sha256:a401875a35737d377e7a18753ba26a52999d8c060589256e32263008c5f19747"
   }
 }

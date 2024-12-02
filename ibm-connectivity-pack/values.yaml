@@ -20,7 +20,7 @@ image:
   imagePullSecretName: '' # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
   imagePullEmail: dummyEmail # Image pull secret email ID
   imagePullUsername: iamapikey # Image pull username 
-  imagePullPassword: ibm-entitlement-key # Image pull password
+  imagePullPassword: ibm-entitlement-key # Image pull password 
 certificate:
   MTLSenable: true # Enable MTLS if true else fallback to TLS
   generate: true # generate new certificates use this for certificate rotation
@@ -32,7 +32,7 @@ certificate:
   serverCertPropertyName: 'tls.crt'
   serverCertKeyPropertyName: 'tls.key'
   caCertPropertyName: 'ca.crt'
-  pkcsPassword: "" # pkcs.p12 password
+  pkcsPassword: '' # pkcs.p12 password
 route:
   enable: false # generate OpenShift route for external access
   domain: 'example.com' # subdomain of OpenShift cluster where connector service is being deployed
@@ -41,17 +41,17 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:8afeb815d0f561e301202e3e172cbca6203b7ac07e51cbd530bdabd2d627bfd1
-  tag: 1.0.1
+  digest: sha256:a401875a35737d377e7a18753ba26a52999d8c060589256e32263008c5f19747
+  tag: 1.0.0
 proxy:
   name: connectivity-pack-proxy
   image: connectivity-pack-proxy
-  digest: sha256:52742e0590c341dc133aa83c07afddcdb8723b5368028e6f1122ffd5e8882300
-  tag: 1.0.1
+  digest: sha256:8ee2b1fe96f00fb90bd25df122097f3653ba7b83eb6808a5a3971e21548a5fe4
+  tag: 1.0.0
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:e83c2136687205e86d0535d76b73ce258ef8cf115e6143f8281b89e188c2975f
+  digest: sha256:4068f1e0ba627e8237c08c8e5a2ba62e3c0d1ab1fa3ca983b22adc7d427fbc62
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -61,12 +61,12 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 256Mi
-  tag: 1.0.1
+  tag: 1.0.0
 event:
   enable: true # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:05d28ddbd76ac49ca55b1672be084f3a4d50eb8f6f4aec020ce83fb6a8c153ca
+  digest: sha256:1c575f3e7658c186723fb490c9513bcda666a4f823a2d56b11ae22ac1a6c37d3
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -76,7 +76,7 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 1.0.1
+  tag: 1.0.0
 javaservice:
   enable: false
 autoScaling:
