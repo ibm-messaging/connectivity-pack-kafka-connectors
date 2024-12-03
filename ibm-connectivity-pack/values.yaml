@@ -17,10 +17,10 @@ annotations:
 image:
   registry: cp.icr.io # Image registry base URL
   path: cp/ibm-eventstreams
-  imagePullSecretName: '' # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
+  imagePullSecretName: ibm-entitlement-key # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
   imagePullEmail: dummyEmail # Image pull secret email ID
   imagePullUsername: iamapikey # Image pull username 
-  imagePullPassword: ibm-entitlement-key # Image pull password 
+  imagePullPassword: '' # Image pull password
 certificate:
   MTLSenable: true # Enable MTLS if true else fallback to TLS
   generate: true # generate new certificates use this for certificate rotation
