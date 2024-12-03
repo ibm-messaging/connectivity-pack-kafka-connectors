@@ -6,7 +6,7 @@ This Helm chart installs IBM Connectivity Pack, which acts as an interface to co
 
 Ensure that you have installed the following prerequisites:
 
-- Red Hat OpenShift Container Platform versions 4.12 or later or Kubernetes version 1.25 or later, running on Linux 64-bit (x86_64) systems.
+- Red Hat OpenShift Container Platform versions 4.12 or Kubernetes version 1.25 or later, running on Linux 64-bit (x86_64) systems.
 - Helm CLI 3.0 or later.
 
 ## Installing
