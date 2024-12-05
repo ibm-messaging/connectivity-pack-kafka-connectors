@@ -40,17 +40,20 @@ spec:
               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productMetric='FREE'
 
               {{- $productID := "" }}
+              {{- $productName := "" }}
                 {{- if .Values.license.licenseId }}
                     {{- $licenseType := include "ibm-connectivity-pack.fetchLicense" (dict "licenseId" .Values.license.licenseId) }}
                     {{- if eq $licenseType "CP4I" }}
                         {{- $productID = "2cba508800504d0abfa48a0e2c4ecbe2" }}
+                        {{- $productName = "IBM Event Streams" }}
                     {{- else if eq $licenseType "EA" }}
                         {{- $productID = "682b6db3fed247a098d85da5ab905b46" }}
+                        {{- $productName = "IBM Event Automation" }}
                     {{- else }}
                         {{- fail " \nYou have not provided a valid license. To continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license." }}
                     {{- end }}
                {{- end }}
-
+               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productName="{{ $productName }}"
                kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID="{{ $productID }}"
 
                kubectl patch deployment {{ include "ibm-connectivity-pack.deploymentName" . }} \
@@ -61,6 +64,7 @@ spec:
                       "metadata": {
                         "annotations": {
                           "productID": "{{ $productID }}",
+                          "productName": "{{ $productName }}",
                           "productChargedContainers":"",
                           "productMetric":"FREE"
                         },
