@@ -1,1 +1,0 @@
-# Details on which connectors we are supporting and  running the connector jar

@@ -1,0 +1,65 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: salesforce-credential
+  namespace: <namespace>
+stringData:
+  username: <username>
+  password: <password>
+  clientIdentity: <clientIdentity>
+  clientSecret: <clientSecret>
+type: Opaque
+
+---
+
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    eventstreams.ibm.com/cluster: <name of Kafka Connect cluster>
+  name: <name of connector>
+  namespace: <namespace>
+spec:
+  autoRestart:
+    enabled: true
+    maxRestarts: <no. of times the connector attemps for restart in case of an error or failure>
+  # connector class name  
+  class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+  config:
+    # which data source to connect to
+    connectivitypack.source: salesforce
+
+    # url to access the data source
+    connectivitypack.source.url: <login url of the data source instance>
+
+    # credentials to access the data source (This example shows auth-type - 'OAUTH2_PASSWORD')
+    connectivitypack.source.credentials.authType: <auth-type that the data source supports. eg. OAUTH2_PASSWORD>
+    connectivitypack.source.credentials.username: ${file:/mnt/salesforce-credential:username}
+    connectivitypack.source.credentials.password: ${file:/mnt/salesforce-credential:password}
+    connectivitypack.source.credentials.clientIdentity: ${file:/mnt/salesforce-credential:clientIdentity}
+    connectivitypack.source.credentials.clientSecret: ${file:/mnt/salesforce-credential:clientSecret}
+    
+
+    # objects and event-types to read from the datasource
+    connectivitypack.source.objects: 'Test_task__e, Order_Event__e, OrderConfirmation__e, CaseChangeEvent'
+    connectivitypack.source.Test_task__e.events: CREATED
+    connectivitypack.source.Order_Event__e.events: CREATED
+    connectivitypack.source.OrderConfirmation__e.events: CREATED
+    connectivitypack.source.CaseChangeEvent.events: UPDATED
+
+    # Should be equal to the number of object-eventType combinations
+    # In this example it is 4 (Test_task__e - CREATED, Order_Event__e - CREATED, OrderConfirmation__e - CREATED, CaseChangeEvent - UPDATED)
+    tasks.max: 4
+
+    #To attempt for exactly once delivery semantics
+    exactly.once.support: required
+
+    # optional topic name format
+    connectivitypack.topic.name.format: '${object}.${eventType}'  
+    
+    # standard kafka connector properties
+    value.converter.schemas.enable: false
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    
+    

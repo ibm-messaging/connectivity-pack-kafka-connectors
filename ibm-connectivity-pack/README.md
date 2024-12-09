@@ -1,29 +1,32 @@
-# IBM Connectivity Pack Helm chart
+# Installing IBM Connectivity Pack Helm Chart
 
-This Helm chart installs IBM Connectivity Pack, which acts as an interface to communicate with your data sources.
+IBM connectivity pack acts as an interface between Kafka Connect connectors and external systems like Salesforce.
+
+The connectivity pack can be deployed on OpenShift and other Kubernetes platforms using the `ibm-connectivity-pack` Helm chart.
 
 ## Prerequisites
 
-Ensure that you have installed the following prerequisites:
-
-- Red Hat OpenShift Container Platform versions 4.12 or Kubernetes version 1.25 or later, running on Linux 64-bit (x86_64) systems.
-- Helm CLI 3.0 or later.
+- OpenShift 4.12 or later
+- Kubernetes version 1.25 or later
+- Helm CLI 3.0 or later
 
 ## Installing
 
-To install IBM Connectivity Pack, run the following command:
+To install the connectivity pack, run the following command:
 
 ```bash
-helm install --set license.licenseId=<license-id>,license.accept=true <release-name> <chart-path> 
+helm install <release-name> ibm-connectivity-pack-1.0.0.tgz --set license.licenseId=<license-id>,license.accept=true
 ```
 
-Where:
+where:
 
-- `<license-id>` specifies a valid license ID from https://ibm.biz/ea-license.
-- `<release-name>` is a release name that you want.
-- `<chart-path>` is the URL or path to the Helm chart that you want to install.
+- `release-name` is the release name of your choice.
+- `license.licenseId` must be set to the license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
+- `license.accept` must be set to `true` to indicate the acceptance of the license agreement.
 
-**Note:** To override the default installation options, set additional [configurations](#configuring) from the CLI.
+You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
+
+For a complete list of configuration parameters supported by the helm chart, see [Configuring](#configuring).
 
 ## Uninstalling
 
@@ -41,7 +44,8 @@ The following table lists the configurable parameters of the **IBM Connectivity 
 
 Parameter | Description | Default
 -- | -- | --
-acceptLicense | Set acceptLicense to true. Accept the license before installing or updating HELM else prehook will throw error | false
+license.accept | Indicates acceptance of license terms | false
+license.licenseId | license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/) | 
 replicaCount | Number of replicas of the pod | 1
 bunyan | Log configuration for the application | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information.
 annotations | Override with product specific annotations | See [values.yaml](values.yaml) Refer Kubernetes annotation for more information
@@ -52,7 +56,7 @@ image.imagePullSecretName| Kubernetes image pull secret if it already exists in 
 image.imagePullEmail | Image pull secret email ID | dummyEmail
 image.imagePullUsername | Image pull username | iamapikey
 image.imagePullPassword | Image pull password | dummyPassword
-certificate.MTLSenable | Enable mTLS else fallback to TLS | false
+certificate.MTLSenable | Enable mTLS else fallback to TLS | true
 certificate.generate | Generate new certificates for mTLS/TLS, this should be used for Certificate rotation and this is not honored if certificate.serverSecretName and / or certificate.clientSecretName is given | false
 certificate.clientSecretName | Already existing mTLS client certificate Kubernetes secret name, if left empty new certificate will be generated on helm install | '' 
 certificate.clientCertPropertyName | Property name in secret which holds mTLS client certificate | 'tls.crt' 
