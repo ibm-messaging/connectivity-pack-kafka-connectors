@@ -1,8 +1,6 @@
 # Installing IBM Connectivity Pack Helm Chart
 
-IBM connectivity pack acts as an interface between Kafka Connect connectors and external systems like Salesforce.
-
-The connectivity pack can be deployed on OpenShift and other Kubernetes platforms using the `ibm-connectivity-pack` Helm chart.
+IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems like Salesforce. The Connectivity Pack can be deployed on OpenShift and other Kubernetes platforms using the Connectivity Pack Helm chart.
 
 ## Prerequisites
 
@@ -12,13 +10,13 @@ The connectivity pack can be deployed on OpenShift and other Kubernetes platform
 
 ## Installing
 
-To install the connectivity pack, run the following command:
+To install the Connectivity Pack, run the following command:
 
 ```bash
 helm install <release-name> ibm-connectivity-pack-1.0.0.tgz --set license.licenseId=<license-id>,license.accept=true
 ```
 
-where:
+Where:
 
 - `release-name` is the release name of your choice.
 - `license.licenseId` must be set to the license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
@@ -40,7 +38,7 @@ helm uninstall <release-name>
 
 You can configure your installation by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
 
-The following table lists the configurable parameters of the **IBM Connectivity Pack** Helm chart and their default values:
+The following table lists the configurable parameters of the IBM Connectivity Pack Helm chart and their default values:
 
 Parameter | Description | Default
 -- | -- | --

@@ -17,7 +17,7 @@ spec:
     # To indicate the configurations (secrets) of connector is provided as K8s Secret
     config.providers: file
     config.providers.file.class: org.apache.kafka.common.config.provider.DirectoryConfigProvider
-  bootstrapServers: <bootstrapServers>
+  bootstrapServers: <bootstrapServers>  # Replace with the bootstrap server address
   resources:
     limits:
       cpu: 2000m
@@ -25,9 +25,9 @@ spec:
   authentication:
     passwordSecret:
       password: password
-      secretName: admin
+      secretName: <kafka-user>  # Replace with the name of the kafka user.
     type: scram-sha-512
-    username: admin
+    username: <kafka-user>  # Replace with the name of the kafka user.
   template:
     connectContainer:
       env:
@@ -35,9 +35,9 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: CONNECTIVITYPACK_SERVICE_URL
-              name: <ibm-connectivitypack-config-map-name>    
+              name: <ibm-connectivitypack-config-map-name>  # Replace with the name of the connectivity pack's config map
       volumeMounts:
-        - mountPath: /mnt/kafka/certificates/connectivitypack-certs
+        - mountPath: /mnt/connectivitypack/certificates
           name: connectivitypack-certs
         - mountPath: /mnt/salesforce-credential
           name: salesforce-credential
@@ -56,7 +56,7 @@ spec:
           productVersion: 11.5.1
           productID: 2a79e49111f44ec3acd89608e56138f5
           cloudpakName: IBM Cloud Pak for Integration
-          productChargedContainers: <name>-kafkaconnect-connect
+          productChargedContainers: <name>-kafkaconnect-connect  # Replace with the name of the kafka connect given under metadata
           productCloudpakRatio: "2:1"
           productName: IBM Event Streams for Non Production
           eventstreams.production.type: CloudPakForIntegrationNonProduction
@@ -64,21 +64,21 @@ spec:
       volumes:
         - name: connectivitypack-certs
           secret:
-            secretName: <name of ibm-connectivitypack>-client-certificate
+            secretName: <connectivitypack-name>-client-certificate  # Replace with the name of the connectivity pack's client certificate secret
         - name: salesforce-credential
           secret:
-            secretName: <name of salesforce-credential>
+            secretName: <salesforce-credentials-name>  # Replace with the name of the Salesforce credentials secret
   tls:
     trustedCertificates:
       - certificate: ca.crt
-        secretName: <Event-Streams instance name>-cluster-ca-cert
+        secretName: <event-streams-instance-name>-cluster-ca-cert  # Replace with the name of the Event Streams instance's CA certificate secret
   build:
     output:
-      image:  <my-image-registry.my-kafka-connect-image:latest>  
-      type: <type of image eg. docker>
+      image: <my-image-registry.my-kafka-connect-image:latest>  # Replace with your image registry and image name
+      type: <image-type>  # Specify the type of image (for example: docker)
     plugins:
       - artifacts:
           - type: jar
-            url: <GitHub URL of connectivity-pack-source-connector-<version>-jar-with-dependencies.jar>    
-        name: connectivity-pack-source-connector      
+            url: <GitHub-URL-of-connectivity-pack-source-connector-<VERSION>-jar-with-dependencies.jar>  # Replace with the URL to the connector jar file
+        name: connectivity-pack-source-connector
   replicas: 1

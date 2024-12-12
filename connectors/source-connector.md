@@ -1,13 +1,13 @@
-# Connectivity pack source connector
+# Connectivity Pack source connector
 
-Connectivity pack Kafka connectors enable streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use `ibm-connectivity-pack` to interact with external data sources while providing at-least-once delivery.
-
+Connectivity Pack Kafka connectors enable streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use IBM Connectivity Pack to interact with external data sources while providing at-least-once delivery.
 
 ## Task Distribution
 
 Each connector task handles receiving events for one specific `object-eventType` combination. Therefore, the number of tasks will be equal to the number of `object-eventType` combinations configured for the connector.
 
 **Note:** If the value of `tasks.max` is less than the number of `object-eventType` combinations, the connector will fail with the following error:
+
 ```
 The connector `<name of connector>` has generated `<actual number of tasks>` tasks, which is greater than `<value given in tasksMax>`, the maximum number of tasks it is configured to create.
 ```

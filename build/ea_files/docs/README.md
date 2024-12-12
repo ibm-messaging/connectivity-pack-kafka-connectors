@@ -37,7 +37,7 @@ helm uninstall <release-name>
 
 You can configure your installation by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
 
-The following table lists the configurable parameters of the **IBM Connectivity Pack** Helm chart and their default values:
+The following table lists the configurable parameters of the IBM Connectivity Pack Helm chart and their default values:
 
 Parameter | Description | Default
 -- | -- | --
