@@ -25,22 +25,23 @@ To run Connectivity Pack Kafka connectors, ensure you have:
 
 IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems you wish to connect to. It can be deployed on OpenShift and other Kubernetes platforms by using the IBM Connectivity Pack Helm chart.
 
-To install the IBM Connectivity Pack by using the Helm chart, run the following command:
+1. Download the latest version of the Connectivity Pack Helm chart from [**GitHub Releases**](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases) of this repository.
+2. To install the IBM Connectivity Pack by using the Helm chart, run the following command:
 
-```bash
-helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
-```
+   ```bash
+   helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
+   ```
 
-Where:
+   Where:
 
-- `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
-- `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
-- `license.accept` determines whether the license is accepted (default is `false` if not specified).
+   - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
+   - `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
+   - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
+   - `license.accept` determines whether the license is accepted (default is `false` if not specified).
 
-You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
+   You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
-For a complete list of configuration parameters supported by the Helm chart, see [configuring](./ibm-connectivity-pack/README.md#configuring).
+For a complete list of configuration parameters supported by the Helm chart, see [installing Helm chart](./ibm-connectivity-pack/README.md#configuring).
 
 ## Starting Kafka Connect
 

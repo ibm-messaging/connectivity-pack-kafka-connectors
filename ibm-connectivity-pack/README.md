@@ -10,20 +10,23 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
 
 ## Installing
 
-To install the Connectivity Pack, run the following command:
+To install the Connectivity Pack, complete the following steps:
 
-```bash
-helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
-```
+1. Download the latest version of the Connectivity Pack Helm chart from [**GitHub Releases**](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases) of this repository.
+1. Run the following command:
 
-Where:
+   ```bash
+   helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
+   ```
 
-- `<RELEASE-NAME>` is the release name of your choice. for example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
-- `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
-- `license.accept` determines whether the license is accepted (default is `false` if not specified).
+   Where:
 
-You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
+   - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
+   - `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
+   - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
+   - `license.accept` determines whether the license is accepted (default is `false` if not specified).
+
+   You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
 For a complete list of configuration parameters supported by the helm chart, see [Configuring](#configuring).
 
