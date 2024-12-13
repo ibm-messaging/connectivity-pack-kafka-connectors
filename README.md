@@ -16,7 +16,7 @@ The Connectivity Pack for Kafka connectors enable streaming data from external d
 
 To run Connectivity Pack Kafka connectors, ensure you have:
 
-- IBM Event Streams installed, and you have the bootstrap address, certificates, and credentials required to access Kafka.
+- IBM Event Streams installed, and you have the bootstrap address, an image pull secret called [`ibm-entitlement-key`](https://ibm.github.io/event-automation/es/installing/installing/#creating-an-image-pull-secret), certificates, and credentials required to access Kafka.
 - The external application (for example, Salesforce) configured according to the [application-specific documentation](./applications/salesforce.md), with the required URLs and credentials to access the application.
 - Either enabled [auto-creation of Kafka topics](DRAFT comment: Add docs URL) or pre-created all the required Kafka topics in the format that must be specified in the `connectivitypack.topic.name.format` section of the [`KafkaConnector` custom resource](#running-the-connectors).
 
@@ -44,9 +44,11 @@ For a complete list of configuration parameters supported by the Helm chart, see
 
 ## Starting Kafka Connect
 
-Start Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions:
+[Configure](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/) Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions:
 
-1. Create a `KafkaConnect` custom resource to [define Kafka Connect runtime configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#starting-kafka-connect).
+1. Create a `KafkaConnect` custom resource to [define Kafka Connect runtime configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#starting-kafka-connect). 
+
+   **Note:** An example custom resource is available in the [`examples`](/examples/kafka-connect.yaml) folder. 
 
     - To use the pre-built connector JAR file, set the URL of the latest GitHub release asset as the value for `spec.build.plugins[].artifacts[].url` as shown in the following example:
 
@@ -128,11 +130,26 @@ Start Kafka Connect runtime and include the configuration, certificates, and con
 
           You can set this URL by using a `configMapKeyRef` that points to the ConfigMap of the Connectivity Pack or directly set it to the correct endpoint. Ensure that the URL is accessible from the Kafka Connect container.
 
-1. Apply the configured `KafkaConnect` custom resource to start the Kafka Connect runtime and verify that the connector is available for use.
+1. Apply the configured `KafkaConnect` custom resource by using the `kubectl apply` command to start the Kafka Connect runtime.
+
+1. Verify that the connector is available for use:
+
+   When Kafka Connect is successfully created, you can find the `status.connectorPlugins` section in the `KafkaConnect` custom resource. For the Connectivity Pack source connector to work, the following plugin must be present.
+
+   ```yaml
+   status:
+     connectorPlugins:
+       - class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+         type: source
+         version: <version>
+   ```
+  
 
 ## Running the Connectors
 
-1. Create a `KafkaConnector` custom resource to [define your connector configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/).
+1. Create a `KafkaConnector` custom resource to [define your connector configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#set-up-a-kafka-connector). 
+
+   **Note:** An example custom resource is available in the [`examples`](/examples/kafka-connector-source.yaml) folder.
 
    - Specify `com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector` as the connector class name.
 
