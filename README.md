@@ -8,6 +8,7 @@ The Connectivity Pack for Kafka connectors enable streaming data from external d
 - [Installing IBM Connectivity Pack](#installing-ibm-connectivity-pack)
 - [Starting Kafka Connect](#starting-kafka-connect)
 - [Running the Connectors](#running-the-connectors)
+- [Supported connectors](#supported-connectors)
 - [Uninstalling IBM Connectivity Pack](#uninstalling-ibm-connectivity-pack)
 - [License](#license)
 
@@ -17,6 +18,8 @@ To run Connectivity Pack Kafka connectors, ensure you have:
 
 - IBM Event Streams installed, and you have the bootstrap address, certificates, and credentials required to access Kafka.
 - The external application (for example, Salesforce) configured according to the [application-specific documentation](./applications/salesforce.md), with the required URLs and credentials to access the application.
+- Either enabled [auto-creation of Kafka topics](DRAFT comment: Add docs URL) or pre-created all the required Kafka topics in the format that must be specified in the `connectivitypack.topic.name.format` section of the [`KafkaConnector` custom resource](#running-the-connectors).
+
 
 ## Installing IBM Connectivity Pack
 
@@ -30,7 +33,7 @@ helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-
 
 Where:
 
-- `<RELEASE-NAME>` is the release name of your choice. for example, `ibm-connectivity-pack`
+- `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
 - `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
 - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
 - `license.accept` determines whether the license is accepted (default is `false` if not specified).
@@ -131,72 +134,74 @@ Start Kafka Connect runtime and include the configuration, certificates, and con
 
 1. Create a `KafkaConnector` custom resource to [define your connector configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/).
 
-    - Specify `com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector` as the connector class name.
+   - Specify `com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector` as the connector class name.
 
-    - Configure the connector properties according to the [connector documentation](./connectors/source-connector.md#configuration) and refer to the [application-specific guidance](./applications/salesforce.md#) for a list of permitted values that can be assigned to each property. The following is an example of a connector configuration for Salesforce:
+   - Configure the connector properties in the `config` section as described in the [source connector documentation](./connectors/source-connector.md#configuration). You can find the supported values for your source in the [application-specific guidance](./applications/salesforce.md#). The following is an example of a connector configuration for Salesforce:
 
-        ```yaml
-        apiVersion: eventstreams.ibm.com/v1beta2
-        kind: KafkaConnector
-        metadata:
-          labels:
-            # The eventstreams.ibm.com/cluster label identifies the KafkaConnect instance
-            # in which to create this connector. That KafkaConnect instance
-            # must have the eventstreams.ibm.com/use-connector-resources annotation
-            # set to true.
-            eventstreams.ibm.com/cluster: cp-connect-cluster
-          name: <name>
-          namespace: <namespace>
-        spec:
+       ```yaml
+       apiVersion: eventstreams.ibm.com/v1beta2
+       kind: KafkaConnector
+       metadata:
+         labels:
+           # The eventstreams.ibm.com/cluster label identifies the KafkaConnect instance
+           # in which to create this connector. That KafkaConnect instance
+           # must have the eventstreams.ibm.com/use-connector-resources annotation
+           # set to true.
+           eventstreams.ibm.com/cluster: cp-connect-cluster
+         name: <name>
+         namespace: <namespace>
+       spec:
 
-          # `tasksMax` should be equal to the number of object-eventType combinations
-          # In this example it is 3 (object1 - CREATED, object2 - CREATED, object2 - UPDATED)
-          tasksMax: 3
+         # `tasksMax` should be equal to the number of object-eventType combinations
+         # In this example it is 3 (object1 - CREATED, object2 - CREATED, object2 - UPDATED)
+         tasksMax: 3
 
-          # Connector class name
-          class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+         # Connector class name
+         class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
 
-          config:
-            # Which data source to connect to eg. salesforce
-            connectivitypack.source: salesforce
+         config:
+           # Which data source to connect to, for example,  salesforce
+           connectivitypack.source: salesforce
 
-            # URL to access the data source
-            connectivitypack.source.url: <URL of the data source instance eg. salesforce login url - `https://login.salesforce.com`>
+           # URL to access the data source,  for example, `https://<your-instance-name>.salesforce.com`
+           connectivitypack.source.url: <URL-of-the-data-source-instance>>
 
-            # Credentials to access the data source using OAUTH2_PASSWORD authentication.
-            connectivitypack.source.credentials.authType: OAUTH2_PASSWORD
-            connectivitypack.source.credentials.username: <username>
-            connectivitypack.source.credentials.password: <password>
-            connectivitypack.source.credentials.clientSecret: <client-secret>
-            connectivitypack.source.credentials.clientIdentity: <client-identity>
+           # Credentials to access the data source using OAUTH2_PASSWORD authentication.
+           connectivitypack.source.credentials.authType: OAUTH2_PASSWORD
+           connectivitypack.source.credentials.username: <username>
+           connectivitypack.source.credentials.password: <password>
+           connectivitypack.source.credentials.clientSecret: <client-secret>
+           connectivitypack.source.credentials.clientIdentity: <client-identity>
 
-            # Objects and event-types to read from the datasource
-            connectivitypack.source.objects: '<object1>,<object2>,[<object3>]'
-            connectivitypack.source.<object1>.events: 'CREATED'
-            connectivitypack.source.<object2>.events: 'CREATED,UPDATED'
+           # Objects and event-types to read from the datasource
+           connectivitypack.source.objects: '<object1>,<object2>,[<object3>]'
+           connectivitypack.source.<object1>.events: 'CREATED'
+           connectivitypack.source.<object2>.events: 'CREATED,UPDATED'
 
-            # Optional, Specifies the format for Kafka topic names generated by the connector.
-            # Placeholders like '${object}' and '${eventType}' will be replaced dynamically
-            # based on the connector configuration. Ensure the format resolves to valid Kafka topic names.
-            # '${object}.${eventType}' is the default format, but its specified here for clarity.
-            connectivitypack.topic.name.format: '${object}.${eventType}'
+           # Optional, Specifies the format for Kafka topic names generated by the connector.
+           # Placeholders like '${object}' and '${eventType}' will be replaced dynamically
+           # based on the connector configuration. Ensure the format resolves to valid Kafka topic names.
+           # '${object}-${eventType}' is the default format, but its specified here for clarity.
+           connectivitypack.topic.name.format: '${object}-${eventType}'
 
-            # Specifies the converter class used to deserialize the message value.
-            # Change this to a different converter (e.g., AvroConverter) if needed.
-            value.converter: org.apache.kafka.connect.json.JsonConverter
+           # Specifies the converter class used to deserialize the message value.
+           # Change this to a different converter (for example, AvroConverter) if needed.
+           value.converter: org.apache.kafka.connect.json.JsonConverter
 
-            # Controls whether the schema is included in the message.
-            # Set this to false to disable schema support, or to true to enable schema inclusion (e.g., for Avro).
-            value.converter.schemas.enable: false
+           # Controls whether the schema is included in the message.
+           # Set this to false to disable schema support, or to true to enable schema inclusion (for example, for Avro).
+           value.converter.schemas.enable: false
 
-            # Specifies the converter class used to deserialize the message key.
-            # You can change this to another converter if necessary.
-            key.converter: org.apache.kafka.connect.json.JsonConverter
-        ```
-
-    - Pre-create all Kafka topics as specified by `connectivitypack.topic.name.format` format.
+           # Specifies the converter class used to deserialize the message key.
+           # You can change this to another converter if necessary.
+           key.converter: org.apache.kafka.connect.json.JsonConverter
+       ```
 
 1. Apply the configured `KafkaConnector` custom resource to start the connector and verify that it is running.
+
+## Supported Connectors
+
+**SALESFORCE**: The Salesforce connector enables streaming of Salesforce platform events and Change Data Capture (CDC) events by using the Faye client or Bauyex protocol. This connector also supports discovery of custom objects and properties. For more information about the Salesforce connector, see the [Salesforce application-specific guidance](./applications/salesforce.md).
 
 ## Uninstalling IBM Connectivity Pack
 

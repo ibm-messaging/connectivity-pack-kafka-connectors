@@ -13,14 +13,15 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
 To install the Connectivity Pack, run the following command:
 
 ```bash
-helm install <release-name> ibm-connectivity-pack-1.0.0.tgz --set license.licenseId=<license-id>,license.accept=true
+helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
 ```
 
 Where:
 
-- `release-name` is the release name of your choice.
-- `license.licenseId` must be set to the license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
-- `license.accept` must be set to `true` to indicate the acceptance of the license agreement.
+- `<RELEASE-NAME>` is the release name of your choice. for example, `ibm-connectivity-pack`
+- `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
+- `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
+- `license.accept` determines whether the license is accepted (default is `false` if not specified).
 
 You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
@@ -31,7 +32,7 @@ For a complete list of configuration parameters supported by the helm chart, see
 To uninstall the IBM Connectivity Pack release, run the following command:
 
 ```bash
-helm uninstall <release-name>
+helm uninstall <RELEASE-NAME>
 ```
 
 ## Configuring
@@ -40,55 +41,55 @@ You can configure your installation by adding configurable parameters through th
 
 The following table lists the configurable parameters of the IBM Connectivity Pack Helm chart and their default values:
 
-Parameter | Description | Default
--- | -- | --
-license.accept | Indicates acceptance of license terms | false
-license.licenseId | license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/) | 
-replicaCount | Number of replicas of the pod | 1
-bunyan | Log configuration for the application | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information.
-annotations | Override with product specific annotations | See [values.yaml](values.yaml) Refer Kubernetes annotation for more information
-environmentVariables | Yaml object of environment variables to be added in action and event services | {}
-image.registry | Image registry URL | us.icr.io
-image.path | Image namespace or the path under image registry before image name and digest | conn-pack-prod-ns
-image.imagePullSecretName| Kubernetes image pull secret if it already exists in the namespace, if not add the following image pull details to create new secret | ''
-image.imagePullEmail | Image pull secret email ID | dummyEmail
-image.imagePullUsername | Image pull username | iamapikey
-image.imagePullPassword | Image pull password | dummyPassword
-certificate.MTLSenable | Enable mTLS else fallback to TLS | true
-certificate.generate | Generate new certificates for mTLS/TLS, this should be used for Certificate rotation and this is not honored if certificate.serverSecretName and / or certificate.clientSecretName is given | false
-certificate.clientSecretName | Already existing mTLS client certificate Kubernetes secret name, if left empty new certificate will be generated on helm install | '' 
-certificate.clientCertPropertyName | Property name in secret which holds mTLS client certificate | 'tls.crt' 
-certificate.clientCertKeyPropertyName | Property name in secret which holds mTLS client certificate key | 'tls.key'
-certificate.clientCertPKCSPropertyName | Property name in secret which holds PKCS12 client certificate | 'pkcs.p12'
-certificate.pkcsPassword | PKCS12 file password | admin123
-certificate.serverSecretName | Already existing mTLS/TLS server certificate Kubernetes secret name, if left empty new certificate is generated on `helm install` | '' 
-certificate.serverCertPropertyName | Property name in secret which holds mTLS/TLS server certificate | 'tls.crt'
-certificate.serverCertKeyPropertyName | Property name in secret which holds mTLS/TLS server certificate key |'tls.key'
-certificate.caCertPropertyName | Property name in secret which holds certificate authority certificate | 'ca.crt'
-route.enable | Enable OpenShift Route for external access update domain and make `certificate.generate` to true so that certificate has the domain entry, *Enable only for OpenShift cluster*  | false
-route.domain | Domain or subdomain of cluster | 'example.com' 
-basicAuth.enable | Enable basic authentication for service | false
-basicAuth.username | Basic auth username | csuser
-preHook.image | Prehook job image name | connectivity-pack-prehook
-preHook.digest | Prehook job image digest | ''
-proxy.image | Proxy service container image name | connectivity-pack-proxy
-proxy.digest | Proxy service container image digest | ''
-action.image | Action service container image name | action-connectors
-action.digest | Action service container image digest | ''
-action.resources | Action service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
-event.enable | Enable event container | false
-event.image | Event service container image name | event-connectors
-event.digest | Event service container image digest | ''
-event.resources | Event service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
-javaservice.enable | Enable java-service container | false
-javaservice.image | java-service container image name | connector-service-java
-javaservice.digest | java-service container image digest | ''
-javaservice.resources | java-service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)
-autoScaling.enable | Enable auto-scaling | false
-autoScaling.minReplicas | Minimum replicas for auto-scaling | 1
-autoScaling.maxReplicas | Maximum replicas for auto-scaling | 5
-autoScaling.cpuUtilization | Target CPU utilization percentage for auto-scaling | 70
-autoScaling.memoryUtilization | Target memory utilization percentage for auto-scaling | 70
+| Parameter                              | Description                                                                                                                                                                                 | Default                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| license.accept                         | Indicates acceptance of license terms                                                                                                                                                       | false                                                                                        |
+| license.licenseId                      | license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/)                                          |                                                                                              |
+| replicaCount                           | Number of replicas of the pod                                                                                                                                                               | 1                                                                                            |
+| bunyan                                 | Log configuration for the application                                                                                                                                                       | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information. |
+| annotations                            | Override with product specific annotations                                                                                                                                                  | See [values.yaml](values.yaml) Refer Kubernetes annotation for more information              |
+| environmentVariables                   | Yaml object of environment variables to be added in action and event services                                                                                                               | {}                                                                                           |
+| image.registry                         | Image registry URL                                                                                                                                                                          | us.icr.io                                                                                    |
+| image.path                             | Image namespace or the path under image registry before image name and digest                                                                                                               | conn-pack-prod-ns                                                                            |
+| image.imagePullSecretName              | Kubernetes image pull secret if it already exists in the namespace, if not add the following image pull details to create new secret                                                        | ''                                                                                           |
+| image.imagePullEmail                   | Image pull secret email ID                                                                                                                                                                  | dummyEmail                                                                                   |
+| image.imagePullUsername                | Image pull username                                                                                                                                                                         | iamapikey                                                                                    |
+| image.imagePullPassword                | Image pull password                                                                                                                                                                         | dummyPassword                                                                                |
+| certificate.MTLSenable                 | Enable mTLS else fallback to TLS                                                                                                                                                            | true                                                                                         |
+| certificate.generate                   | Generate new certificates for mTLS/TLS, this should be used for Certificate rotation and this is not honored if certificate.serverSecretName and / or certificate.clientSecretName is given | false                                                                                        |
+| certificate.clientSecretName           | Already existing mTLS client certificate Kubernetes secret name, if left empty new certificate will be generated on helm install                                                            | ''                                                                                           |
+| certificate.clientCertPropertyName     | Property name in secret which holds mTLS client certificate                                                                                                                                 | 'tls.crt'                                                                                    |
+| certificate.clientCertKeyPropertyName  | Property name in secret which holds mTLS client certificate key                                                                                                                             | 'tls.key'                                                                                    |
+| certificate.clientCertPKCSPropertyName | Property name in secret which holds PKCS12 client certificate                                                                                                                               | 'pkcs.p12'                                                                                   |
+| certificate.pkcsPassword               | PKCS12 file password                                                                                                                                                                        | admin123                                                                                     |
+| certificate.serverSecretName           | Already existing mTLS/TLS server certificate Kubernetes secret name, if left empty new certificate is generated on `helm install`                                                           | ''                                                                                           |
+| certificate.serverCertPropertyName     | Property name in secret which holds mTLS/TLS server certificate                                                                                                                             | 'tls.crt'                                                                                    |
+| certificate.serverCertKeyPropertyName  | Property name in secret which holds mTLS/TLS server certificate key                                                                                                                         | 'tls.key'                                                                                    |
+| certificate.caCertPropertyName         | Property name in secret which holds certificate authority certificate                                                                                                                       | 'ca.crt'                                                                                     |
+| route.enable                           | Enable OpenShift Route for external access update domain and make `certificate.generate` to true so that certificate has the domain entry, *Enable only for OpenShift cluster*              | false                                                                                        |
+| route.domain                           | Domain or subdomain of cluster                                                                                                                                                              | 'example.com'                                                                                |
+| basicAuth.enable                       | Enable basic authentication for service                                                                                                                                                     | false                                                                                        |
+| basicAuth.username                     | Basic auth username                                                                                                                                                                         | csuser                                                                                       |
+| preHook.image                          | Prehook job image name                                                                                                                                                                      | connectivity-pack-prehook                                                                    |
+| preHook.digest                         | Prehook job image digest                                                                                                                                                                    | ''                                                                                           |
+| proxy.image                            | Proxy service container image name                                                                                                                                                          | connectivity-pack-proxy                                                                      |
+| proxy.digest                           | Proxy service container image digest                                                                                                                                                        | ''                                                                                           |
+| action.image                           | Action service container image name                                                                                                                                                         | action-connectors                                                                            |
+| action.digest                          | Action service container image digest                                                                                                                                                       | ''                                                                                           |
+| action.resources                       | Action service container resources Check Kubernetes deployment resources for more details                                                                                                   | See [values.yaml](values.yaml)                                                               |
+| event.enable                           | Enable event container                                                                                                                                                                      | false                                                                                        |
+| event.image                            | Event service container image name                                                                                                                                                          | event-connectors                                                                             |
+| event.digest                           | Event service container image digest                                                                                                                                                        | ''                                                                                           |
+| event.resources                        | Event service container resources Check Kubernetes deployment resources for more details                                                                                                    | See [values.yaml](values.yaml)                                                               |
+| javaservice.enable                     | Enable java-service container                                                                                                                                                               | false                                                                                        |
+| javaservice.image                      | java-service container image name                                                                                                                                                           | connector-service-java                                                                       |
+| javaservice.digest                     | java-service container image digest                                                                                                                                                         | ''                                                                                           |
+| javaservice.resources                  | java-service container resources Check Kubernetes deployment resources for more details                                                                                                     | See [values.yaml](values.yaml)                                                               |
+| autoScaling.enable                     | Enable auto-scaling                                                                                                                                                                         | false                                                                                        |
+| autoScaling.minReplicas                | Minimum replicas for auto-scaling                                                                                                                                                           | 1                                                                                            |
+| autoScaling.maxReplicas                | Maximum replicas for auto-scaling                                                                                                                                                           | 5                                                                                            |
+| autoScaling.cpuUtilization             | Target CPU utilization percentage for auto-scaling                                                                                                                                          | 70                                                                                           |
+| autoScaling.memoryUtilization          | Target memory utilization percentage for auto-scaling                                                                                                                                       | 70                                                                                           |
 
 ### Configuring your mTLS
 
@@ -153,5 +154,3 @@ You can configure detailed logging by using the `bunyan` configuration in the `v
       }
     }
 ```
-
-

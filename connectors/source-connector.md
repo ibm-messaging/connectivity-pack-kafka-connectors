@@ -1,33 +1,63 @@
 # Connectivity Pack source connector
 
-Connectivity Pack Kafka connectors enable streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use IBM Connectivity Pack to interact with external data sources while providing at-least-once delivery.
+Connectivity Pack source connector enables streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to interact with external data sources while providing at-least-once delivery.
 
-## Task Distribution
+## How it works
 
-Each connector task handles receiving events for one specific `object-eventType` combination. Therefore, the number of tasks will be equal to the number of `object-eventType` combinations configured for the connector.
+The connector is designed to work with multiple data sources. For each data source, a corresponding set of Kafka topics is created, allowing seamless integration and data flow between the source systems and Kafka.
 
-**Note:** If the value of `tasks.max` is less than the number of `object-eventType` combinations, the connector will fail with the following error:
+The connector establishes a WebSocket connection to the data source through the connectivity pack instance. The connectivity pack acts as a bridge between the connector and the source system, handling the complexities of communication. It incorporates an internal mechanism to continuously monitor and retrieve new events from the data source, ensuring real-time data synchronization.
 
-```
-The connector `<name of connector>` has generated `<actual number of tasks>` tasks, which is greater than `<value given in tasksMax>`, the maximum number of tasks it is configured to create.
+## Task distribution
+
+Distribution of tasks in Connectivity Pack source connector is done in a specific way as described in this section. It depends on an `object - event-type` combination, which is defined while setting up your `KafkaConnector` custom resource.
+
+These combinations are used to define the topics in Kafka where messages related to the object and the event type are published. Each combination results in a unique topic. This automatic creation of a unique topic ensures that the events are categorized and processed correctly based on the object and the event-type. The connector also uses these combinations to distribute the workload across tasks.
+
+- **Object:** Represents a data entity or record in the source system, such as `Account`, `Order_Event__e`, or `CaseChangeEvent`.
+- **Event-type:** Specifies the type of action or state change related to the object, such as `CREATED`, `UPDATED`, or `DELETED`.
+
+For example, if the object is `Order_Event__e` and the event type is `CREATED`, the combination `Order_Event__e-CREATED` represents events triggered when a new `Order_Event__e` record is created in the source system.
+
+**Note:** If the value of `spec.tasksMax` is less than the number of `object - event-type` combinations, the connector will fail with the following error:
+
+```shell
+The connector `<name-of-connector>` has generated `<actual-number-of-tasks>` tasks, which is greater than `<value-given-in-tasksMax>`, the maximum number of tasks it is configured to create.
 ```
 
 ## Configuration
 
-The following configuration options are available for the Connectivity Pack source connector:
+The following configuration options are supported and must be configured in the `config` section of the `KafkaConnector` custom resource.
 
-| Name                                                       | Description                                                                                                                                                                                                                | Type                              | Default                                       | Valid values                                                                                            |
-| ---------------------------------------------------------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| connectivitypack.source                                    | The source from which data is retrieved.                                                                                                                                                                                   | string                            |                                               | A valid source, for example, `salesforce`.                                                              |
-| connectivitypack.source.url                                | The URL to access the source.                                                                                                                                                                                              | string                            |                                               | A valid URL to connect to the actual source instance.                                                   |
-| connectivitypack.source.credentials.authType               | The authentication type supported by the source.                                                                                                                                                                           | string                            |                                               | A supported authentication type. For example, Salesforce supports `OAUTH2_PASSWORD`, and `BASIC_OAUTH`. |
-| connectivitypack.source.credentials.username               | The username associated with the source credentials.Required for authentication type `OAUTH2_PASSWORD`.                                                                                                                    | string                            |                                               | A valid username as per the source's requirements.                                                      |
-| connectivitypack.source.credentials.password               | The password associated with the source credentials. Required for authentication type `OAUTH2_PASSWORD`.                                                                                                                   | string                            |                                               | A valid password as per the source's requirements.                                                      |
-| connectivitypack.source.credentials.clientSecret           | The client secret associated with the source credentials. Required for `OAUTH2_PASSWORD` and `BASIC_OAUTH` authentication types.                                                                                           | string                            |                                               | A valid client secret as per the source's requirements.                                                 |
-| connectivitypack.source.credentials.clientIdentity         | The client identity associated with the source credentials. Required for `OAUTH2_PASSWORD` and `BASIC_OAUTH` authentication types.                                                                                         | string                            |                                               | A valid client identity as per the source's requirements.                                               |
-| connectivitypack.source.credentials.accessTokenBasicOauth  | The access token used for OAuth authentication with the source. Required for `BASIC_OAUTH` authentication type.                                                                                                            | string                            |                                               | A valid access token as per the source's requirements.                                                  |
-| connectivitypack.source.credentials.refreshTokenBasicOauth | The refresh token used to renew the OAuth access token. Required for `BASIC_OAUTH` authentication type.                                                                                                                    | string                            |                                               | A valid refresh token as per the source's requirements.                                                 |
-| connectivitypack.source.objects                            | The object(s) in the source that this connector is associated with. Either a single object or a comma-seperated list of objects can be given                                                                               | string or comma-separated strings |                                               | Valid object(s) for the source.                                                                         |
-| connectivitypack.source.`<object>`.events                  | The event(s) for each object that this connector listens to. Each object specified in `connectivitypack.source.objects` should have corresponding events. `<object>` should be replaced with one of the specified objects. | string or comma-separated strings |                                               | Valid event(s) supported by each object, e.g., `CREATED`, `UPDATED`, etc.                               |
-| connectivitypack.topic.name.format                         | The format for topic names. This format must include `${object}` and `${eventType}`. One topic will be created for each object-eventType combination. This is an optional configuration parameter.                         | string                            | `${object}-${eventType}`                      | A valid topic name format that contains the placeholders `${object}` and `${eventType}`.                |
-| connectivitypack.auto.correct.invalid.topic                | Automatically convert invalid topic names to valid Kafka topics. For example, a topic name like `*topicname` will be converted to `-topicname` by replacing `*` with `-`.                                                  | boolean                           | `false`                                       | `true`, `false`                                                                                         |
+
+**Note:** See the [application-specific guidance](../applications/) for supported values of your source such as [Salesforce](../applications/salesforce.md).
+
+### Source information
+
+| Property | Type  | Description | Valid values |
+| --- | --- | --- | --- |
+| `connectivitypack.source` | `string` | Specifies the source system from which data is retrieved. | A valid source, for example, `salesforce` |
+| `connectivitypack.source.url` | `string` | The base URL of the source system. | A valid source URL in the format `https://.salesforce.com` |
+
+### Authentication
+
+| Property | Type | Description | Valid values |
+| --- | --- | --- | --- |
+| `connectivitypack.source.credentials.authType` | `string` | Specifies the authentication type for the source system. | Supported types, for example, `OAUTH2_PASSWORD` or `BASIC_OAUTH` |
+| `connectivitypack.source.credentials.username` | `string` | The username used for authentication. Required for `OAUTH2_PASSWORD`. | The username used for authentication. |
+| `connectivitypack.source.credentials.password` | `string` | The password used for authentication. Required for `OAUTH2_PASSWORD`. | The password used for authentication. |
+| `connectivitypack.source.credentials.clientIdentity` | `string`  | The client ID of the source application's connected app. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client ID of the source application's connected app. |
+| `connectivitypack.source.credentials.clientSecret` | `string`  | The client secret of the source application's connected app. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client secret of the source application's connected app. |
+| `connectivitypack.source.credentials.accessTokenBasicOauth` | `string` | The OAuth access token used for authentication. Required for `BASIC_OAUTH`. | The OAuth access token used for authentication. |
+| `connectivitypack.source.credentials.refreshTokenBasicOauth` | `string` | The refresh token used to renew the OAuth access token. Required for `BASIC_OAUTH`. | The refresh token used to renew the OAuth access token. |
+
+### Data mapping
+ 
+| Property | Type | Description | Valid values |
+| --- | --- | --- | --- |
+| `connectivitypack.source.objects` | `string` or comma-separated list | Specifies the objects in the source system that the connector will interact with. | Values depend on your source, for example in Salesforce, valid values can be `Account`, `Contact`, `Opportunity`  |
+| `connectivitypack.source.<object>.events` | `string` or comma-separated list | Specifies the events for each object that the connector listens to. | Values depend on your source, for example in Salesforce, valid values can be `CREATED`, `UPDATED`, `DELETED`. |
+| `connectivitypack.topic.name.format` | `string` | Optional: Defines the format for Kafka topic names. | A format containing `${object}` and `${eventType}` to create topics. Default: `${object}-${eventType}` |
+| `connectivitypack.auto.correct.invalid.topic` | `boolean` | Optional: Automatically converts invalid topic names to valid Kafka topic names by replacing unsupported characters. | `true` or `false` |
+
+
