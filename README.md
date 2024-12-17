@@ -209,10 +209,6 @@ For a complete list of configuration parameters supported by the Helm chart, see
            # Controls whether the schema is included in the message.
            # Set this to false to disable schema support, or to true to enable schema inclusion (for example, for Avro).
            value.converter.schemas.enable: false
-
-           # Specifies the converter class used to deserialize the message key.
-           # You can change this to another converter if necessary.
-           key.converter: org.apache.kafka.connect.json.JsonConverter
        ```
 
 1. Apply the configured `KafkaConnector` custom resource to start the connector and verify that it is running.

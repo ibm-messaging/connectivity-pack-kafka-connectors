@@ -69,4 +69,3 @@ spec:
     # standard kafka connector properties
     value.converter.schemas.enable: false
     value.converter: org.apache.kafka.connect.json.JsonConverter
-    key.converter: org.apache.kafka.connect.json.JsonConverter
