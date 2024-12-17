@@ -7,7 +7,7 @@ The Connectivity Pack for Kafka connectors enable streaming data from external d
 - [Prerequisites](#prerequisites)
 - [Installing IBM Connectivity Pack](#installing-ibm-connectivity-pack)
 - [Starting Kafka Connect](#starting-kafka-connect)
-- [Running the Connectors](#running-the-connectors)
+- [Running the connectors](#running-the-connectors)
 - [Supported connectors](#supported-connectors)
 - [Uninstalling IBM Connectivity Pack](#uninstalling-ibm-connectivity-pack)
 - [License](#license)
@@ -18,7 +18,7 @@ To run Connectivity Pack Kafka connectors, ensure you have:
 
 - IBM Event Streams installed, and you have the bootstrap address, an image pull secret called [`ibm-entitlement-key`](https://ibm.github.io/event-automation/es/installing/installing/#creating-an-image-pull-secret), certificates, and credentials required to access Kafka.
 - The external application (for example, Salesforce) configured according to the [application-specific documentation](./applications/salesforce.md), with the required URLs and credentials to access the application.
-- Either enabled [auto-creation of Kafka topics](DRAFT comment: Add docs URL) or pre-created all the required Kafka topics in the format that must be specified in the `connectivitypack.topic.name.format` section of the [`KafkaConnector` custom resource](#running-the-connectors).
+- Either enabled [auto-creation of Kafka topics](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#enabling-topic-creation-for-connectors) or pre-created all the required Kafka topics in the format that must be specified in the `connectivitypack.topic.name.format` section of the [`KafkaConnector` custom resource](#running-the-connectors).
 
 
 ## Installing IBM Connectivity Pack

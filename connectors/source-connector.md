@@ -1,12 +1,12 @@
 # Connectivity Pack source connector
 
-Connectivity Pack source connector enables streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to interact with external data sources while providing at-least-once delivery.
+Connectivity Pack source connector enables streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to interact with external data sources.
 
 ## How it works
 
 The connector is designed to work with multiple data sources. For each data source, a corresponding set of Kafka topics is created, allowing seamless integration and data flow between the source systems and Kafka.
 
-The connector establishes a WebSocket connection to the data source through the connectivity pack instance. The connectivity pack acts as a bridge between the connector and the source system, handling the complexities of communication. It incorporates an internal mechanism to continuously monitor and retrieve new events from the data source, ensuring real-time data synchronization.
+The connector establishes a WebSocket connection to the data source through the Connectivity Pack instance. The Connectivity Pack acts as a bridge between the connector and the source system, handling the complexities of communication. It incorporates an internal mechanism to continuously monitor and retrieve new events from the data source, ensuring real-time data synchronization.
 
 ## Task distribution
 
