@@ -70,26 +70,13 @@ For more information, see the [Salesforce OAuth 2.0 Documentation](https://devel
 - Use `OAUTH2_PASSWORD` or `BASIC_OAUTH` authentication types based on the Connected App's setup and Salesforce's authentication flow.
 - If using CDC (Change Data Capture) events, verify that CDC is enabled for the specified objects in Salesforce.
 
-## List of static Objects and interactions supported
+## Supported objects and interactions
 
 You can specify any of the following objects and its event types in the `connectivitypack.source.<object>` and the `connectivitypack.source.<object>.events` sections of the `KafkaConnector` custom resource:
 
-| **Object Name** | **Object Description** |                           **Triggers / Events**                           |
-| :-------------: | :--------------------: | :-----------------------------------------------------------------------: |
-|     Account     |        Account         | CREATED, UPDATED, CREATED_POLLER, UPDATED_POLLER, CREATEDORUPDATED_POLLER |
-|   Attachment    |      Attachments       |                                                                           |
-|     Contact     |       *Contact*        | CREATED, UPDATED, CREATED_POLLER, UPDATED_POLLER, CREATEDORUPDATED_POLLER |
-| ContentDocument |    ContentDocument     |                                                                           |
-|      Case       |                        |                                                                           |
-|    Campaign     |                        |                                                                           |
-|      Event      |                        |                                                                           |
-|      File       |                        |                                                                           |
-|    FileShare    |                        |                                                                           |
-|     Folder      |                        |                                                                           |
-|      Lead       |                        |                                                                           |
-|      Order      |                        |                                                                           |
-|   Opportunity   |                        |                                                                           |
-|    Product2     |                        |                                                                           |
-|    Solution     |                        |                                                                           |
-|      Soql       |                        |                                                                           |
-|      Task       |                        |                                                                           |
+
+|           **Object Types**            |   **Triggers / Events**   |
+|:-------------------------------------:|:-------------------------:|
+|        Platform Event objects         |          CREATED          |
+|      Change Data Capture objects      | CREATED, UPDATED, DELETED |
+
