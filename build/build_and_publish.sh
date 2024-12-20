@@ -18,6 +18,3 @@ mkdir -p license
 cp -r build/licenses/* license/
 mkdir -p ibm-connectivity-pack/license
 cp -r build/licenses/* ibm-connectivity-pack/license/
-
-# Remove existing connector JAR and fetch the latest
-. ${0%/*}/fetch_latest_connector_jar.sh
