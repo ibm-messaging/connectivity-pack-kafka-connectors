@@ -231,4 +231,5 @@ Where `<RELEASE-NAME>` is the release name of your Connectivity Pack installatio
 
 Copyright IBM Corp. 2024
 
-IBM Connectivity Pack is available under the IBM Event Automation license and IBM Cloud Pak for Integration license. For more information, see [licensing information](https://ibm.biz/ea-license).
+IBM Connectivity Pack is licensed under the [IBM Event Automation license and IBM Cloud Pak for Integration license](https://ibm.biz/ea-license), while the Helm chart and documentation are licensed under the [Apache License, Version 2.0](./ibm-connectivity-pack/license.md).
+
