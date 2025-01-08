@@ -51,14 +51,14 @@ For a complete list of configuration parameters supported by the Helm chart, see
 
    **Note:** An example custom resource is available in the [`examples`](/examples/kafka-connect.yaml) folder.
 
-    - To use the pre-built connector JAR file, set the URL of the [latest release asset](https://public.dhe.ibm.com/www/stage/export/pub/software/websphere/messaging/eventstreams/connectors/connectivitypack/) as the value for `spec.build.plugins[].artifacts[].url` as shown in the following example:
+    - To use the pre-built connector JAR file, set the URL of the [latest release asset](https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/eventstreams/connectors/connectivitypack/) as the value for `spec.build.plugins[].artifacts[].url` as shown in the following example:
 
         ```yaml
         plugins:
           - name: connectivitypack-source-connector
             artifacts:
             - type: jar
-              url: https://public.dhe.ibm.com/www/stage/export/pub/software/websphere/messaging/eventstreams/connectors/connectivitypack/<VERSION>/connectivity-pack-source-connector-<VERSION>-jar-with-dependencies.jar
+              url: https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/eventstreams/connectors/connectivitypack/<VERSION>/connectivity-pack-source-connector-<VERSION>-jar-with-dependencies.jar
         ```
 
         Where `<VERSION>` is the version of the Connectivity Pack connector JAR file.
