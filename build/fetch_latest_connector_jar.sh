@@ -14,7 +14,8 @@ fi
 
 #Remove existing connector JAR
 echo "Remove existing connector JAR"
-find ./build/connector-jar/ -name "*.jar" | xargs -r rm
+mkdir -p build/connector-jar
+find ./build/connector-jar/ -name "*.jar" | xargs -r rm || echo "JAR not available"
 
 echo "Download Latest connector JAR from artifactory hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors/connectivity-pack-source-connector/connectivity-pack-source-connector/connectivity-pack-source-connector-${CONNECTOR_JAR_VERSION}-jar-with-dependencies-signed.jar"
 # Connectivity Pack Source Connector

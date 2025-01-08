@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#Build new images if there is a change in Dockerfiles
-if [ "$(find . -name 'Dockerfile*' -exec git diff --exit-code {} \;)" == '' ]; then
-    echo "Skipping build images stage as there are no changes to Dockerfiles !!!"
-    exit 0
-fi
-
 if [ -z "$ARTIFACTORY_USERNAME" ]; then
     echo "ARTIFACTORY_USERNAME and ARTIFACTORY_PASSWORD not set. Aborting build..."
     exit 1
