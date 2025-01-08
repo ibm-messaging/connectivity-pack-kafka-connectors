@@ -9,8 +9,8 @@ fi
 
 BUILD_NUMBER="${BUILD_NUMBER:-0}"
 GIT_COMMIT=${GIT_COMMIT:-$(git rev-parse HEAD)}
-TEST_REGISTRY="${TEST_REGISTRY:-docker-eu-public.artifactory.swg-devops.com/hyc-qp-docker-local/scratch/eventstreams/connectivity-pack-kafka-connectors}"
-MAIN_REGISTRY="${MAIN_REGISTRY:-docker-eu-public.artifactory.swg-devops.com/hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors}"
+TEST_REGISTRY="${TEST_REGISTRY:-us.icr.io/ea-dev-scratch/eventstreams/connectivity-pack-kafka-connectors}"
+MAIN_REGISTRY="${MAIN_REGISTRY:-us.icr.io/ea-dev/stable/es/connectivity-pack-kafka-connectors}"
 
 JENKINS_BUILD_TAG="${BUILD_NUMBER}-${GIT_COMMIT:0:7}"
 
@@ -27,6 +27,9 @@ else
 fi
 echo "IMAGE_TAG......................[${IMAGE_TAG}]"
 echo "IMAGE_REGISTRY.................[${IMAGE_REGISTRY}]"
+
+#Docker login to registry
+echo $US_ICR_PASS | docker login -u $US_ICR_USER --password-stdin us.icr.io
 
 # Identifying digest values from Artifactory and using the same to update image-config.yaml as well as values.yaml
 

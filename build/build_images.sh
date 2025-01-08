@@ -1,17 +1,23 @@
 #!/bin/bash
 
+#Build new images if there is a change in Dockerfiles
+if [ "$(find . -name 'Dockerfile*' -exec git diff --exit-code {} \;)" == '' ]; then
+    echo "Skipping build images stage as there are no changes to Dockerfiles !!!"
+    exit 0
+fi
+
 if [ -z "$ARTIFACTORY_USERNAME" ]; then
     echo "ARTIFACTORY_USERNAME and ARTIFACTORY_PASSWORD not set. Aborting build..."
     exit 1
 fi
 
-if [ -z "$US_ICR_IO_USERID" ]; then
-    echo "US_ICR_IO_USERID and US_ICR_IO_KEY not set. Aborting build..."
+if [ -z "$US_ICR_USER" ]; then
+    echo "US_ICR_USER and US_ICR_PASS not set. Aborting build..."
     exit 1
 fi
 
 #Docker login to registry
-echo $US_ICR_IO_KEY | docker login -u $US_ICR_IO_USERID --password-stdin us.icr.io
+echo $US_ICR_PASS | docker login -u $US_ICR_USER --password-stdin us.icr.io
 
 set -e
 
@@ -29,8 +35,8 @@ LOAD_OR_PUSH="${LOAD_OR_PUSH:-push}"
 PLATFORMS="${PLATFORMS:-linux/amd64}"
 BUILD_NUMBER="${BUILD_NUMBER:-0}"
 GIT_COMMIT=${GIT_COMMIT:-$(git rev-parse HEAD)}
-TEST_REGISTRY="${TEST_REGISTRY:-docker-eu-public.artifactory.swg-devops.com/hyc-qp-docker-local/scratch/eventstreams/connectivity-pack-kafka-connectors}"
-MAIN_REGISTRY="${MAIN_REGISTRY:-docker-eu-public.artifactory.swg-devops.com/hyc-qp-stable-docker-local/event-integration/eventstreams/connectivity-pack-kafka-connectors}"
+TEST_REGISTRY="${TEST_REGISTRY:-us.icr.io/ea-dev-scratch/eventstreams/connectivity-pack-kafka-connectors}"
+MAIN_REGISTRY="${MAIN_REGISTRY:-us.icr.io/ea-dev/stable/es/connectivity-pack-kafka-connectors}"
 BUILDX="buildx build --cache-to=type=local,dest=${HOME}/buildx_cache --${LOAD_OR_PUSH} --platform ${PLATFORMS} --progress=plain --provenance=false"
 
 TIMESTAMPED_TAG="$(date +"%Y-%m-%d-%H.%M.%S")-${GIT_COMMIT:0:7}"

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# This Script fetches the ibm-connectivity-pack AppConnect Helm Chart with version <CHART_VERSION>
+# This Script fetches the ibm-connectivity-pack AppConnect Helm Chart with version <APP_CONNECT_CHART_VERSION>
 
-if [ -z "$US_ICR_IO_KEY" ]; then
-    echo "US_ICR_IO_USERID and US_ICR_IO_KEY not set. Aborting build..."
+if [ -z "$US_ICR_PASS" ]; then
+    echo "US_ICR_USER and US_ICR_PASS not set. Aborting build..."
     exit 1
 fi
 
@@ -19,32 +19,30 @@ CHART_NAME="ibm-connectivity-pack"
 
 # Helm registry login
 echo "Logging into Helm registry $HELM_REPO_URL"
-echo "$US_ICR_IO_KEY" | helm registry login --username "$US_ICR_IO_USERID" --password-stdin "$HELM_REPO_URL"
+echo "$US_ICR_PASS" | helm registry login --username "$US_ICR_USER" --password-stdin "$HELM_REPO_URL"
 if [ $? -ne 0 ]; then
   echo "Helm registry login failed."
   exit 1
 fi
 
 
+echo "Backup EA Readme in helm chart folder"
+cp ibm-connectivity-pack/README.md EA_README.md
+
+echo "Delete existing helm chart folder"
+rm -rf ibm-connectivity-pack/
+
 # Pull the Helm chart
 echo "Pulling Helm chart ${CHART_NAME} version ${APP_CONNECT_CHART_VERSION} from ${HELM_REPO_URL}"
-helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$APP_CONNECT_CHART_VERSION"
+helm pull "oci://$HELM_REPO_URL/$HELM_REPO_PATH/$CHART_NAME" --version "$APP_CONNECT_CHART_VERSION" --untar --untardir "ibm-connectivity-pack"
 if [ $? -ne 0 ]; then
   echo "Failed to pull Helm chart."
   exit 1
 fi
 
-# Extract the tarball
-TARBALL="${CHART_NAME}-${APP_CONNECT_CHART_VERSION}.tgz"
-echo "Extracting $TARBALL ..."
-tar -xzf "$TARBALL"
-if [ $? -ne 0 ]; then
-  echo "Failed to extract Helm chart."
-  exit 1
-fi
+echo "Helm chart pulled and extracted successfully to ibm-connectivity-pack"
 
-# Remove the tarball after extraction
-echo "Removing the downloaded tarball $TARBALL..."
-rm -f "$TARBALL"
+echo "Copy back in EA Readme in helm chart folder"
+cp EA_README.md ibm-connectivity-pack/README.md
 
-echo "Helm chart pulled and extracted successfully."
+echo 'license/' >> ibm-connectivity-pack/.helmignore
