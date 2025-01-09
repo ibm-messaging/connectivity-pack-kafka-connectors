@@ -47,12 +47,12 @@ spec:
     connectivitypack.source.credentials.clientIdentity: ${file:/mnt/salesforce-credential:clientIdentity}
     connectivitypack.source.credentials.clientSecret: ${file:/mnt/salesforce-credential:clientSecret}
 
-    # Objects and event-types to read from the datasource
+    # Objects and associated events to read from the datasource
     # For example: The config lists the source objects the connector will listen to. Each object corresponds to a data source object,
     # such as Salesforce-style objects or custom events, that the connector processes.
     connectivitypack.source.objects: 'Test_task__e, Order_Event__e, OrderConfirmation__e, CaseChangeEvent'
 
-    # Specifies the event types (e.g., CREATED, UPDATED) to capture for the 'Test_task__e' object.
+    # Specifies the events (for example, CREATED, UPDATED) to capture for the 'Test_task__e' object.
     # The connector will process only events of the specified type for this object.
     connectivitypack.source.Test_task__e.events: CREATED
 

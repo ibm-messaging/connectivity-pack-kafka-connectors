@@ -2,33 +2,27 @@
 
 The Salesforce connector enables streaming of Salesforce platform events and Change Data Capture (CDC) events by using the Faye client or Bauyex protocol. This connector also supports discovery of custom objects and properties.
 
-## Platform Events
-
-Salesforce platform events deliver custom event notifications when something meaningful happens to objects that are defined in your Salesforce organization. Platform Events are dynamic in nature and specific to the endpoint account connected and hence not shown in static list.
-
-## Change Data Capture Events
-
-Salesforce CDC events provide notifications of state changes to objects that you are interested in. Note that CDC must be enabled by customers, and it is only available for objects in the dynamic list.
-
 ## Pre-requisites
 
 - Ensure streaming API is enabled for your Salesforce edition and organization.
 - Ensure you have the required permissions set up in Salesforce to use Change Data Capture objects.
+- Ensure you have the required permissions set up in Salesforce to access the specified objects and events.
 - Set the Session Security Level at login value to `None` instead of `High Assurance`.
 - To connect to Salesforce sandboxes or subdomains and use Salesforce as a source application to trigger events, enable the Salesforce Organization object in your Salesforce environment.
+- If using Change Data Capture (CDC) events, ensure that CDC is enabled for the specified objects in Salesforce.
 
-## Connection
+## Connecting to Salesforce
 
 The `connectivitypack.source` and `connectivitypack.source.url` configurations in the `KafkaConnector` custom resource provide the connector with the required information to connect to the data source.
 
 | **Name**                        | **Value or Description**                                                                                                        |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `connectivitypack.source`  | `salesforce` |
-| `connectivitypack.source.url` | Specifies the URL of the source system. For example, for Salesforce, the instance's base URL is `https://yourinstance.salesforce.com`. |
+| `connectivitypack.source.url` | Specifies the URL of the source system. For example, for Salesforce, the base URL of your instance is `https://<yourinstance>.salesforce.com`. |
 
-## Authentication
+## Supported authentication mechanisms
 
-You can configure the following authentication mechanisms for Salesforce in the `KafkaConnector` custom resource:
+You can configure the following authentication mechanisms for Salesforce in the `KafkaConnector` custom resource depending on the authentication flow in Salesforce.
 
 ### 1. Basic OAuth
 
@@ -64,19 +58,31 @@ For more information, see the [Salesforce OAuth 2.0 Documentation](https://devel
 | **connectivitypack.source.credentials.clientSecret**   | The client secret of the Salesforce Connected App required for OAuth2 Password authentication.               |
 | **connectivitypack.source.credentials.clientIdentity** | The client ID (or consumer key) of the Salesforce Connected App required for OAuth2 Password authentication. |
 
-## Notes
+## Supported objects and events
 
-- When configuring the connector for Salesforce, ensure that the Connected App has the appropriate permissions to access the specified objects and events.
-- Use `OAUTH2_PASSWORD` or `BASIC_OAUTH` authentication types based on the Connected App's setup and Salesforce's authentication flow.
-- If using CDC (Change Data Capture) events, verify that CDC is enabled for the specified objects in Salesforce.
+You can specify any of the following objects and associated events in the `connectivitypack.source.<object>` and the `connectivitypack.source.<object>.events` sections of the `KafkaConnector` custom resource:
 
-## Supported objects and interactions
+### Platform Events
 
-You can specify any of the following objects and its event types in the `connectivitypack.source.<object>` and the `connectivitypack.source.<object>.events` sections of the `KafkaConnector` custom resource:
+[Salesforce platform events](https://www.ibm.com/links?url=https%3A%2F%2Fdeveloper.salesforce.com%2Fdocs%2Fatlas.en-us.platform_events.meta%2Fplatform_events%2Fplatform_events_intro.htm) deliver custom event notifications when something meaningful happens to objects that are defined in your Salesforce organization. Platform events are dynamic in nature and specific to the endpoint account connected, and as a result are not shown in the static list.
 
-
-|           **Object Types**            |   **Triggers / Events**   |
+|           **Objects**            |   **Events**   |
 |:-------------------------------------:|:-------------------------:|
 |        Platform Event objects         |          CREATED          |
-|      Change Data Capture objects      | CREATED, UPDATED, DELETED |
 
+#### Replay ID
+Salesforce provides queues for recording platform events and each event notification has a unique replay ID. Salesforce retains platform events for 72 hours, and a user can store a replay ID value to use when subscribing again to retrieve events during the retention window, as described in the [Salesforce documentation](https://developer.salesforce.com/docs/atlas.en-us.api_streaming.meta/api_streaming/using_streaming_api_durability.htm).
+
+The Salesforce connector uses the replay ID to track Salesforce platform events it has received. If the connector is restarted for any reason, it resumes streaming from where it stopped by using the replay ID. If the replay ID is no longer valid (more than 72 hours old), the connector will not be able to resume. Instead, it will start a new subscription to receive events from the current time.
+
+### Change Data Capture Events
+
+Salesforce CDC events provide notifications of state changes to objects that you are interested in.
+
+**Note:** CDC must be enabled by customers, and it is only available for objects in the dynamic list.
+
+All custom objects and a subset of standard objects are supported for use with Change Data Capture in Salesforce. For the full list, see [Change Event Object Support](https://www.ibm.com/links?url=https%3A%2F%2Fdeveloper.salesforce.com%2Fdocs%2Fatlas.en-us.change_data_capture.meta%2Fchange_data_capture%2Fcdc_object_support.htm).
+
+|           **Objects**            |   **Events**   |
+|:-------------------------------------:|:-------------------------:|
+|      Change Data Capture objects      | CREATED, UPDATED, DELETED |
