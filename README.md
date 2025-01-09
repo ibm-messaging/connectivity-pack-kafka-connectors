@@ -1,11 +1,12 @@
 # Connectivity pack Kafka connectors
 
-The Connectivity Pack for Kafka connectors enable streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use the IBM Connectivity Pack to interact with external data sources.
+By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable data streaming between external systems and Kafka.
+
 
 ## Contents
 
 - [Prerequisites](#prerequisites)
-- [Installing IBM Connectivity Pack](#installing-ibm-connectivity-pack)
+- [Installing IBM Connectivity Pack](#installing-the-ibm-connectivity-pack)
 - [Starting Kafka Connect](#starting-kafka-connect)
 - [Running the connectors](#running-the-connectors)
 - [Supported connectors](#supported-connectors)
@@ -17,15 +18,15 @@ The Connectivity Pack for Kafka connectors enable streaming data from external d
 To run Connectivity Pack Kafka connectors, ensure you have:
 
 - IBM Event Streams installed, and you have the bootstrap address, an image pull secret called [`ibm-entitlement-key`](https://ibm.github.io/event-automation/es/installing/installing/#creating-an-image-pull-secret), certificates, and credentials required to access Kafka.
-- The external application (for example, Salesforce) configured according to the [application-specific documentation](./applications/salesforce.md), with the required URLs and credentials to access the application.
+- The external application (for example, Salesforce) configured according to the [application-specific documentation](./applications/), with the required URLs and credentials to access the application.
 - Either enabled [auto-creation of Kafka topics](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#enabling-topic-creation-for-connectors) or pre-created all the required Kafka topics in the format that must be specified in the `connectivitypack.topic.name.format` section of the [`KafkaConnector` custom resource](#running-the-connectors).
 
 
-## Installing IBM Connectivity Pack
+## Installing the IBM Connectivity Pack
 
-IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems you wish to connect to. It can be deployed on OpenShift and other Kubernetes platforms by using the IBM Connectivity Pack Helm chart.
+The IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems you want to connect to. It can be deployed on OpenShift and other Kubernetes platforms by using the IBM Connectivity Pack Helm chart.
 
-1. Download the latest version of the Connectivity Pack Helm chart from [**GitHub Releases**](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases) of this repository.
+1. Download the [latest version](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases) of the Connectivity Pack Helm chart.
 2. To install the IBM Connectivity Pack by using the Helm chart, run the following command:
 
    ```bash
@@ -42,13 +43,15 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
 
    You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
-For a complete list of configuration parameters supported by the Helm chart, see [installing Helm chart](./ibm-connectivity-pack/README.md#configuring).
+For a complete list of configuration parameters supported by the Helm chart, see [installing the Connectivity Pack](./ibm-connectivity-pack/README.md#configuring).
 
 ## Starting Kafka Connect
 
-[Configure](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/) Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions:
+Configure the Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions:
 
-1. Create a `KafkaConnect` custom resource to [define Kafka Connect runtime configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#starting-kafka-connect).
+**Note:** For more information, see [setting up connectors](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/).
+
+1. Create a `KafkaConnect` custom resource to [define the Kafka Connect runtime configuration](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#starting-kafka-connect).
 
    **Note:** An example custom resource is available in the [`examples`](/examples/kafka-connect.yaml) folder.
 
@@ -136,7 +139,7 @@ For a complete list of configuration parameters supported by the Helm chart, see
 
 1. Verify that the connector is available for use:
 
-   When Kafka Connect is successfully created, you can find the `status.connectorPlugins` section in the `KafkaConnect` custom resource. For the Connectivity Pack source connector to work, the following plugin must be present.
+   When Kafka Connect is successfully created, you can find the `status.connectorPlugins` section in the `KafkaConnect` custom resource. For the Connectivity Pack source connector to work, the following plug-in must be present.
 
    ```yaml
    status:
@@ -214,9 +217,9 @@ For a complete list of configuration parameters supported by the Helm chart, see
 
 1. Apply the configured `KafkaConnector` custom resource to start the connector and verify that it is running.
 
-## Supported Connectors
+## Supported connectors
 
-**SALESFORCE**: The Salesforce connector enables streaming of Salesforce platform events and Change Data Capture (CDC) events by using the Faye client or Bauyex protocol. This connector also supports discovery of custom objects and properties. For more information about the Salesforce connector, see the [Salesforce application-specific guidance](./applications/salesforce.md).
+**SALESFORCE**: The Salesforce connector enables streaming of Salesforce platform events and Change Data Capture (CDC) events by using the Faye client or Bauyex protocol. This connector also supports the discovery of custom objects and properties. For more information about the Salesforce connector, see the [Salesforce application-specific guidance](./applications/salesforce.md).
 
 ## Uninstalling IBM Connectivity Pack
 
