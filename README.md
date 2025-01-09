@@ -29,7 +29,7 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
 2. To install the IBM Connectivity Pack by using the Helm chart, run the following command:
 
    ```bash
-   helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
+   helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true -n <NAMESPACE>
    ```
 
    Where:
@@ -38,6 +38,7 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
    - `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
    - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
    - `license.accept` determines whether the license is accepted (default is `false` if not specified).
+   - `<NAMESPACE>` is the namespace where you want to install the IBM Connectivity Pack. This must be in the same namespace where an Event Streams instance is deployed.
 
    You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
@@ -222,10 +223,13 @@ For a complete list of configuration parameters supported by the Helm chart, see
 To uninstall the IBM Connectivity Pack by using the Helm chart, run the following command:
 
 ```bash
-helm uninstall <RELEASE-NAME>
+helm uninstall <RELEASE-NAME> -n <NAMESPACE>
 ```
 
-Where `<RELEASE-NAME>` is the release name of your Connectivity Pack installation.
+Where:
+
+- `<RELEASE-NAME>` is the release name of your Connectivity Pack installation.
+- `<NAMESPACE>` is the namespace where the IBM Connectivity Pack is deployed.
 
 ## License
 
