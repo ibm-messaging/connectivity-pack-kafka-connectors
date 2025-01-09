@@ -86,3 +86,61 @@ All custom objects and a subset of standard objects are supported for use with C
 |           **Objects**            |   **Events**   |
 |:-------------------------------------:|:-------------------------:|
 |      Change Data Capture objects      | CREATED, UPDATED, DELETED |
+
+## Example configuration
+
+The following is an example of a connector configuration for Salesforce:
+
+```yaml
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    # The eventstreams.ibm.com/cluster label identifies the Kafka Connect instance
+    # in which to create this connector. That KafkaConnect instance
+    # must have the eventstreams.ibm.com/use-connector-resources annotation
+    # set to true.
+    eventstreams.ibm.com/cluster: cp-connect-cluster
+  name: <name>
+  namespace: <namespace>
+spec:
+  # Connector class name
+  class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+
+  config:
+    # Which data source to connect to, for example,  salesforce
+    connectivitypack.source: salesforce
+
+    # URL to access the data source,  for example, `https://<your-instance-name>.salesforce.com`
+    connectivitypack.source.url: <URL-of-the-data-source-instance>
+
+    # Credentials to access the data source using OAUTH2_PASSWORD authentication.
+    connectivitypack.source.credentials.authType: OAUTH2_PASSWORD
+    connectivitypack.source.credentials.username: <username>
+    connectivitypack.source.credentials.password: <password>
+    connectivitypack.source.credentials.clientSecret: <client-secret>
+    connectivitypack.source.credentials.clientIdentity: <client-identity>
+
+    # Objects and event types to read from the data source
+    connectivitypack.source.objects: '<object1>,<object2>'
+    connectivitypack.source.<object1>.events: 'CREATED'
+    connectivitypack.source.<object2>.events: 'CREATED,UPDATED'
+
+    # Optional, sets the format for Kafka topic names created by the connector.
+    # You can use placeholders such as '${object}' and '${eventType}', which the connector will replace automatically.
+    # Including '${object}' or '${eventType}' in the format is optional. For example, '${object}-topic-name' is a valid format.
+    # By default, the format is '${object}-${eventType}', but it's shown here for clarity.
+    connectivitypack.topic.name.format: '${object}-${eventType}'
+
+    # `tasksMax` must be equal to the number of object-eventType combinations
+    # In this example it is 3 (object1 - CREATED, object2 - CREATED, object2 - UPDATED)
+    tasksMax: 3
+
+    # Specifies the converter class used to deserialize the message value.
+    # Change this to a different converter (for example, AvroConverter) as applicable.
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+
+    # Controls whether the schema is included in the message.
+    # Set this to false to disable schema support, or to true to enable schema inclusion (for example, for Avro).
+    value.converter.schemas.enable: false
+```
