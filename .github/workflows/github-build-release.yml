@@ -25,6 +25,7 @@ jobs:
       - name: Package Helm Chart
         run: tar -czvf ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz -C ibm-connectivity-pack .
       - name: Get Release by Tag Name
+        id: get_release
         uses: joutvhu/get-release@v1
         with:
           tag_name: ${{env.SOURCE_TAG}}
@@ -36,7 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz
           asset_name: ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz
           asset_content_type: application/tgz
