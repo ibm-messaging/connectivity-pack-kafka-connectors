@@ -1,7 +1,6 @@
-# Connectivity pack Kafka connectors
+# Connectivity Pack Kafka connectors
 
 By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable data streaming between external systems and Kafka.
-
 
 ## Contents
 
