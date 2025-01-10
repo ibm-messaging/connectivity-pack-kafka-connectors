@@ -1,6 +1,6 @@
 # IBM Connectivity Pack Helm chart
 
-This Helm chart installs IBM Connectivity Pack, which acts as an interface to communicate with your data sources.
+This Helm chart installs IBM Connectivity Pack, which acts as an interface to communicate with your external systems.
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ Parameter | Description | Default
 -- | -- | --
 acceptLicense | Set acceptLicense to true. Accept the license before installing or updating HELM else prehook will throw error | false
 replicaCount | Number of replicas of the pod | 1
-bunyan | Log configuration for the application | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information.
+bunyan | Log configuration for the system | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information.
 annotations | Override with product specific annotations | See [values.yaml](values.yaml) Refer Kubernetes annotation for more information
 environmentVariables | Yaml object of environment variables to be added in action and event services | {}
 image.registry | Image registry URL | us.icr.io
@@ -98,7 +98,7 @@ The Helm chart supports both mTLS and TLS through `certificate.MTLSenable`:
 
 ### OpenShift Route
 
-To enable an OpenShift Route for external access, set `route.enable` to `true`. This exposes your application outside the cluster through an OpenShift route.
+To enable an OpenShift Route for external access, set `route.enable` to `true`. This exposes your system outside the cluster through an OpenShift route.
 
 ### Basic authentication
 

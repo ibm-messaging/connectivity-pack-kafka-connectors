@@ -1,16 +1,16 @@
 # Connectivity Pack source connector
 
-The Connectivity Pack source connector enables streaming data from external data sources, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use the [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to enable the data flow between the source system and Kafka.
+The Connectivity Pack source connector enables streaming data from source systems, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use the [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to enable the data flow between the source system and Kafka.
 
 The connector can be configured to stream the required data by specifying the source system, and a list of objects and associated events that are to be streamed.
 
-The connector uses a Connectivity Pack instance as a bridge that retrieves events from the data source and sends them to the connector for publishing to Kafka topics.
+The connector uses a Connectivity Pack instance as a bridge that retrieves events from the source system and sends them to the connector for publishing to Kafka topics.
 
 ## Configuration
 
 The following configuration options are supported and must be configured in the `config` section of the `KafkaConnector` custom resource.
 
-**Note:** See the [application-specific guidance](../applications/) for supported values of your source system, such as [Salesforce](../applications/salesforce.md).
+**Note:** See the [system-specific guidance](../systems/) for supported values of your source system, such as [Salesforce](../systems/salesforce.md).
 
 ### Source information
 
@@ -26,8 +26,8 @@ The following configuration options are supported and must be configured in the 
 | `connectivitypack.source.credentials.authType` | `string` | Specifies the authentication type for the source system. | Supported types, for example, `OAUTH2_PASSWORD` or `BASIC_OAUTH` |
 | `connectivitypack.source.credentials.username` | `string` | The username associated with the source system's credentials. Required for `OAUTH2_PASSWORD`. | The username used for authentication. |
 | `connectivitypack.source.credentials.password` | `string` | The password associated with the source system's credentials. Required for `OAUTH2_PASSWORD`. | The password used for authentication. |
-| `connectivitypack.source.credentials.clientIdentity` | `string`  | The client identity of the application to which the source system is connected to. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client identity of the application to which the source system is connected to. |
-| `connectivitypack.source.credentials.clientSecret` | `string`  | The client secret of the source application's connected app. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client secret of the source application's connected app. |
+| `connectivitypack.source.credentials.clientIdentity` | `string`  | The client identity of the system to which the source system is connected to. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client identity of the system to which the source system is connected to. |
+| `connectivitypack.source.credentials.clientSecret` | `string`  | The client secret of the source system. Required for both `OAUTH2_PASSWORD` and `BASIC_OAUTH`. | The client secret of the source system's connected app. |
 | `connectivitypack.source.credentials.accessTokenBasicOauth` | `string` | The OAuth access token used for authentication. Required for `BASIC_OAUTH`. |  A valid access token that complies with the source system's requirements. |
 | `connectivitypack.source.credentials.refreshTokenBasicOauth` | `string` | The refresh token used to renew the OAuth access token. Required for `BASIC_OAUTH`. | A valid refresh token that complies with the source system's requirements.  |
 

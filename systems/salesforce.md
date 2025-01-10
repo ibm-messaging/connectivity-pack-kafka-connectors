@@ -8,7 +8,7 @@ The Salesforce connector enables streaming of Salesforce platform events and Cha
 - Ensure you have the required permissions set up in Salesforce to use Change Data Capture objects.
 - Ensure you have the required permissions set up in Salesforce to access the specified objects and events.
 - Set the Session Security Level at login value to `None` instead of `High Assurance`.
-- To connect to Salesforce sandboxes or subdomains and use Salesforce as a source application to trigger events, enable the Salesforce Organization object in your Salesforce environment.
+- To connect to Salesforce sandboxes or subdomains and use Salesforce as a source system to trigger events, enable the Salesforce Organization object in your Salesforce environment.
 - If using Change Data Capture (CDC) events, ensure that CDC is enabled for the specified objects in Salesforce.
 
 ## Connecting to Salesforce

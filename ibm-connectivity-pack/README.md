@@ -1,6 +1,6 @@
-# Installing IBM Connectivity Pack Helm Chart
+# Installing IBM Connectivity Pack
 
-IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems like Salesforce. The Connectivity Pack can be deployed on OpenShift and other Kubernetes platforms using the Connectivity Pack Helm chart.
+IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems such as Salesforce. The Connectivity Pack can be deployed on OpenShift and other Kubernetes platforms by using the Connectivity Pack Helm chart.
 
 ## Prerequisites
 
@@ -10,46 +10,49 @@ IBM Connectivity Pack acts as an interface between Kafka Connect connectors and 
 
 ## Installing
 
-To install the Connectivity Pack, complete the following steps:
+To install the Connectivity Pack, run the following command:
 
-1. Download the latest version of the Connectivity Pack Helm chart from [**GitHub Releases**](https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases) of this repository.
-1. Run the following command:
+```bash
+helm install <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> --set license.licenseId=<LICENSE-ID>,license.accept=true -n <NAMESPACE>
+```
 
-   ```bash
-   helm install <RELEASE-NAME> ibm-connectivity-pack-<CONNECTIVITY-PACK-HELM-CHART-VERSION>.tgz --set license.licenseId=<LICENSE-ID>,license.accept=true
-   ```
+Where:
 
-   Where:
+- `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/1.0.0/ibm-connectivity-pack-1.0.0.tgz`
+- `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
+- `license.accept` determines whether the license is accepted (default is `false` if not specified).
+- `<NAMESPACE>` is the namespace where the Connectivity Pack is deployed.
 
-   - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-   - `<CONNECTIVITY-PACK-HELM-CHART-VERSION>` is the latest version of the Connectivity Pack Helm chart.
-   - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
-   - `license.accept` determines whether the license is accepted (default is `false` if not specified).
-
-   You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
+You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
 For a complete list of configuration parameters supported by the helm chart, see [Configuring](#configuring).
 
 ## Uninstalling
 
-To uninstall the IBM Connectivity Pack release, run the following command:
+To uninstall the Connectivity Pack by using the Helm chart, run the following command:
 
 ```bash
-helm uninstall <RELEASE-NAME>
+helm uninstall <RELEASE-NAME> -n <NAMESPACE>
 ```
+
+Where:
+
+- `<RELEASE-NAME>` is the release name of your Connectivity Pack installation.
+- `<NAMESPACE>` is the namespace where the Connectivity Pack is deployed.
 
 ## Configuring
 
 You can configure your installation by adding configurable parameters through the `--set` flag in your `helm install` command or by using a custom YAML file.
 
-The following table lists the configurable parameters of the IBM Connectivity Pack Helm chart and their default values:
+The following table lists the configurable parameters of the Connectivity Pack Helm chart and their default values:
 
 | Parameter                              | Description                                                                                                                                                                                                             | Default                                                                                      |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | license.accept                         | Indicates acceptance of license terms                                                                                                                                                                                   | false                                                                                        |
 | license.licenseId                      | license identifier (ID) for the program that you purchased as per [licensing reference](https://ibm.github.io/event-automation/support/licensing/)                                                                      |
 | replicaCount                           | Number of replicas of the pod                                                                                                                                                                                           | 1                                                                                            |
-| bunyan                                 | Log configuration for the application                                                                                                                                                                                   | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information. |
+| bunyan                                 | Log configuration for the system                                                                                                                                                                                   | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information. |
 | annotations                            | Override with product specific annotations                                                                                                                                                                              | See [values.yaml](values.yaml) for more information.                                         |
 | environmentVariables                   | Yaml object of environment variables to be added in action and event services                                                                                                                                           |
 | image.registry                         | Image registry URL                                                                                                                                                                                                      | cp.icr.io                                                                                    |
@@ -104,7 +107,7 @@ The Helm chart supports both mTLS and TLS through `certificate.MTLSenable`:
 
 ### OpenShift Route
 
-To enable an OpenShift Route for external access, set `route.enable` to `true`. This exposes your application outside the cluster through an OpenShift route.
+To enable an OpenShift Route for external access, set `route.enable` to `true`. This exposes your system outside the cluster through an OpenShift route.
 
 ### Basic authentication
 
