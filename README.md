@@ -42,15 +42,15 @@ Where:
 
 You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
 
-For a complete list of configuration parameters supported by the Helm chart, see [installing the Connectivity Pack](./ibm-connectivity-pack/README.md#configuring).
+For more information about installing the Connectivity Pack, including a complete list of configuration parameters supported by the Helm chart, see [installing the Connectivity Pack](./ibm-connectivity-pack/README.md#configuring).
 
 ## Starting Kafka Connect
 
-Configure the Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions:
+Configure the Kafka Connect runtime and include the configuration, certificates, and connectors for the Connectivity Pack by following these instructions.
 
 **Note:** For more information, see [setting up connectors](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/).
 
-1. Create a `KafkaConnect` custom resource to define the Kafka Connect runtime. An example custom resource is available in the [`examples`](/examples/kafka-connect.yaml) folder. You can edit the custom resource file based on your requirements.
+1. Create a `KafkaConnect` custom resource to define the Kafka Connect runtime. An example custom resource is available in the [`examples`](/examples/kafka-connect.yaml) folder. You can edit the example custom resource file to meet on your requirements and to configure the following settings.
 
     - To use the pre-built connector JAR file, set the URL of the [latest release asset](https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/eventstreams/connectors/connectivitypack/) as the value for `spec.build.plugins[].artifacts[].url` as shown in the following example:
 
@@ -115,7 +115,15 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
 
           You can set this URL by using a `configMapKeyRef` that points to the ConfigMap of the Connectivity Pack or directly set it to the correct endpoint. Ensure that the URL is accessible from the Kafka Connect container.
         
-        - **`CONNECTIVITYPACK_PKCS12_PASSWORD`**: The password that is used to access the PKCS12 certificate store. This environment variable is required for secure communication between the connector and the Connectivity Pack only if the PKCS12 file is password-protected. If the PKCS12 file does not have a password, this can be set as an empty string or skip configuring this environment variable. For example:
+        - **`CONNECTIVITYPACK_CERTS_PATH`**: The file path to the directory containing the certificates required for secure communication. This includes the client certificate, private key, and any intermediate certificates that are required for secure communication between the connector and the Connectivity Pack. For example:
+
+          ```yaml
+          CONNECTIVITYPACK_CERTS_PATH: /mnt/connectivitypack/certificates
+          ```
+
+          By default, this is set to `/mnt/connectivitypack/certificates`. You can optionally specify this environment variable if your certificates are mounted at a different path.
+          
+        - **`CONNECTIVITYPACK_PKCS12_PASSWORD`**: The password that is used to access the PKCS12 certificate store. This environment variable is required for secure communication between the connector and the Connectivity Pack only if the PKCS12 file is password-protected. If the PKCS12 file does not have a password, you can set this as an empty string or skip configuring this environment variable. For example:
 
             ```yaml
             template:
@@ -123,16 +131,8 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
                 env:
                   CONNECTIVITYPACK_PKCS12_PASSWORD: <your-pkcs12-password>
             ```
+            
 
-        - **`CONNECTIVITYPACK_CERTS_PATH`**: The file path to the directory containing the certificates required for secure communication. This includes the client certificate, private key, and any intermediate certificates that are needed for secure communication between the connector and the Connectivity Pack. For example:
-
-          ```yaml
-          CONNECTIVITYPACK_CERTS_PATH: /mnt/connectivitypack/certificates
-          ```
-
-          The path must be mounted correctly within the container to ensure the connector has access to the required certificates. By default, the `CONNECTIVITYPACK_CERTS_PATH` is set to `/mnt/connectivitypack/certificates`. You must update this value to match the location where your certificates are mounted.
-
-        
 
 1. Apply the configured `KafkaConnect` custom resource by using the `kubectl apply` command to start the Kafka Connect runtime.
 
@@ -149,7 +149,7 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
 
 ## Running the Connectors
 
-Configure your connector with information about your external system by following these instructions:
+Configure your connector with information about your external system by following these instructions.
 
 **Note:** For more information, see [setting up connectors](https://ibm.github.io/event-automation/es/connecting/setting-up-connectors/#set-up-a-kafka-connector).
 

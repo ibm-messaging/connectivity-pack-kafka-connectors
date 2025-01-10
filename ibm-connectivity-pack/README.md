@@ -1,6 +1,6 @@
-# Installing IBM Connectivity Pack
+# Installing the IBM Connectivity Pack
 
-IBM Connectivity Pack acts as an interface between Kafka Connect connectors and external systems such as Salesforce. The Connectivity Pack can be deployed on OpenShift and other Kubernetes platforms by using the Connectivity Pack Helm chart.
+The Connectivity Pack acts as an interface between Kafka Connect connectors and external systems you want to connect to. It can be deployed on OpenShift and other Kubernetes platforms by using the Connectivity Pack Helm chart.
 
 ## Prerequisites
 
