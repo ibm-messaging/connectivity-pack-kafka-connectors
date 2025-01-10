@@ -1,8 +1,0 @@
-private:
-  repo: cp.icr.io
-  path: cp/ibm-eventstreams/
-images:
-  preHook: connectivity-pack-prehook@sha256:a401875a35737d377e7a18753ba26a52999d8c060589256e32263008c5f19747
-  proxy: connectivity-pack-proxy@sha256:8ee2b1fe96f00fb90bd25df122097f3653ba7b83eb6808a5a3971e21548a5fe4
-  action: action-connectors@sha256:4068f1e0ba627e8237c08c8e5a2ba62e3c0d1ab1fa3ca983b22adc7d427fbc62
-  event: event-connectors@sha256:1c575f3e7658c186723fb490c9513bcda666a4f823a2d56b11ae22ac1a6c37d3
