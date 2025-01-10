@@ -1,0 +1,77 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "ibm-connectivity-pack.eaPostHookJob" . }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    {{- toYaml .Values.annotations | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      serviceAccountName: {{ include "ibm-connectivity-pack.eaPostHookJob" . }}-sa
+      restartPolicy: Never
+      imagePullSecrets: 
+        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
+      containers:
+        - name: mtls-cert-generator
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.preHook.image }}@{{ .Values.preHook.digest }}
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+              kubectl patch configMap {{ include "ibm-connectivity-pack.config" .}} \
+                -n {{ .Release.Namespace }} \
+                --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.config" . }}"}}}'
+              kubectl patch secret {{ include "ibm-connectivity-pack.stunnelClient" .}} \
+                -n {{ .Release.Namespace }} \
+                --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.stunnelClient" . }}"}}}'
+              kubectl patch configMap {{ include "ibm-connectivity-pack.proxy" .}} \
+              -n {{ .Release.Namespace }} \
+              --patch '{"metadata":{"labels":{"eventstreams.ibm.com/name":"{{ include "ibm-connectivity-pack.proxy" . }}"}}}'
+              
+              kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productChargedContainers=''
+              kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productMetric='FREE'
+
+              {{- $productID := "" }}
+              {{- $productName := "" }}
+                {{- if .Values.license.licenseId }}
+                    {{- $licenseType := include "ibm-connectivity-pack.fetchLicense" (dict "licenseId" .Values.license.licenseId) }}
+                    {{- if eq $licenseType "CP4I" }}
+                        {{- $productID = "2cba508800504d0abfa48a0e2c4ecbe2" }}
+                        {{- $productName = "IBM Event Streams" }}
+                    {{- else if eq $licenseType "EA" }}
+                        {{- $productID = "682b6db3fed247a098d85da5ab905b46" }}
+                        {{- $productName = "IBM Event Automation" }}
+                    {{- else }}
+                        {{- fail " \nYou have not provided a valid license. To continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license." }}
+                    {{- end }}
+               {{- end }}
+               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productName="{{ $productName }}"
+               kubectl annotate deployment {{ include "ibm-connectivity-pack.deploymentName" . }} productID="{{ $productID }}"
+
+               kubectl patch deployment {{ include "ibm-connectivity-pack.deploymentName" . }} \
+                -n {{ .Release.Namespace }} \
+                --patch '{
+                  "spec": {
+                    "template": {
+                      "metadata": {
+                        "annotations": {
+                          "productID": "{{ $productID }}",
+                          "productName": "{{ $productName }}",
+                          "productChargedContainers":"",
+                          "productMetric":"FREE"
+                        },
+                        "labels": {
+                          "eventstreams.ibm.com/name": "{{ include "ibm-connectivity-pack.deploymentName" . }}"
+                        }
+                      }
+                    }
+                  }
+                }'

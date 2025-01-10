@@ -1,0 +1,71 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: salesforce-credential
+  namespace: <namespace>
+stringData:
+  username: <username>
+  password: <password>
+  clientIdentity: <clientIdentity>
+  clientSecret: <clientSecret>
+type: Opaque
+
+---
+
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaConnector
+metadata:
+  labels:
+    eventstreams.ibm.com/cluster: <name of Kafka Connect cluster>
+  name: <name of connector>
+  namespace: <namespace>
+spec:
+  autoRestart:
+    # Enables automatic restarting of Kafka connectors in case of errors or failures.
+    # For more details, see: https://strimzi.io/blog/2023/01/25/auto-restarting-connectors/
+    enabled: true
+    maxRestarts: <no. of times the connector attempts to restart in case of an error or failure>
+
+  # Connector class name
+  class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+
+  # `tasksMax` should be equal to the number of object-eventType combinations
+  # In this example it is 4 (Test_task__e - CREATED, Order_Event__e - CREATED, OrderConfirmation__e - CREATED, CaseChangeEvent - UPDATED)
+  tasksMax: 4
+
+  config:
+    # Which data source to connect to eg. salesforce
+    connectivitypack.source: salesforce
+
+    # URL to access the data source
+    connectivitypack.source.url: <URL of the data source instance>
+
+    # Credentials to access the data source (This example shows auth-type - 'OAUTH2_PASSWORD')
+    connectivitypack.source.credentials.authType: <auth-type that the data source supports. eg. OAUTH2_PASSWORD>
+    connectivitypack.source.credentials.username: ${file:/mnt/salesforce-credential:username}
+    connectivitypack.source.credentials.password: ${file:/mnt/salesforce-credential:password}
+    connectivitypack.source.credentials.clientIdentity: ${file:/mnt/salesforce-credential:clientIdentity}
+    connectivitypack.source.credentials.clientSecret: ${file:/mnt/salesforce-credential:clientSecret}
+
+    # Objects and associated events to read from the datasource
+    # For example: The config lists the source objects the connector will listen to. Each object corresponds to a data source object,
+    # such as Salesforce-style objects or custom events, that the connector processes.
+    connectivitypack.source.objects: 'Test_task__e, Order_Event__e, OrderConfirmation__e, CaseChangeEvent'
+
+    # Specifies the events (for example, CREATED, UPDATED) to capture for the 'Test_task__e' object.
+    # The connector will process only events of the specified type for this object.
+    connectivitypack.source.Test_task__e.events: CREATED
+
+    connectivitypack.source.Order_Event__e.events: CREATED
+    connectivitypack.source.OrderConfirmation__e.events: CREATED
+    connectivitypack.source.CaseChangeEvent.events: UPDATED
+
+    # Optional, sets the format for Kafka topic names created by the connector.
+    # You can use placeholders like '${object}' and '${eventType}', which the connector will replace automatically.
+    # Including '${object}' or '${eventType}' in the format is optional. For example, '${object}-topic-name' is a valid format.
+    # By default, the format is '${object}-${eventType}', but it's shown here for clarity.
+    connectivitypack.topic.name.format: '${object}-${eventType}'
+
+    # standard kafka connector properties
+    value.converter.schemas.enable: false
+    value.converter: org.apache.kafka.connect.json.JsonConverter

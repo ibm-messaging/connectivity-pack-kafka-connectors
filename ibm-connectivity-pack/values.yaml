@@ -1,0 +1,99 @@
+###############################################################################
+#
+# © Copyright IBM Corp. 2024
+#
+###############################################################################
+# Default values for IBM Connectivity pack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+license:
+  accept: false
+replicaCount: 1 # Replica of the POD
+bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
+environmentVariables: {} # Yaml object ENV to be added on action and event pods
+annotations:
+  productName: IBM Connectivity pack
+image:
+  registry: cp.icr.io # Image registry base URL
+  path: cp/ibm-eventstreams
+  imagePullSecretName: ibm-entitlement-key # Image pull secret name if already  exist please specify here else give below values for creating new Image pull secret
+  imagePullEmail: dummyEmail # Image pull secret email ID
+  imagePullUsername: iamapikey # Image pull username 
+  imagePullPassword: '' # Image pull password
+certificate:
+  MTLSenable: true # Enable MTLS if true else fallback to TLS
+  generate: true # generate new certificates use this for certificate rotation
+  clientSecretName: '' # If MTLS/TLS secret for client already exist please specify here
+  clientCertPropertyName: 'tls.crt'
+  clientCertKeyPropertyName: 'tls.key'
+  clientCertPKCSPropertyName: 'pkcs.p12'
+  serverSecretName: '' # If MTLS/TLS secret for server already exist please specify here
+  serverCertPropertyName: 'tls.crt'
+  serverCertKeyPropertyName: 'tls.key'
+  caCertPropertyName: 'ca.crt'
+  pkcsPassword: '' # pkcs.p12 password
+route:
+  enable: false # generate OpenShift route for external access
+  domain: 'example.com' # subdomain of OpenShift cluster where connector service is being deployed
+basicAuth:
+  enable: false # Enable basic auth for service 
+  username: 'csuser'
+preHook:
+  image: connectivity-pack-prehook
+  digest: sha256:a401875a35737d377e7a18753ba26a52999d8c060589256e32263008c5f19747
+  tag: 1.0.0
+proxy:
+  name: connectivity-pack-proxy
+  image: connectivity-pack-proxy
+  digest: sha256:8ee2b1fe96f00fb90bd25df122097f3653ba7b83eb6808a5a3971e21548a5fe4
+  tag: 1.0.0
+action:
+  name: action-connectors
+  image: action-connectors
+  digest: sha256:4068f1e0ba627e8237c08c8e5a2ba62e3c0d1ab1fa3ca983b22adc7d427fbc62
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 256Mi
+  tag: 1.0.0
+event:
+  enable: true # Set to true if Event container is needed
+  name: event-connectors
+  image: event-connectors # Update image
+  digest: sha256:1c575f3e7658c186723fb490c9513bcda666a4f823a2d56b11ae22ac1a6c37d3
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 750Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 400Mi
+  tag: 1.0.0
+javaservice:
+  enable: false
+autoScaling:
+  enable: false # Update this to true to enable autoScaling
+  minReplicas: 1 # What is the minimum replica needed
+  maxReplicas: 5 # What is the maximum replica needed
+  cpuUtilization: 70 # % of CPU utilization after which POD to be replicated 
+  memoryUtilization: 70 # % of Memory utilization after which POD to be replicated 
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+csCommon:
+  eventList: "['salesforceevent']"

@@ -1,0 +1,84 @@
+apiVersion: eventstreams.ibm.com/v1beta2
+kind: KafkaConnect
+metadata:
+  annotations:
+    eventstreams.ibm.com/use-connector-resources: "true"
+  name: <name>
+  namespace: <namespace>
+  labels:
+    backup.eventstreams.ibm.com/component: kafkaconnect
+spec:
+  config:
+    exactly.once.source.support: ENABLED  # To enable exactly-once delivery semantics
+    config.storage.topic: <groupid>-configs
+    group.id: <groupid>
+    offset.storage.topic: <groupid>-offsets
+    status.storage.topic: <groupid>-status
+    # To indicate the configurations (secrets) of connector is provided as K8s Secret
+    config.providers: file
+    config.providers.file.class: org.apache.kafka.common.config.provider.DirectoryConfigProvider
+  bootstrapServers: <bootstrapServers>  # Replace with the bootstrap server address
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 2Gi
+  authentication:
+    passwordSecret:
+      password: password
+      secretName: <kafka-user>  # Replace with the name of the kafka user.
+    type: scram-sha-512
+    username: <kafka-user>  # Replace with the name of the kafka user.
+  template:
+    connectContainer:
+      env:
+        - name: CONNECTIVITYPACK_SERVICE_URL  # DO NOT change the name
+          valueFrom:
+            configMapKeyRef:
+              key: CONNECTIVITYPACK_SERVICE_URL
+              name: <ibm-connectivitypack-config-map-name>  # Replace with the name of the connectivity pack's config map
+      volumeMounts:
+        - mountPath: /mnt/connectivitypack/certificates
+          name: connectivitypack-certs
+        - mountPath: /mnt/salesforce-credential
+          name: salesforce-credential
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+    pod:
+      metadata:
+        annotations:
+          cloudpakId: c8b82d189e7545f0892db9ef2731b90d
+          productVersion: 11.5.1
+          productID: 2a79e49111f44ec3acd89608e56138f5
+          cloudpakName: IBM Cloud Pak for Integration
+          productChargedContainers: <name>-kafkaconnect-connect  # Replace with the name of the kafka connect given under metadata
+          productCloudpakRatio: "2:1"
+          productName: IBM Event Streams for Non Production
+          eventstreams.production.type: CloudPakForIntegrationNonProduction
+          productMetric: VIRTUAL_PROCESSOR_CORE
+      volumes:
+        - name: connectivitypack-certs
+          secret:
+            secretName: <connectivitypack-name>-client-certificate  # Replace with the name of the connectivity pack's client certificate secret
+        - name: salesforce-credential
+          secret:
+            secretName: <salesforce-credentials-name>  # Replace with the name of the Salesforce credentials secret
+  tls:
+    trustedCertificates:
+      - certificate: ca.crt
+        secretName: <event-streams-instance-name>-cluster-ca-cert  # Replace with the name of the Event Streams instance's CA certificate secret
+  build:
+    output:
+      image: <my-image-registry.my-kafka-connect-image:latest>  # Replace with your image registry and image name
+      type: <image-type>  # Specify the type of image (for example: docker)
+    plugins:
+      - artifacts:
+          - type: jar
+            url: <GitHub-URL-of-connectivity-pack-source-connector-<VERSION>-jar-with-dependencies.jar>  # Replace with the URL to the connector jar file
+        name: connectivity-pack-source-connector
+  replicas: 1

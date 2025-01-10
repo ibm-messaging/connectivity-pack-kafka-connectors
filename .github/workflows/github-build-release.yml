@@ -1,0 +1,43 @@
+name: Upload HelmChart To Release
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    name: Build and Upload helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Read Helm Chart
+        id: chart
+        uses: jacobtomlinson/gha-read-helm-chart@master
+        with:
+          path: ibm-connectivity-pack
+      - name: Print Chart Details and set Chart Version
+        run: |
+          echo "Name - ${{ steps.chart.outputs.name }}"
+          echo "Version - ${{ steps.chart.outputs.version }}"
+          echo "App Version - ${{ steps.chart.outputs.appVersion }}"
+          echo "CHART_VERSION=${{ steps.chart.outputs.version }}" >> $GITHUB_ENV
+          GIT_REF_TAG=${{ github.ref }}
+          echo "SOURCE_TAG=${GIT_REF_TAG#refs/tags/}" >> $GITHUB_ENV
+      - name: Package Helm Chart
+        run: tar -czvf ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz -C ibm-connectivity-pack .
+      - name: Get Release by Tag Name
+        id: get_release
+        uses: joutvhu/get-release@v1
+        with:
+          tag_name: ${{env.SOURCE_TAG}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Asset Helm Chart
+        id: upload-release-asset-helm-chart
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz
+          asset_name: ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz
+          asset_content_type: application/tgz
