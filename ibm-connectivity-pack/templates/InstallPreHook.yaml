@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "ibm-connectivity-pack.preHookJob" . }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    {{- toYaml .Values.annotations | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      serviceAccountName: {{ include "ibm-connectivity-pack.preHookJob" . }}-sa
+      restartPolicy: Never
+      imagePullSecrets: 
+        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
+      containers:
+        - name: mtls-cert-generator
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault
+          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.preHook.image }}@{{ .Values.preHook.digest }}
+          command:
+            - /bin/sh
+            - "-c"
+            - |
+              {{- if not .Values.license.accept }}
+              {{- fail (printf "\nYou have not accepted the terms of the license. To continue the installation, accept the license by setting 'license.accept' to true.") }}
+              {{- end }}
+              {{- if and .Values.image.imagePullSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.image.imagePullSecretName)) }}
+              {{- fail (printf "\nFailed to find image pull secret '%s' in namespace '%s'" .Values.image.imagePullSecretName .Release.Namespace) }}
+              {{- end }}
+              {{- if and .Values.certificate.serverSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.certificate.serverSecretName)) }}
+              {{- fail (printf "\nFailed to find certificate secret '%s' in namespace '%s'" .Values.certificate.serverSecretName .Release.Namespace) }}
+              {{- end }}
+              {{- if and .Values.certificate.MTLSenable .Values.certificate.clientSecretName (not (lookup "v1" "Secret" .Release.Namespace .Values.certificate.clientSecretName)) }}
+              {{- fail (printf "\nFailed to find certificate secret '%s' in namespace '%s'" .Values.certificate.clientSecretName .Release.Namespace) }}
+              {{- end }}
+              {{- if and (not .Values.certificate.serverSecretName) (not .Values.certificate.clientSecretName) }}
+              export IS_CERT_GENERATE={{ .Values.certificate.generate }}
+              export COMMON_NAME={{ include "ibm-connectivity-pack.service" . }}
+              export DNS2={{ include "ibm-connectivity-pack.service" . }}.{{ .Release.Namespace }}.svc.cluster.local
+              export ROUTE_ENABLED={{ .Values.route.enable }}
+              export DNS3={{ .Values.route.domain }}
+              export RELEASE_NAME={{ .Release.Name }}
+              export CA_CERT_NAME={{ .Values.certificate.caCertPropertyName }}
+              export CLIENT_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelClient" .}}
+              export CLIENT_CERT_NAME={{ .Values.certificate.clientCertPropertyName }}
+              export CLIENT_KEY_NAME={{ .Values.certificate.clientCertKeyPropertyName }}
+              export CLIENT_PKCS_P12={{ .Values.certificate.clientCertPKCSPropertyName }}
+              export SERVER_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelServer" .}}
+              export SERVER_CERT_NAME={{ .Values.certificate.serverCertPropertyName }}
+              export SERVER_KEY_NAME={{ .Values.certificate.serverCertKeyPropertyName }}
+              export PKCS_PASSWORD={{ .Values.certificate.pkcsPassword }}
+              export MTLS_ENABLED={{ .Values.certificate.MTLSenable }}
+              sh createCert.sh
+              {{- range $key, $value := .Values.annotations }}
+              kubectl annotate secret $CLIENT_SECRET_NAME {{ $key }}="{{ $value }}" -n {{ $.Release.Namespace }} --overwrite
+              kubectl annotate secret $SERVER_SECRET_NAME {{ $key }}="{{ $value }}" -n {{ $.Release.Namespace }} --overwrite
+              {{- end }}
+              {{- end }}

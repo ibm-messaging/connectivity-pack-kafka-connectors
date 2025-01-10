@@ -1,0 +1,10 @@
+
+IBM Connectivity Pack has been installed successfully. To access securely, configure Kafka Connect custom resource to use:
+
+- configuration from the ConfigMap: {{ include "ibm-connectivity-pack.config" . }}
+{{- if .Values.certificate.MTLSenable }}
+- mTLS certificates from the secret: {{ include "ibm-connectivity-pack.stunnelClient" . }}
+{{- end }}
+{{- if .Values.basicAuth.enable }}
+- Basic authentication credentials from the secret: {{ include "ibm-connectivity-pack.basicAuthCreds" . }}
+{{- end }}
