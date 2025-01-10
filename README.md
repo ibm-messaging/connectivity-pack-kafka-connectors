@@ -5,7 +5,7 @@ By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable da
 ## Contents
 
 - [Prerequisites](#prerequisites)
-- [Installing IBM Connectivity Pack](#installing-the-ibm-connectivity-pack)
+- [Installing the IBM Connectivity Pack](#installing-the-ibm-connectivity-pack)
 - [Starting Kafka Connect](#starting-kafka-connect)
 - [Running the connectors](#running-the-connectors)
 - [License](#license)
