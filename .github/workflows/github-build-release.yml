@@ -19,7 +19,7 @@ jobs:
         with:
           path: ibm-connectivity-pack
       - name: Print Chart Details and set Chart Version
-          run: |
+        run: |
           echo "Name - ${{ steps.chart.outputs.name }}"
           echo "Version - ${{ steps.chart.outputs.version }}"
           echo "App Version - ${{ steps.chart.outputs.appVersion }}"
