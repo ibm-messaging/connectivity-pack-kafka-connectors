@@ -1,14 +1,10 @@
+name: Upload HelmChart To Release
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+' # Push events to matching semver, i.e. 1.0.0
-
-name: Build and create release
-
+  release:
+    types: [created]
 jobs:
   build:
-    name: Build and upload release binary
-    #if: github.event.base_ref == 'refs/heads/master' # only run if on master branch
+    name: Build and Upload helm Chart
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -26,17 +22,12 @@ jobs:
           echo "CHART_VERSION=${{ steps.chart.outputs.version }}" >> $GITHUB_ENV
       - name: Package Helm Chart
         run: tar -czvf ibm-connectivity-pack-${{env.CHART_VERSION}}.tgz -C ibm-connectivity-pack .
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Release by Tag Name
+        uses: joutvhu/get-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: false
-          allowUpdates: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Release Asset Helm Chart
         id: upload-release-asset-helm-chart
         uses: actions/upload-release-asset@v1
