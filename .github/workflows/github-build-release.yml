@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - '[0-9]+.[0-9]+.[0-9]+' # Push events to matching semver, i.e. 1.0.0
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Push events to matching semver, i.e. 1.0.0
 
 name: Build and create release
 
@@ -36,6 +36,7 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
+          allowUpdates: true
       - name: Upload Release Asset Helm Chart
         id: upload-release-asset-helm-chart
         uses: actions/upload-release-asset@v1
