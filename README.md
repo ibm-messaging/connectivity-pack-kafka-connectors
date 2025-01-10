@@ -107,6 +107,14 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
 
     - The following section explains the environment variables that are used in the Kafka Connect configuration:
 
+        - **`CONNECTIVITYPACK_SERVICE_URL`**: The URL of the Connectivity Pack that the Kafka connector uses to connect. For example:
+
+          ```yaml
+          CONNECTIVITYPACK_SERVICE_URL: <connectivity-service-url>
+          ```
+
+          You can set this URL by using a `configMapKeyRef` that points to the ConfigMap of the Connectivity Pack or directly set it to the correct endpoint. Ensure that the URL is accessible from the Kafka Connect container.
+        
         - **`CONNECTIVITYPACK_PKCS12_PASSWORD`**: The password that is used to access the PKCS12 certificate store. This environment variable is required for secure communication between the connector and the Connectivity Pack only if the PKCS12 file is password-protected. If the PKCS12 file does not have a password, this can be set as an empty string or skip configuring this environment variable. For example:
 
             ```yaml
@@ -124,13 +132,7 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
 
           The path must be mounted correctly within the container to ensure the connector has access to the required certificates. By default, the `CONNECTIVITYPACK_CERTS_PATH` is set to `/mnt/connectivitypack/certificates`. You must update this value to match the location where your certificates are mounted.
 
-        - **`CONNECTIVITYPACK_SERVICE_URL`**: The URL of the Connectivity Pack that the Kafka connector uses to connect. For example:
-
-          ```yaml
-          CONNECTIVITYPACK_SERVICE_URL: <connectivity-service-url>
-          ```
-
-          You can set this URL by using a `configMapKeyRef` that points to the ConfigMap of the Connectivity Pack or directly set it to the correct endpoint. Ensure that the URL is accessible from the Kafka Connect container.
+        
 
 1. Apply the configured `KafkaConnect` custom resource by using the `kubectl apply` command to start the Kafka Connect runtime.
 
@@ -193,7 +195,7 @@ Configure your connector with information about your external system by followin
    ```
 
 1. Apply the configured `KafkaConnector` custom resource by using the `kubectl apply` command to start the connector.
-1. When the connector is successfully running, verify that the connector is available for use by checking the `status` section in the `KafkaConnector` custom resource:
+1. Verify that the connector is running by checking the `status` section in the `KafkaConnector` custom resource:
 
    ```yaml
    Status:
