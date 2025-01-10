@@ -1,7 +1,7 @@
 .idea
 .DS_Store
 .git_askpass
-build/licenses
+build
 published_images.txt
 pr_link.txt
 EA_README.md
