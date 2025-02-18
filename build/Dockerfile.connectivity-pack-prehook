@@ -1,0 +1,12 @@
+FROM us.icr.io/conn-pack-prod-ns/connectivity-pack-prehook@sha256:6f27bea82e0ab82e063ca1fbbe90c82db29432fcbb5d934b04f30785cf8bf479
+
+USER root
+
+# Add license files
+RUN rm -rf licenses/ && \
+    mkdir -p /licenses
+COPY ./build/licenses /licenses
+# package in common license viewer script for pretty license printing
+COPY ./build/view_licenses.sh /
+
+USER 1001

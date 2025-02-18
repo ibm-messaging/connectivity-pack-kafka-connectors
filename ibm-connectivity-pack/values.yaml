@@ -11,7 +11,8 @@ license:
   accept: false
 replicaCount: 1 # Replica of the POD
 bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
-environmentVariables: {} # Yaml object ENV to be added on action and event pods
+environmentVariables: # Yaml object ENV to be added on action and event pods
+  SCARF_ANALYTICS: 'false' # To opt out scarf analytics by default
 annotations:
   productName: IBM Connectivity pack
 image:

@@ -1,0 +1,12 @@
+FROM us.icr.io/conn-pack-prod-ns/action-connectors@sha256:18ceb549bf664b7ade5e19970a35bec36b377ee79cac59c55833a09a2f80c882
+
+USER root
+
+# Add license files
+RUN rm -rf licenses/ && \
+    mkdir -p /licenses
+COPY ./build/licenses /licenses
+# package in common license viewer script for pretty license printing
+COPY ./build/view_licenses.sh /
+
+USER 1001
