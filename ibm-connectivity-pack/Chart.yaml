@@ -19,4 +19,4 @@ keywords:
 kubeVersion: '>=1.25.0'
 name: ibm-connectivity-pack
 type: application
-version: 1.0.0
+version: 1.0.1

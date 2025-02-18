@@ -19,9 +19,27 @@ helm install <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> --set license.lic
 Where:
 
 - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/1.0.0/ibm-connectivity-pack-1.0.0.tgz`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/1.0.1/ibm-connectivity-pack-1.0.1.tgz`
 - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
 - `license.accept` determines whether the license is accepted (default is `false` if not specified).
+- `<NAMESPACE>` is the namespace where the Connectivity Pack is deployed.
+
+You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
+
+For a complete list of configuration parameters supported by the helm chart, see [Configuring](#configuring).
+
+## Upgrading
+
+To upgrade the Connectivity Pack to the latest version, run the following command:
+
+```bash
+helm upgrade <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> -n <NAMESPACE>
+```
+
+Where:
+
+- `<RELEASE-NAME>` is the release name you specified when installing the Connectivity Pack. For example, `ibm-connectivity-pack`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/1.0.1/ibm-connectivity-pack-1.0.1.tgz`
 - `<NAMESPACE>` is the namespace where the Connectivity Pack is deployed.
 
 You can override the default configuration parameters by using the `--set` flag or by using a custom YAML file. For example, to set the `replicaCount` as `3`, you can use `--set replicaCount=3`.
@@ -54,7 +72,7 @@ The following table lists the configurable parameters of the Connectivity Pack H
 | replicaCount                           | Number of replicas of the pod                                                                                                                                                                                           | 1                                                                                            |
 | bunyan                                 | Log configuration for the system                                                                                                                                                                                   | See [Logging](#logging) and the sample [values.yaml](values.yaml) file for more information. |
 | annotations                            | Override with product specific annotations                                                                                                                                                                              | See [values.yaml](values.yaml) for more information.                                         |
-| environmentVariables                   | Yaml object of environment variables to be added in action and event services                                                                                                                                           |
+| environmentVariables                   | Yaml object of environment variables to be added in action and event services                                                                                                                                           | SCARF_ANALYTICS: 'false' - To opt out scarf analytics by deafult
 | image.registry                         | Image registry URL                                                                                                                                                                                                      | cp.icr.io                                                                                    |
 | image.path                             | Image namespace or the path under image registry before image name and digest                                                                                                                                           | cp/ibm-eventstreams                                                                          |
 | image.imagePullSecretName              | Kubernetes image pull secret if it already exists in the namespace, if not add the following image pull details to create new secret                                                                                    | ibm-entitlement-key                                                                          |
