@@ -2,7 +2,7 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: {{ include "ibm-connectivity-pack.deploymentName" . }} 
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   annotations:
     {{- toYaml .Values.annotations | nindent 4 }}  
   labels:
@@ -59,12 +59,16 @@ spec:
                 optional: true
                 name: {{ include "ibm-connectivity-pack.envConfig" . }}
           env:
-            - name: ENABLE_INMEMORY_ACCOUNT_STORE
+            - name: CONNECTOR_SERVICE_ROUTE
+              value: {{ include "ibm-connectivity-pack.actionServiceRoute" .}}
+            - name: ENABLE_DYNAMIC_CREDENTIALS_MODE
               value: 'true'
+            - name: ENABLE_REFRESH_TOKEN_MODE
+              value: {{ ternary true false (.Values.enableRefreshTokenMode) | quote }}
             - name: CONNECTOR_SERVICE_PORT
               value: "3020"
             - name: FEATURE_TOGGLES_OVERRIDE
-              value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1 }"
+              value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1, \"epic3660-enable-refresh-token-api\": 1, \"epic19598-mssharepoint-claimcheck-src\": 1, \"epic20879-google-bigquery-enable-newschema\": 1, \"epic20879-google-bigquery-enable-upsert\": 1 }"
             - name: LCP_HTTP_PORT
               value: "3020"
             - name: FIREFLY_DESIGNER_RUNTIME_MODE
@@ -72,9 +76,7 @@ spec:
             - name: FIREFLY_ROUTE_EVENTS_CONNECTOR_PROVIDER
               value: {{ include "ibm-connectivity-pack.eventServiceRoute" .}}
             - name: OPENAPI_FILES_MOUNT_DIRECTORY
-              value: "./connectors"
-            - name: APPCONNECT_PREMIUM_CONNECTOR_MOUNTPATH
-              value: "./mountPath"                          
+              value: "./connectors"                        
             - name: CONNECTOR_SERVICE
               value: 'true'          
             - name: DESIGNER_FLOWS_OPERATION_MODE
@@ -90,7 +92,7 @@ spec:
             - name: CONNECTOR_ACCOUNT
               value: /opt/ibm/app/accounts
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}
+              value: {{ include "ibm-connectivity-pack.namespace" . }}
             - name: TOKEN_STORE_SECRET_NAME
               value: {{ include "ibm-connectivity-pack.tokenStore" .}} 
             - name: MQSI_DISABLE_SALESFORCE_CONNECTOR
@@ -113,6 +115,14 @@ spec:
               value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}
             - name: CONNECTOR_JAVA_SERVICE
               value: {{ include "ibm-connectivity-pack.javaServiceRoute" .}}
+            - name: LOOPBACK_DEFAULT_TIMEOUT
+              value: {{ .Values.action.fileStreamingTimeout | quote }}
+            - name: MAX_CLAIMCHECK_FILE_SIZE
+              value: {{ .Values.action.maxFileSize | quote  }}
+            {{ if .Values.javaservice.enable -}}
+            - name: STANDALONE_CLIENT
+              value: 'true'
+            {{ end }}
             - name: TECH_CONN_CCT_MODE
               value: development_mode
             - name: POD_NAME
@@ -123,9 +133,14 @@ spec:
             - name: POD_IP
               valueFrom:
                 fieldRef:
-                  fieldPath: status.podIP                       
+                  fieldPath: status.podIP
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          ports:
+            - containerPort: 3001
+              protocol: TCP
+            - containerPort: 3020
+              protocol: TCP
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: tmp
@@ -133,7 +148,7 @@ spec:
             - name: workdir
               readOnly: true
               mountPath: /opt/ibm/app/workdir
-            {{ if .Values.certificate.MTLSenable -}}
+            {{ if .Values.certificate.enable -}}
             - name: stunnel-client
               readOnly: true
               mountPath: /opt/ibm/app/ssl
@@ -177,12 +192,14 @@ spec:
                 optional: true            
                 name: {{ include "ibm-connectivity-pack.envConfig" . }}            
           env:
-            - name: ENABLE_INMEMORY_ACCOUNT_STORE
-              value: 'true'          
+            - name: ENABLE_DYNAMIC_CREDENTIALS_MODE
+              value: 'true'
+            - name: ENABLE_REFRESH_TOKEN_MODE
+              value: {{ ternary true false (.Values.enableRefreshTokenMode) | quote }}
             - name: FIREFLY_ROUTE_LOOPBACK_CONNECTOR_PROVIDER
               value: {{ include "ibm-connectivity-pack.actionServiceRoute" .}}
             - name: FEATURE_TOGGLES_OVERRIDE
-              value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1 }"
+              value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1, \"epic3660-enable-refresh-token-api\": 1 }"
             - name: CONNECTOR_SERVICE_EVENTS
               value: {{ .Values.event.enable | quote }}
             - name: DESIGNER_FLOWS_OPERATION_MODE
@@ -190,7 +207,7 @@ spec:
             - name: FIREFLY_USERID
               value: default              
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}
+              value: {{ include "ibm-connectivity-pack.namespace" . }}
             - name: SERVICE_NAME
               value: {{ include "ibm-connectivity-pack.service" .}}
             - name: ECP_SERVICE_ROUTE
@@ -240,6 +257,8 @@ spec:
               value: "/opt/ibm/app/creds"
             - name: CONNECTOR_SERVICE_ENABLE_WS_PRODUCER
               value: 'true'
+            - name: MUTUAL_AUTH
+              value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
@@ -256,11 +275,11 @@ spec:
             - name: workdir
               readOnly: true
               mountPath: /opt/ibm/app/workdir
-            {{ if .Values.certificate.MTLSenable -}}
+            {{ if .Values.certificate.enable -}}
             - name: stunnel-client
               readOnly: true
               mountPath: /opt/ibm/app/ssl
-            {{ end }} 
+            {{ end }}
             {{ if .Values.basicAuth.enable -}}
             - name: cred
               readOnly: true
@@ -273,10 +292,18 @@ spec:
           resources: 
             {{- toYaml .Values.javaservice.resources | nindent 12 }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}           
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            seccompProfile:
+              type: RuntimeDefault           
           env:
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}
+              value: {{ include "ibm-connectivity-pack.namespace" . }}
           ports:
             - name: javaservice
               containerPort: 9080
@@ -284,6 +311,7 @@ spec:
           imagePullPolicy: IfNotPresent
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.javaservice.image }}@{{ .Values.javaservice.digest }}
         {{ end }}
+        {{ if .Values.certificate.enable -}}
         - name: {{ .Values.proxy.name }}
           resources: # Update below value for vertical scaling of container
             limits:
@@ -353,6 +381,7 @@ spec:
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.proxy.image }}@{{ .Values.proxy.digest }}
           args:
             - /etc/stunnel/stunnel.conf
+        {{ end }}
       serviceAccount: {{ include "ibm-connectivity-pack.serviceAccountName" .}}
       volumes:
         - name: tmp
@@ -364,31 +393,7 @@ spec:
           secret:
             secretName: {{ include "ibm-connectivity-pack.basicAuthCreds" . }}
             optional: true
-        - name: proxy
-          configMap:
-            name: {{ include "ibm-connectivity-pack.proxy" . }}
-        - name: stunnel-server
-          secret:
-            secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
-            items:
-              - key: {{ .Values.certificate.serverCertKeyPropertyName }}
-                path: server.key.pem
-              - key: {{ .Values.certificate.serverCertPropertyName }}
-                path: server.cert.pem
-              - key: {{ .Values.certificate.caCertPropertyName }}
-                path: server.ca.pem
-        {{ if .Values.certificate.MTLSenable -}}
-        - name: stunnel-client
-          secret:
-            secretName: {{ include "ibm-connectivity-pack.stunnelClient" . }}
-            items:
-              - key: {{ .Values.certificate.caCertPropertyName }}
-                path: stunnel.ca.pem     
-              - key:  {{ .Values.certificate.clientCertPropertyName }}
-                path: stunnel.cert.pem
-              - key: {{ .Values.certificate.clientCertKeyPropertyName }}
-                path: stunnel.key.pem
-        {{- end }}
+        {{- include "ibm-connectivity-pack.stunnelvolume" . | nindent 8  }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

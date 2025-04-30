@@ -61,6 +61,17 @@ Create the name of the deployment
 {{- end }}
 
 {{/*
+Return namespace
+*/}}
+{{- define "ibm-connectivity-pack.namespace" -}}
+{{- if .Values.namespace }}
+{{- .Values.namespace }}
+{{- else }}
+{{- .Release.Namespace }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the serviceAccount
 */}}
 {{- define "ibm-connectivity-pack.serviceAccountName" -}}
@@ -125,21 +136,33 @@ Create the event service route
 Create the action service route
 */}}
 {{- define "ibm-connectivity-pack.actionServiceRoute" -}}
+{{- if .Values.certificate.enable }}
 {{- printf "https://%s:3001" (include "ibm-connectivity-pack.service" .) }}
+{{- else }}
+{{- printf "http://%s:3001" (include "ibm-connectivity-pack.service" .) }}
+{{- end }}
 {{- end }}
 
 {{/*
 Create the webhook service route
 */}}
 {{- define "ibm-connectivity-pack.webhookServiceRoute" -}}
+{{- if .Values.certificate.enable }}
 {{- printf "https://%s:3009" (include "ibm-connectivity-pack.service" .) }}
+{{- else }}
+{{- printf "http://%s:3009" (include "ibm-connectivity-pack.service" .) }}
+{{- end }}
 {{- end }}
 
 {{/*
 Create the mutal auth service route
 */}}
 {{- define "ibm-connectivity-pack.mutualAuthServiceRoute" -}}
+{{- if .Values.certificate.enable }}
 {{- printf "https://%s" (include "ibm-connectivity-pack.service" .) }}
+{{- else }}
+{{- printf "http://%s" (include "ibm-connectivity-pack.service" .) }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -224,6 +247,48 @@ Create the name for stunnel client cert secret
 {{- .Values.certificate.clientSecretName }}
 {{- else }}
 {{- default  .Release.Name }}-client-certificate
+{{- end }}
+{{- end }}
+
+
+{{- define "ibm-connectivity-pack.stunnelvolume" -}}
+{{ if .Values.certificate.enable -}}
+- name: proxy
+  configMap:
+    name: {{ include "ibm-connectivity-pack.proxy" . }}
+- name: stunnel-server
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
+    items:
+      - key: {{ .Values.certificate.serverCertKeyPropertyName }}
+        path: server.key.pem
+      - key: {{ .Values.certificate.serverCertPropertyName }}
+        path: server.cert.pem
+      - key: {{ .Values.certificate.caCertPropertyName }}
+        path: server.ca.pem
+{{ if .Values.certificate.MTLSenable -}}
+- name: stunnel-client
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelClient" . }}
+    items:
+    - key: {{ .Values.certificate.caCertPropertyName }}
+      path: stunnel.ca.pem     
+    - key:  {{ .Values.certificate.clientCertPropertyName }}
+      path: stunnel.cert.pem
+    - key: {{ .Values.certificate.clientCertKeyPropertyName }}
+      path: stunnel.key.pem
+{{- else }}
+- name: stunnel-client
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
+    items:
+    - key: {{ .Values.certificate.serverCertKeyPropertyName }}
+      path: stunnel.key.pem
+    - key: {{ .Values.certificate.serverCertPropertyName }}
+      path: stunnel.cert.pem
+    - key: {{ .Values.certificate.caCertPropertyName }}
+      path: stunnel.ca.pem   
+{{- end }}
 {{- end }}
 {{- end }}
 

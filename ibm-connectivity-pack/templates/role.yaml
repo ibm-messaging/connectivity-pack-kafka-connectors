@@ -2,7 +2,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name:  {{ include "ibm-connectivity-pack.role" .}}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
@@ -63,10 +63,11 @@ rules:
       - configurations
 
 ---
+{{- if eq .Values.skipHooks false }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   name: {{ include "ibm-connectivity-pack.preHookJobRole" . }}
@@ -79,3 +80,4 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["create", "get", "list", "update", "patch", "delete"]
+{{ end }}

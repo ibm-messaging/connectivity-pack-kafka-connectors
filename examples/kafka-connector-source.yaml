@@ -27,11 +27,11 @@ spec:
     maxRestarts: <no. of times the connector attempts to restart in case of an error or failure>
 
   # Connector class name
-  class: com.ibm.eventstreams.connect.connectivitypacksource.ConnectivityPackSourceConnector
+  class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
 
   # `tasksMax` should be equal to the number of object-eventType combinations
-  # In this example it is 4 (Test_task__e - CREATED, Order_Event__e - CREATED, OrderConfirmation__e - CREATED, CaseChangeEvent - UPDATED)
-  tasksMax: 4
+  # In this example it is 5 (Test_task__e - CREATED, Order_Event__e - CREATED, OrderConfirmation__e - CREATED, CaseChangeEvent - UPDATED, Test_CustomObject__c - CREATED_POLLER)
+  tasksMax: 5
 
   config:
     # Which data source to connect to eg. salesforce
@@ -50,15 +50,22 @@ spec:
     # Objects and associated events to read from the datasource
     # For example: The config lists the source objects the connector will listen to. Each object corresponds to a data source object,
     # such as Salesforce-style objects or custom events, that the connector processes.
-    connectivitypack.source.objects: 'Test_task__e, Order_Event__e, OrderConfirmation__e, CaseChangeEvent'
+    connectivitypack.source.objects: 'Test_task__e,Order_Event__e,OrderConfirmation__e,CaseChangeEvent,Test_CustomObject__c'
 
     # Specifies the events (for example, CREATED, UPDATED) to capture for the 'Test_task__e' object.
     # The connector will process only events of the specified type for this object.
     connectivitypack.source.Test_task__e.events: CREATED
-
     connectivitypack.source.Order_Event__e.events: CREATED
     connectivitypack.source.OrderConfirmation__e.events: CREATED
     connectivitypack.source.CaseChangeEvent.events: UPDATED
+    connectivitypack.source.Test_CustomObject__c.events: CREATED_POLLER
+
+    # Subscription parameters for polling. Required only for POLLER events
+    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.pollingInterval: 1
+    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.timezone: UTC
+    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.updatedField: LastModifiedDate
+    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.timeFormat: 'YYYY-MM-DDTHH:mm:ssZ'
+    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.createdField: CreatedDate
 
     # Optional, sets the format for Kafka topic names created by the connector.
     # You can use placeholders like '${object}' and '${eventType}', which the connector will replace automatically.
@@ -69,3 +76,6 @@ spec:
     # standard kafka connector properties
     value.converter.schemas.enable: false
     value.converter: org.apache.kafka.connect.json.JsonConverter
+
+    # Optional, set the topic for producing the heartbeat events.
+    connectivitypack.source.heartbeat.topic: heartbeat-${topic}

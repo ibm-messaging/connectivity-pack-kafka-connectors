@@ -3,7 +3,7 @@ kind: Secret
 apiVersion: v1
 metadata:
   name: {{ include "ibm-connectivity-pack.basicAuthCreds" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   annotations:
     {{- toYaml .Values.annotations | nindent 4 }}
   labels:
