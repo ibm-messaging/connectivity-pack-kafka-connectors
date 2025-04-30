@@ -1,9 +1,9 @@
-{{- if not (lookup "v1" "Secret" .Release.Namespace (include "ibm-connectivity-pack.tokenStore" .)) -}}
+{{- if not (lookup "v1" "Secret" (include "ibm-connectivity-pack.namespace" .) (include "ibm-connectivity-pack.tokenStore" .)) -}}
 kind: Secret
 apiVersion: v1
 metadata:
   name: {{ include "ibm-connectivity-pack.tokenStore" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:

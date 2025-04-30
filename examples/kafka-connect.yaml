@@ -79,6 +79,6 @@ spec:
     plugins:
       - artifacts:
           - type: jar
-            url: <GitHub-URL-of-connectivity-pack-source-connector-<VERSION>-jar-with-dependencies.jar>  # Replace with the URL to the connector jar file
-        name: connectivity-pack-source-connector
+            url: <GitHub-URL-of-connectivity-pack-connector-<VERSION>-jar-with-dependencies.jar>  # Replace with the URL to the connector jar file
+        name: connectivity-pack-connector
   replicas: 1

@@ -1,7 +1,9 @@
+{{- if eq .Values.skipHooks false }}
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "ibm-connectivity-pack.preHookJob" . }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
@@ -34,5 +36,6 @@ spec:
             - /bin/sh
             - "-c"
             - |
-              kubectl delete secret {{ include "ibm-connectivity-pack.stunnelClient" .}} --namespace {{ .Release.Namespace }} --ignore-not-found=true
-              kubectl delete secret {{ include "ibm-connectivity-pack.stunnelServer" .}} --namespace {{ .Release.Namespace }} --ignore-not-found=true
+              kubectl delete secret {{ include "ibm-connectivity-pack.stunnelClient" .}} --namespace {{ include "ibm-connectivity-pack.namespace" . }} --ignore-not-found=true
+              kubectl delete secret {{ include "ibm-connectivity-pack.stunnelServer" .}} --namespace {{ include "ibm-connectivity-pack.namespace" . }} --ignore-not-found=true
+{{ end }}

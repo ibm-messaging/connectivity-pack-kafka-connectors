@@ -2,10 +2,10 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "ibm-connectivity-pack.config" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
     {{- toYaml .Values.annotations | nindent 4 }}
 data:
-  CONNECTIVITYPACK_SERVICE_URL: {{ include "ibm-connectivity-pack.service" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  CONNECTIVITYPACK_SERVICE_URL: {{ include "ibm-connectivity-pack.service" . }}.{{ include "ibm-connectivity-pack.namespace" . }}.svc.cluster.local

@@ -1,8 +1,9 @@
+{{ if .Values.certificate.enable -}}
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: {{ include "ibm-connectivity-pack.proxy" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
@@ -14,6 +15,7 @@ data:
     ; * Global options                                                         *
     ; **************************************************************************
     pid = /tmp/haproxy.pid
+    fips = yes
     foreground = yes
     ; **************************************************************************
     ; * Service defaults                                                       *
@@ -52,6 +54,7 @@ data:
     ; * Global options                                                         *
     ; **************************************************************************
     pid = /tmp/haproxy.pid
+    fips = yes
     foreground = yes
     ; **************************************************************************
     ; * Service defaults                                                       *
@@ -82,3 +85,4 @@ data:
     accept = 3042
     connect = localhost:3022
   {{ end }}
+{{ end }}
