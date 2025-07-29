@@ -125,10 +125,6 @@ spec:
     # By default, the format is '${object}-${eventType}', but it's shown here for clarity.
     connectivitypack.topic.name.format: '${object}-${eventType}'
 
-    # `tasksMax` must be equal to the number of object-eventType combinations
-    # In this example it is 1
-    tasksMax: 1
-
     # Specifies the converter class used to deserialize the message value.
     # Change this to a different converter (for example, AvroConverter) as applicable.
     value.converter: org.apache.kafka.connect.json.JsonConverter
@@ -139,4 +135,8 @@ spec:
 
     # Optional, set the topic for producing the heartbeat events.
     connectivitypack.source.heartbeat.topic: heartbeat-${topic}
+
+  # `tasksMax` must be equal to the number of object-eventType combinations
+  # In this example it is 1
+  tasksMax: 1
 ```
