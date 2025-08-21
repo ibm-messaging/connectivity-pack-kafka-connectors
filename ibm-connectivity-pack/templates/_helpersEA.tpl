@@ -49,13 +49,15 @@ Create the name of the service
 # Function for fetching the license
 {{- define "ibm-connectivity-pack.fetchLicense" -}}
 
-{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" -}}
-{{- $licenseListEA := list "L-AUKS-FKVXVL" -}}
+{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-JVUW-LSTB9R" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" -}}
+{{- $licenseListEA := list "L-AUKS-FKVXVL" "L-CYBH-K48BZQ" -}}
+{{- $licenseListIWHI := list "L-SBZZ-CNR329" -}}
 
 {{- $licenseId := .licenseId | quote -}}
 
 {{- $foundCP4ILicense := false }}
 {{- $foundEALicense := false }}
+{{- $foundIWHILicense := false }}
 {{- $licenseType := "" }}
 
 {{- range $licenseListCP4I }}
@@ -72,6 +74,13 @@ Create the name of the service
   {{- end }}
 {{- end }}
 
+{{- range $licenseListIWHI }}
+  {{- if eq (quote .) $licenseId }}
+    {{- $foundIWHILicense = true }}
+    {{- $licenseType = "IWHI" }}
+  {{- end }}
+{{- end }}
+
 {{- $licenseType }}
 
 {{- end }}
@@ -80,13 +89,15 @@ Create the name of the service
 # Function for validating the license
 {{- define "ibm-connectivity-pack.validateLicense" -}}
 
-{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" -}}
-{{- $licenseListEA := list "L-AUKS-FKVXVL" -}}
+{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-JVUW-LSTB9R" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" -}}
+{{- $licenseListEA := list "L-AUKS-FKVXVL" "L-CYBH-K48BZQ" -}}
+{{- $licenseListIWHI := list "L-SBZZ-CNR329" -}}
 
 {{- $licenseId := .licenseId | quote -}}
 
 {{- $foundCP4ILicense := false }}
 {{- $foundEALicense := false }}
+{{- $foundIWHILicense := false }}
 
 {{- range $licenseListCP4I }}
   {{- if eq (quote .) $licenseId }}
@@ -100,8 +111,14 @@ Create the name of the service
   {{- end }}
 {{- end }}
 
-{{- if not (or $foundCP4ILicense $foundEALicense )}}
-  {{- fail (printf "\nYou have provided an invalid license: %s.\nTo continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license.\nValid Event Automation licenses are:\n  %s\nValid Cloud Pak for Integration licenses are:\n  %s" $licenseId $licenseListEA $licenseListCP4I) }}
+{{- range $licenseListIWHI }}
+  {{- if eq (quote .) $licenseId }}
+    {{- $foundIWHILicense = true }}
+  {{- end }}
+{{- end }}
+
+{{- if not (or $foundCP4ILicense $foundEALicense $foundIWHILicense)}}
+  {{- fail (printf "\nYou have provided an invalid license: %s.\nTo continue the installation, set 'license.licenseId' and provide a valid value from https://ibm.biz/ea-license.\nValid Event Automation licenses are:\n  %s\nValid Cloud Pak for Integration licenses are:\n  %s\nValid webMethods Hybrid Integration  licenses are:\n  %s" $licenseId $licenseListEA $licenseListCP4I $licenseListIWHI) }}
 {{- end }}
 
 {{- end }}
