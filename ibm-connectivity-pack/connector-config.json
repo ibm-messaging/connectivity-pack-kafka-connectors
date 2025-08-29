@@ -1,19 +1,19 @@
 {
   "action-connectors": {
-    "tag": "2.0.0",
-    "digest": "sha256:800b56a821200174ac82e12d5b2649434c1fdadfc1d2061d02be99fe3b4cedd7"
+    "tag": "3.0.0",
+    "digest": "sha256:cbe955a55b1652b408c7622699dbf657cf6137dcd1eca97e9bb70ffb424c6695"
   },
   "event-connectors": {
-    "tag": "2.0.0",
-    "digest": "sha256:2368806303cbc30420bd0ba63274219a7d8f4c359dfe378f38624c6d15db26bc"
+    "tag": "3.0.0",
+    "digest": "sha256:2b116da33ce5202035374d1443e4af66e04223f174e033fbaf555df6aa6224aa"
   },
   "java-tech-connectors": {},
   "connectivity-pack-proxy": {
-    "tag": "2.0.0",
-    "digest": "sha256:887bb7629a16f5246e8777bc4cf2707347d4c537461f0bd4aa523cb84145df6d"
+    "tag": "3.0.0",
+    "digest": "sha256:708c72ca56391e6d336bc549546788aee66985a25c39880dd11ebd136b1c9ccd"
   },
   "connectivity-pack-prehook": {
-    "tag": "2.0.0",
-    "digest": "sha256:c544bc6336c92e6002042fc8fdd84d2b5e2d09ca6e8cd53d9a4575ea3c2bf14f"
+    "tag": "3.0.0",
+    "digest": "sha256:8d4c21d45c8030cff35cc2e65c36567b20805691946ebde5442a8b0d5bb35929"
   }
 }

@@ -64,7 +64,6 @@ spec:
     connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.pollingInterval: 1
     connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.timezone: UTC
     connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.updatedField: LastModifiedDate
-    connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.timeFormat: 'YYYY-MM-DDTHH:mm:ssZ'
     connectivitypack.source.Test_CustomObject__c.CREATED_POLLER.subscription.createdField: CreatedDate
 
     # Optional, sets the format for Kafka topic names created by the connector.
