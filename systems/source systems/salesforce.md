@@ -85,7 +85,6 @@ Subscription parameters configure how the Salesforce Polling connector polls for
 
 | **Parameter**| **Description**| **KafkaConnector configuration** |
 |--------------|----------------|------------------------------------|
-| `timeFormat`        | The date-time format to use when polling. For example, `YYYY-MM-DDTHH:mm:ssZ`. | `connectivitypack.source.<object>.<event>.subscription.timeFormat`   |
 | `timeZone`          | The time zone for polling operations. Default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md).| `connectivitypack.source.<object>.<event>.subscription.timezone`|
 | `createdField`      | The field that contains the object’s creation timestamp. | `connectivitypack.source.<object>.<event>.subscription.createdField` |
 | `updatedField`      | The field that contains the object’s last modified timestamp. | `connectivitypack.source.<object>.<event>.subscription.updatedField`  |
@@ -146,7 +145,6 @@ spec:
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.pollingInterval: 1
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.timezone: UTC
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.updatedField: LastModifiedDate
-    connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.timeFormat: 'YYYY-MM-DDTHH:mm:ssZ'
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.createdField: CreatedDate
     # Optional, sets the format for Kafka topic names created by the connector.
     # You can use placeholders such as '${object}' and '${eventType}', which the connector will replace automatically.

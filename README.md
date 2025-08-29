@@ -2,6 +2,10 @@
 
 By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable data streaming between external systems and Kafka.
 
+**Note:**  
+- Connectivity Pack v2.0.0 and earlier are compatible with Event Streams 11.8 and earlier, but not compatible with Kafka Connect 4.0.0.
+- Connectivity Pack v3.0.0 is compatible with Event Streams 12.0.0 and later, and compatible with Kafka Connect 4.0.0.
+
 ## Contents
 
 - [Prerequisites](#prerequisites)
@@ -35,7 +39,7 @@ helm install <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> --set license.lic
 Where:
 
 - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/2.0.0/ibm-connectivity-pack-2.0.0.tgz`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.0.0/ibm-connectivity-pack-3.0.0.tgz`
 - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
 - `license.accept` determines whether the license is accepted (default is `false` if not specified).
 - `<NAMESPACE>` is the namespace where you want to install the Connectivity Pack. This must be in the same namespace where an Event Streams instance is deployed.
@@ -204,7 +208,6 @@ Configure your connector with information about your external system by followin
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.pollingInterval: <pollingInterval>
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.timezone: <timezone>
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.updatedField: <the field name that contains the timestamp of when the object was updated>
-      connectivitypack.source.<customObject>.CREATED_POLLER.subscription.timeFormat: <format of the time stamp>
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.createdField: <the field name that contains the timestamp of when the object was created>
 
       # Optional, sets the format for Kafka topic names created by the connector.
@@ -281,4 +284,4 @@ Configure your connector with information about your external system by followin
 
 Copyright IBM Corp. 2025
 
-IBM Connectivity Pack is licensed under the [IBM Event Automation license and IBM Cloud Pak for Integration license](https://ibm.biz/ea-license), while the Helm chart and documentation are licensed under the [Apache License, Version 2.0](./ibm-connectivity-pack/license.md).
+IBM Connectivity Pack is licensed under the [IBM Event Automation license, IBM Cloud Pak for Integration license, and IBM webMethods Hybrid Integration license](https://ibm.biz/ea-license), while the Helm chart and documentation are licensed under the [Apache License, Version 2.0](./ibm-connectivity-pack/license.md).

@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "ibm-connectivity-pack.preHookJob" . }}
+  name: {{ include "ibm-connectivity-pack.postDeleteHookJob" . }}
   namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}

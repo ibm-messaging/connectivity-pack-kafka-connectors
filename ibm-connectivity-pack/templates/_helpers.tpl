@@ -303,11 +303,20 @@ Create the name for Horizontal Pod Autoscaler
 {{- end }}
 
 {{/*
-Create the name of the service
+Create the name of prehook job
 */}}
 {{- define "ibm-connectivity-pack.preHookJob" -}}
 {{- if .Release.Name }}
 {{- default  .Release.Name }}-prehook-job
+{{- end }}
+{{- end }}
+
+{{/*
+Create the name of the posthook job
+*/}}
+{{- define "ibm-connectivity-pack.postDeleteHookJob" -}}
+{{- if .Release.Name }}
+{{- default  .Release.Name }}-post-delete-job
 {{- end }}
 {{- end }}
 
@@ -355,5 +364,62 @@ Create the name of the service
 {{- define "ibm-connectivity-pack.envConfig" -}}
 {{- if .Release.Name }}
 {{- default  .Release.Name }}-env-config
+{{- end }}
+{{- end }}
+
+{{/*
+Create UDA connector configmap volume
+*/}}
+{{- define "ibm-connectivity-pack.udaConnectors" -}}
+{{- if .Values.action.udaPersistentVolumeClaimName }}
+- name: {{ .Values.action.udaPersistentVolumeClaimName }}-uda-vol
+  persistentVolumeClaim:
+    claimName: {{ .Values.action.udaPersistentVolumeClaimName }}
+{{- else }}
+{{- $files := .Files.Glob "connectors/*.{json,yaml,yml,car}" }}
+{{- range $path, $file := $files }}
+- name: {{ base $path | replace "." "-" | lower }}-vol
+  configMap:
+    name: {{ base $path | replace "." "-" | lower }}-config
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create UDA connector configmap volume mount
+*/}}
+{{- define "ibm-connectivity-pack.udaConnectorsMount" -}}
+{{- if .Values.action.udaPersistentVolumeClaimName }}
+- name: {{ .Values.action.udaPersistentVolumeClaimName }}-uda-vol
+  mountPath: /opt/ibm/app/connectors
+{{- else }}
+{{- $files := .Files.Glob "connectors/*.{json,yaml,yml,car}" }}
+{{- range $path, $file := $files }}
+- name: {{ base $path | replace "." "-" | lower }}-vol
+  mountPath: /opt/ibm/app/connectors/{{ base $path }}
+  subPath: {{ base $path }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Render environment variables for node-runtime-metrics
+*/}}
+{{- define "ibm-connectivity-pack.nodeRuntimeMetrics" }}
+{{- if hasKey .Values.action "enableMetrics" }}
+- name: ENABLE_METRICS
+  value: {{ ternary "true" "false" (eq .Values.action.enableMetrics "true") | quote }}
+{{- end }}
+{{- if hasKey .Values.action "metricsRotationWindowSec" }}
+name: METRICS_ROTATION_WINDOW_SEC
+  value: {{ .Values.action.metricsRotationWindowSec | quote }}
+{{- end }}
+{{- if hasKey .Values.action "metricsDirectory" }}
+name: METRICS_DIRECTORY
+  value: {{ .Values.action.metricsDirectory | quote }}
+{{- end }}
+{{- if hasKey .Values.action "metricsCollectIntervalMs" }}
+- name: METRICS_COLLECT_INTERVAL_MS
+  value: {{ .Values.action.metricsCollectIntervalMs | quote }}
 {{- end }}
 {{- end }}

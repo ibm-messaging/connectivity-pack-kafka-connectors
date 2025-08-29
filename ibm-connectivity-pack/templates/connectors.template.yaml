@@ -1,0 +1,17 @@
+{{- $root := . }}
+{{- $files := $root.Files.Glob "connectors/*.{json,yaml,yml,car}" }}
+{{- range $path, $file := $files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ base $path | replace "." "-" | lower }}-config
+  namespace: {{ include "ibm-connectivity-pack.namespace" $root }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" $root | nindent 4 }}
+  annotations:
+    {{- toYaml $root.Values.annotations | nindent 4 }}  
+data:
+  {{ base $path }}: |
+    {{ $file | toString | nindent 4 }}
+---
+{{- end }}
