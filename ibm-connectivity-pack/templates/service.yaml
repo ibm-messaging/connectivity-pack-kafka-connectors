@@ -6,19 +6,15 @@ metadata:
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
-    {{- toYaml .Values.annotations | nindent 4 }}    
+    {{- toYaml .Values.annotations | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
-    - name: proxy
+    - name: action
       protocol: TCP
       port: 3001
-      {{ if .Values.certificate.enable -}}
-      targetPort: 3001
-      {{ else }}
       targetPort: 3020
-      {{ end }}
-    - name: eventproxy
+    - name: event
       protocol: TCP
       port: 3004
       targetPort: 3004
@@ -33,7 +29,7 @@ spec:
     - name: websocket
       protocol: TCP
       port: 3022
-      targetPort: 3042    
+      targetPort: 3022    
     - name: javaservice
       protocol: TCP
       port: 9080

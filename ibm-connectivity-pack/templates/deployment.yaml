@@ -4,7 +4,7 @@ metadata:
   name: {{ include "ibm-connectivity-pack.deploymentName" . }} 
   namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   annotations:
-    {{- toYaml .Values.annotations | nindent 4 }}  
+    {{- toYaml .Values.annotations | nindent 4 }}
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
 spec:
@@ -15,8 +15,12 @@ spec:
   template:
     metadata:
       creationTimestamp: null
+      annotations:
+        {{- toYaml .Values.annotations |  nindent 8 }}
       labels: 
         {{- include "ibm-connectivity-pack.labels" . | nindent 8 }}
+      annotations:
+        {{- toYaml .Values.annotations |  nindent 8 }}
     spec:
       restartPolicy: Always
       serviceAccountName: {{ include "ibm-connectivity-pack.serviceAccountName" .}}
@@ -28,28 +32,19 @@ spec:
           resources: 
             {{- toYaml .Values.action.resources | nindent 12 }}
           readinessProbe:
-            httpGet:
-              path: /admin/ready
-              port: 3020
-              scheme: HTTP
+            {{- include "ibm-connectivity-pack.actonProbe" . | nindent 12 }}
             timeoutSeconds: 30
             periodSeconds: 10
             successThreshold: 1
             failureThreshold: 3
           startupProbe:
-            httpGet:
-              path: /admin/ready
-              port: 3020
-              scheme: HTTP
+            {{- include "ibm-connectivity-pack.actonProbe" . | nindent 12 }}
             timeoutSeconds: 1
             periodSeconds: 5
             successThreshold: 1
             failureThreshold: 120          
           livenessProbe:
-            httpGet:
-              path: /admin/ready
-              port: 3020
-              scheme: HTTP
+            {{- include "ibm-connectivity-pack.actonProbe" . | nindent 12 }}
             timeoutSeconds: 30
             periodSeconds: 10
             successThreshold: 1
@@ -60,6 +55,18 @@ spec:
                 name: {{ include "ibm-connectivity-pack.envConfig" . }}
           env:
             {{- include "ibm-connectivity-pack.nodeRuntimeMetrics" . | nindent 12  }}
+            {{ if .Values.certificate.enable -}}
+            - name: SERVER_TLS_KEY_PATH
+              value: /etc/stunnel/secrets/server.key.pem
+            - name: SERVER_TLS_CERT_PATH
+              value: /etc/stunnel/secrets/server.cert.pem
+            {{ if .Values.certificate.MTLSenable -}}
+            - name: SERVER_MTLS_CA_PATH
+              value: /etc/stunnel/secrets/server.ca.pem
+            - name: MUTUAL_AUTH
+              value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}              
+            {{ end }}
+            {{ end }}
             - name: CONNECTOR_SERVICE_ROUTE
               value: {{ include "ibm-connectivity-pack.actionServiceRoute" .}}
             - name: ENABLE_DYNAMIC_CREDENTIALS_MODE
@@ -108,12 +115,12 @@ spec:
               value: "/opt/ibm/app/creds"
             - name: CONNECTOR_SERVICE_EVENTS_ALLOWLIST
               value: {{- toYaml .Values.csCommon.eventList | indent 2 }}
+            - name: SINGLE_TENANT
+              value: 'true'
             - name: CONNECTOR_SERVICE_EVENTS
               value: {{ .Values.event.enable | quote }}
             - name: SUBSCRIBE_PERSISTENCE
               value: k8s
-            - name: MUTUAL_AUTH
-              value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}
             - name: CONNECTOR_JAVA_SERVICE
               value: {{ include "ibm-connectivity-pack.javaServiceRoute" .}}
             - name: LOOPBACK_DEFAULT_TIMEOUT
@@ -123,6 +130,20 @@ spec:
             {{ if .Values.javaservice.enable -}}
             - name: STANDALONE_CLIENT
               value: 'true'
+            {{ end }}
+            {{ if .Values.mcp.enable -}}
+            - name: ENABLE_MCP
+              value: 'true'
+            - name: MCP_ACCOUNT_CONFIG_FILE
+              value: '/opt/ibm/app/mcpaccounts/accounts.yaml'
+            - name: MCP_TOOL_CONFIG_FILE
+              value: '/opt/ibm/app/mcptools/toolsconfig.json'
+            - name: MCP_SERVER_TRANSPORT
+              value: 'StreamableHTTPServer'
+            {{ if .Values.mcp.oauth.enable -}}
+            - name: MCP_OAUTH_SETTINGS
+              value: {{ .Values.mcp.oauth.settings | quote }}
+            {{ end }}
             {{ end }}
             - name: TECH_CONN_CCT_MODE
               value: development_mode
@@ -135,7 +156,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
@@ -148,10 +168,20 @@ spec:
             - name: workdir
               readOnly: true
               mountPath: /opt/ibm/app/workdir
+            {{ if .Values.mcp.enable -}}
+            - name: mcpaccounts
+              readOnly: true
+              mountPath: /opt/ibm/app/mcpaccounts
+            - name: mcptools
+              readOnly: true
+              mountPath: /opt/ibm/app/mcptools
+            {{ end }}
             {{ if .Values.certificate.enable -}}
             - name: stunnel-client
               readOnly: true
               mountPath: /opt/ibm/app/ssl
+            - name: stunnel-server
+              mountPath: /etc/stunnel/secrets              
             {{ end }}
             {{ if .Values.basicAuth.enable -}}
             - name: cred
@@ -165,25 +195,19 @@ spec:
           resources: 
             {{- toYaml .Values.event.resources | nindent 12 }}
           readinessProbe:
-            exec:
-              command:
-                - /readiness/readyECP.sh
+            {{- include "ibm-connectivity-pack.eventProbe" . | nindent 12 }}
             timeoutSeconds: 4
             periodSeconds: 5
             successThreshold: 1
             failureThreshold: 1
           startupProbe:
-            exec:
-              command:
-                - /readiness/readyECP.sh
+            {{- include "ibm-connectivity-pack.eventProbe" . | nindent 12 }}
             timeoutSeconds: 1
             periodSeconds: 5
             successThreshold: 1
             failureThreshold: 120
           livenessProbe:
-            exec:
-              command:
-                - /readiness/readyECP.sh
+            {{- include "ibm-connectivity-pack.eventProbe" . | nindent 12 }}
             timeoutSeconds: 5
             periodSeconds: 10
             successThreshold: 1
@@ -193,6 +217,8 @@ spec:
                 optional: true            
                 name: {{ include "ibm-connectivity-pack.envConfig" . }}            
           env:
+            - name: ECP_IPC_PATH
+              value: '3004'          
             - name: ENABLE_DYNAMIC_CREDENTIALS_MODE
               value: 'true'
             - name: ENABLE_REFRESH_TOKEN_MODE
@@ -258,8 +284,18 @@ spec:
               value: "/opt/ibm/app/creds"
             - name: CONNECTOR_SERVICE_ENABLE_WS_PRODUCER
               value: 'true'
+            {{ if .Values.certificate.enable -}}
+            - name: SERVER_TLS_KEY_PATH
+              value: /etc/stunnel/secrets/server.key.pem
+            - name: SERVER_TLS_CERT_PATH
+              value: /etc/stunnel/secrets/server.cert.pem
+            {{ if .Values.certificate.MTLSenable -}}
+            - name: SERVER_MTLS_CA_PATH
+              value: /etc/stunnel/secrets/server.ca.pem
             - name: MUTUAL_AUTH
-              value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}
+              value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}              
+            {{ end }}        
+            {{ end }}              
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
@@ -280,6 +316,8 @@ spec:
             - name: stunnel-client
               readOnly: true
               mountPath: /opt/ibm/app/ssl
+            - name: stunnel-server
+              mountPath: /etc/stunnel/secrets
             {{ end }}
             {{ if .Values.basicAuth.enable -}}
             - name: cred
@@ -298,90 +336,40 @@ spec:
                 - ALL
             privileged: false
             runAsNonRoot: true
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             seccompProfile:
               type: RuntimeDefault           
           env:
             - name: NAMESPACE
               value: {{ include "ibm-connectivity-pack.namespace" . }}
+            {{ if .Values.certificate.enable -}}
+            - name: SERVER_TLS_KEYSTORE_PATH
+              value: /etc/stunnel/secrets/server.p12
+            - name: PKCS_PASSWORD
+              value: {{ .Values.certificate.pkcsPassword | quote  }}
+            {{ if .Values.certificate.MTLSenable -}}
+            - name: SERVER_MTLS_TRUSTSTORE_PATH
+              value: /etc/stunnel/secrets/truststore.p12
+            {{ end }}
+            {{ end }}
+          {{ if .Values.certificate.enable -}}
+          volumeMounts:
+            - name: stunnel-server
+              mountPath: /etc/stunnel/secrets
+            - name: tls-override
+              mountPath: /opt/ol/wlp/usr/servers/defaultServer/configDropins/overrides/
+            - name: jvmlogs
+              mountPath: /logs/
+            - name: wlpoutput
+              mountPath: /opt/ol/wlp/output
+          {{ end }}
           ports:
             - name: javaservice
               containerPort: 9080
               protocol: TCP
           imagePullPolicy: IfNotPresent
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.javaservice.image }}@{{ .Values.javaservice.digest }}
-        {{ end }}
-        {{ if .Values.certificate.enable -}}
-        - name: {{ .Values.proxy.name }}
-          resources: # Update below value for vertical scaling of container
-            limits:
-              cpu: '1'
-              ephemeral-storage: 10Gi
-              memory: 512Mi
-            requests:
-              cpu: 100m
-              ephemeral-storage: 150Mi
-              memory: 256Mi
-          readinessProbe:
-            exec:
-              command:
-                - /readiness/ready.sh
-            timeoutSeconds: 3
-            periodSeconds: 5
-            successThreshold: 1
-            failureThreshold: 1
-          livenessProbe:
-            exec:
-              command:
-                - /readiness/ready.sh
-            timeoutSeconds: 3
-            periodSeconds: 5
-            successThreshold: 1
-            failureThreshold: 1
-          startupProbe:
-            exec:
-              command:
-                - /readiness/ready.sh
-            timeoutSeconds: 1
-            periodSeconds: 5
-            successThreshold: 1
-            failureThreshold: 120
-          terminationMessagePath: /dev/termination-log
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - kill `cat /tmp/haproxy.pid`
-          command:
-            - /bin/stunnel
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          ports:
-            - name: https-port
-              containerPort: 3001
-              protocol: TCP
-            - name: https-port-ecp
-              containerPort: 3004
-              protocol: TCP
-            - name: https-webhook
-              containerPort: 3008
-              protocol: TCP
-            - name: https-websocket
-              containerPort: 3022
-              protocol: TCP             
-          imagePullPolicy: IfNotPresent
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: stunnel-server
-              mountPath: /etc/stunnel/secrets
-            - name: proxy
-              mountPath: /etc/stunnel
-          terminationMessagePolicy: File
-          image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.proxy.image }}@{{ .Values.proxy.digest }}
-          args:
-            - /etc/stunnel/stunnel.conf
         {{ end }}
       serviceAccount: {{ include "ibm-connectivity-pack.serviceAccountName" .}}
       volumes:
@@ -390,10 +378,34 @@ spec:
             sizeLimit: 10Gi
         - name: workdir
           emptyDir: {}
+        - name: jvmlogs
+          emptyDir: {}
+        - name: wlpoutput
+          emptyDir: {}          
+        {{ if .Values.mcp.enable -}}
+        - name: mcptools
+          secret: 
+            secretName: {{ .Values.mcp.toolsSecretName | quote }}
+            items:
+              - key: configuration
+                path: toolsconfig.json 
+        - name: mcpaccounts
+          secret: 
+            secretName: {{ .Values.mcp.accountsSecretName | quote }}
+            items:
+              - key: configuration
+                path: accounts.yaml
+        {{ end }}
         - name: cred
           secret:
             secretName: {{ include "ibm-connectivity-pack.basicAuthCreds" . }}
             optional: true
+        {{ if .Values.certificate.enable -}}
+        - name: tls-override
+          configMap:
+            name: {{ include "ibm-connectivity-pack.java-server-conf" . }}
+            optional: true
+        {{ end }}
         {{- include "ibm-connectivity-pack.stunnelvolume" . | nindent 8  }}
         {{- include "ibm-connectivity-pack.udaConnectors" . | nindent 8  }}
   strategy:

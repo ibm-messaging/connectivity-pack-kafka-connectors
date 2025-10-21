@@ -38,6 +38,8 @@ certificate:
   serverCertPropertyName: 'tls.crt'
   serverCertKeyPropertyName: 'tls.key'
   caCertPropertyName: 'ca.crt'
+  serverKeyStrorePKCSPropertyName: 'server.p12'
+  serverTrustStorePKCSPropertyName: 'truststore.p12'
   pkcsPassword: '' # pkcs.p12 password
 route:
   enable: false # generate OpenShift route for external access
@@ -47,35 +49,15 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:8d4c21d45c8030cff35cc2e65c36567b20805691946ebde5442a8b0d5bb35929
-  tag: 3.0.0
-proxy:
-  name: connectivity-pack-proxy
-  image: connectivity-pack-proxy
-  digest: sha256:708c72ca56391e6d336bc549546788aee66985a25c39880dd11ebd136b1c9ccd
-  tag: 3.0.0
+  digest: sha256:6d38a8f6d32750dd832e61dcb484d555fe8d5f66d212d2505200d1c3342103e9
+  tag: 3.1.0
 action:
   name: action-connectors
   fileStreamingTimeout: '120000'
   udaPersistentVolumeClaimName: ''
   maxFileSize: '262144000'
   image: action-connectors
-  digest: sha256:cbe955a55b1652b408c7622699dbf657cf6137dcd1eca97e9bb70ffb424c6695
-  resources: # Update below value for vertical scaling of container
-    limits:
-      cpu: '1'
-      ephemeral-storage: 10Gi
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      ephemeral-storage: 5Gi
-      memory: 256Mi
-  tag: 3.0.0
-event:
-  enable: true # Set to true if Event container is needed
-  name: event-connectors
-  image: event-connectors # Update image
-  digest: sha256:2b116da33ce5202035374d1443e4af66e04223f174e033fbaf555df6aa6224aa
+  digest: sha256:74c16dcb6fc04f09f924584979600de15d6ec47dd9206509a0de72375bd19120
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -85,7 +67,22 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 3.0.0
+  tag: 3.1.0
+event:
+  enable: true # Set to true if Event container is needed
+  name: event-connectors
+  image: event-connectors # Update image
+  digest: sha256:71139de912870c6d072dc42ce6690ce47b6dc809f62275a467c317ae53c4fab7
+  resources: # Update below value for vertical scaling of container
+    limits:
+      cpu: '1'
+      ephemeral-storage: 10Gi
+      memory: 750Mi
+    requests:
+      cpu: 250m
+      ephemeral-storage: 5Gi
+      memory: 400Mi
+  tag: 3.1.0
 javaservice:
   enable: false
 autoScaling:
@@ -105,4 +102,11 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
 csCommon:
-  eventList: "['salesforceevent','jira','github','googlecalendar','googlebigquery','servicenow']"
+  eventList: "['salesforceevent','jira','github','googlecalendar','googlebigquery','servicenow','hdfsevent']"
+mcp:
+  enable: false # Update this to true to enable mcp server running as HTTP Streamaable  require tools and account config to give 
+  accountsSecretName: '<name>' # Give the name of the secret which contains configuration key with accounts.yaml structure.
+  toolsSecretName: '<name>' # Give the name of the secret which contains configuration key with tools.json structure.
+  oauth:
+    enable: false # enables aouth details
+    settings: '{ "baseIdpUrl": "<idpUrl>", "wellKnownOAuthMetdataUrl": "<idpUrlwithMetaUri>", "scopesSupported": ["mcp:read", "mcp:tools", "mcp-server-audience"], "oauthAudience": "mcp-server", "clientRegistrationEndpoint": "<>", "mcpMethodRoleMapping": {    "tools/list": ["mcp:read"] ,   "tools/call": ["mcp:tools"]}, "clientDetails": {    "clientId": <>,    "clientSecret": <> } }'

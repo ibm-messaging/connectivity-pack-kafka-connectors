@@ -14,7 +14,7 @@ spec:
     name: {{ include "ibm-connectivity-pack.service" . }}
     weight: 100
   port:
-    targetPort: proxy
+    targetPort: action
   {{- if .Values.certificate.enable }}
   tls:
     termination: passthrough

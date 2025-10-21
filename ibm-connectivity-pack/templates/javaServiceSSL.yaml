@@ -1,0 +1,31 @@
+{{ if and .Values.javaservice.enable .Values.certificate.enable }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "ibm-connectivity-pack.java-server-conf" . }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
+  annotations:
+    {{- toYaml .Values.annotations | nindent 4 }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+data:
+  tls-override.xml: |-
+    {{ if .Values.certificate.MTLSenable -}}
+    <server>
+        <ssl id="mtlsSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="trustStore" clientAuthentication="true" />
+        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
+        <keyStore id="trustStore" location="${env.SERVER_MTLS_TRUSTSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
+        <httpEndpoint id="defaultHttpEndpoint" httpPort="-1" httpsPort="9080">
+            <sslOptions sslRef="mtlsSSLConfig" />
+        </httpEndpoint>
+    </server>
+    {{ else }}
+    <server>
+        <ssl id="tlsSSLConfig" keyStoreRef="defaultKeyStore" />
+        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
+        <httpEndpoint id="defaultHttpEndpoint" httpPort="-1" httpsPort="9080">
+            <sslOptions sslRef="tlsSSLConfig" />
+        </httpEndpoint>
+    </server>
+    {{ end }}
+{{ end }}

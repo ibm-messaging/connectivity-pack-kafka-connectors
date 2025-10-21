@@ -129,7 +129,11 @@ Create the name of the service
 Create the event service route
 */}}
 {{- define "ibm-connectivity-pack.eventServiceRoute" -}}
+{{- if .Values.certificate.enable }}
 {{- printf "https://%s:3004" (include "ibm-connectivity-pack.service" .) }}
+{{- else }}
+{{- printf "http://%s:3004" (include "ibm-connectivity-pack.service" .) }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -158,18 +162,18 @@ Create the webhook service route
 Create the mutal auth service route
 */}}
 {{- define "ibm-connectivity-pack.mutualAuthServiceRoute" -}}
-{{- if .Values.certificate.enable }}
 {{- printf "https://%s" (include "ibm-connectivity-pack.service" .) }}
-{{- else }}
-{{- printf "http://%s" (include "ibm-connectivity-pack.service" .) }}
-{{- end }}
 {{- end }}
 
 {{/*
 Create the java service route
 */}}
 {{- define "ibm-connectivity-pack.javaServiceRoute" -}}
+{{- if .Values.certificate.enable }}
+{{- printf "https://%s:9080/connector-java-services/_lcp_jdbc_connect" (include "ibm-connectivity-pack.service" .) }}
+{{- else }}
 {{- printf "http://%s:9080/connector-java-services/_lcp_jdbc_connect" (include "ibm-connectivity-pack.service" .) }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -211,15 +215,6 @@ Create the name for image pull secret name
 {{- end }}
 
 {{/*
-Create the name proxy config map name
-*/}}
-{{- define "ibm-connectivity-pack.proxy" -}}
-{{- if .Release.Name }}
-{{- default  .Release.Name }}-proxy
-{{- end }}
-{{- end }}
-
-{{/*
 Create the name for image pull secret
 */}}
 {{- define "ibm-connectivity-pack.imagePullSecret" -}}
@@ -253,9 +248,6 @@ Create the name for stunnel client cert secret
 
 {{- define "ibm-connectivity-pack.stunnelvolume" -}}
 {{ if .Values.certificate.enable -}}
-- name: proxy
-  configMap:
-    name: {{ include "ibm-connectivity-pack.proxy" . }}
 - name: stunnel-server
   secret:
     secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
@@ -266,6 +258,12 @@ Create the name for stunnel client cert secret
         path: server.cert.pem
       - key: {{ .Values.certificate.caCertPropertyName }}
         path: server.ca.pem
+      {{ if .Values.javaservice.enable -}}
+      - key: {{ .Values.certificate.serverKeyStrorePKCSPropertyName }}
+        path: server.p12
+      - key: {{ .Values.certificate.serverTrustStorePKCSPropertyName }}
+        path: truststore.p12
+      {{ end }}
 {{ if .Values.certificate.MTLSenable -}}
 - name: stunnel-client
   secret:
@@ -368,6 +366,16 @@ Create the name of the service
 {{- end }}
 
 {{/*
+Create the name of the java service TLS 
+*/}}
+{{- define "ibm-connectivity-pack.java-server-conf" -}}
+{{- if .Release.Name }}
+{{- default  .Release.Name }}-java-server-config
+{{- end }}
+{{- end }}
+
+
+{{/*
 Create UDA connector configmap volume
 */}}
 {{- define "ibm-connectivity-pack.udaConnectors" -}}
@@ -376,11 +384,12 @@ Create UDA connector configmap volume
   persistentVolumeClaim:
     claimName: {{ .Values.action.udaPersistentVolumeClaimName }}
 {{- else }}
-{{- $files := .Files.Glob "connectors/*.{json,yaml,yml,car}" }}
+{{- $root := . }}
+{{- $files := $root.Files.Glob "connectors/*.{json,yaml,yml,car}" }}
 {{- range $path, $file := $files }}
 - name: {{ base $path | replace "." "-" | lower }}-vol
   configMap:
-    name: {{ base $path | replace "." "-" | lower }}-config
+    name: {{ base $path | replace "." "-" | lower }}-{{- default  $root.Release.Name  }}-config
 {{- end }}
 {{- end }}
 {{- end }}
@@ -421,5 +430,52 @@ name: METRICS_DIRECTORY
 {{- if hasKey .Values.action "metricsCollectIntervalMs" }}
 - name: METRICS_COLLECT_INTERVAL_MS
   value: {{ .Values.action.metricsCollectIntervalMs | quote }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Action probe
+*/}}
+{{- define "ibm-connectivity-pack.actonProbe" -}}
+{{- if .Values.certificate.enable }}
+exec:
+  command:
+    - /bin/sh
+    - -c
+    - |
+{{- if .Values.certificate.MTLSenable }}
+      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3020/admin/ready || exit 1
+{{ else }}
+      curl --silent --fail -k https://localhost:3020/admin/ready || exit 1
+{{- end }}
+{{ else }}
+httpGet:
+  path: /admin/ready
+  port: 3020
+  scheme: HTTP
+{{- end }}
+{{- end }}
+
+{{/*
+Event probe
+*/}}
+{{- define "ibm-connectivity-pack.eventProbe" -}}
+{{- if .Values.certificate.enable }}
+exec:
+  command:
+    - /bin/sh
+    - -c
+    - |
+{{- if .Values.certificate.MTLSenable }}    
+      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3004/admin/ready || exit 1
+{{ else }}
+      curl --silent --fail -k https://localhost:3004/admin/ready || exit 1
+{{- end }}
+{{ else }}
+httpGet:
+  path: /admin/ready
+  port: 3004
+  scheme: HTTP
 {{- end }}
 {{- end }}
