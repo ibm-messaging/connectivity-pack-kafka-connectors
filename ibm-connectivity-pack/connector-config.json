@@ -1,19 +1,15 @@
 {
   "action-connectors": {
-    "tag": "3.0.0",
-    "digest": "sha256:cbe955a55b1652b408c7622699dbf657cf6137dcd1eca97e9bb70ffb424c6695"
+    "tag": "3.1.0",
+    "digest": "sha256:74c16dcb6fc04f09f924584979600de15d6ec47dd9206509a0de72375bd19120"
   },
   "event-connectors": {
-    "tag": "3.0.0",
-    "digest": "sha256:2b116da33ce5202035374d1443e4af66e04223f174e033fbaf555df6aa6224aa"
+    "tag": "3.1.0",
+    "digest": "sha256:71139de912870c6d072dc42ce6690ce47b6dc809f62275a467c317ae53c4fab7"
   },
   "java-tech-connectors": {},
-  "connectivity-pack-proxy": {
-    "tag": "3.0.0",
-    "digest": "sha256:708c72ca56391e6d336bc549546788aee66985a25c39880dd11ebd136b1c9ccd"
-  },
   "connectivity-pack-prehook": {
-    "tag": "3.0.0",
-    "digest": "sha256:8d4c21d45c8030cff35cc2e65c36567b20805691946ebde5442a8b0d5bb35929"
+    "tag": "3.1.0",
+    "digest": "sha256:6d38a8f6d32750dd832e61dcb484d555fe8d5f66d212d2505200d1c3342103e9"
   }
 }

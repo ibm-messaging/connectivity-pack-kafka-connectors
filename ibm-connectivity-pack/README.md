@@ -69,8 +69,6 @@ basicAuth.enable | Enable basic authentication for service | false
 basicAuth.username | Basic auth username | csuser
 preHook.image | Prehook job image name | connectivity-pack-prehook
 preHook.digest | Prehook job image digest | ''
-proxy.image | Proxy service container image name | connectivity-pack-proxy
-proxy.digest | Proxy service container image digest | ''
 action.image | Action service container image name | action-connectors
 action.digest | Action service container image digest | ''
 action.resources | Action service container resources Check Kubernetes deployment resources for more details | See [values.yaml](values.yaml)

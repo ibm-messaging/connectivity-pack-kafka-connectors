@@ -85,7 +85,6 @@ Subscription parameters configure how the Salesforce Polling connector polls for
 
 | **Parameter**| **Description**| **KafkaConnector configuration** |
 |--------------|----------------|------------------------------------|
-| `timeZone`          | The time zone for polling operations. Default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md).| `connectivitypack.source.<object>.<event>.subscription.timezone`|
 | `createdField`      | The field that contains the object’s creation timestamp. | `connectivitypack.source.<object>.<event>.subscription.createdField` |
 | `updatedField`      | The field that contains the object’s last modified timestamp. | `connectivitypack.source.<object>.<event>.subscription.updatedField`  |
 | `pollingInterval`   | The interval (in seconds) between polling requests. Default value is 5. Supported values are 1, 5, 10, 15, 30, 60.| `connectivitypack.source.<object>.<event>.subscription.pollingInterval`|
@@ -143,7 +142,6 @@ spec:
     connectivitypack.source.<object3>.events: 'CREATEDORUPDATED_POLLER'
     # Subscription parameters for polling. Required only for POLLER events
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.pollingInterval: 1
-    connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.timezone: UTC
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.updatedField: LastModifiedDate
     connectivitypack.source.<object3>.CREATEDORUPDATED_POLLER.subscription.createdField: CreatedDate
     # Optional, sets the format for Kafka topic names created by the connector.

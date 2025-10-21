@@ -39,7 +39,7 @@ helm install <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> --set license.lic
 Where:
 
 - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.0.0/ibm-connectivity-pack-3.0.0.tgz`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.1.0/ibm-connectivity-pack-3.1.0.tgz`
 - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
 - `license.accept` determines whether the license is accepted (default is `false` if not specified).
 - `<NAMESPACE>` is the namespace where you want to install the Connectivity Pack. This must be in the same namespace where an Event Streams instance is deployed.
@@ -136,7 +136,8 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
           template:
             connectContainer:
               env:
-                CONNECTIVITYPACK_PKCS12_PASSWORD: <your-pkcs12-password>
+                - name: CONNECTIVITYPACK_PKCS12_PASSWORD
+                  value: <your-pkcs12-password>
           ```
 
 1. Apply the configured `KafkaConnect` custom resource by using the `kubectl apply` command to start the Kafka Connect runtime.
@@ -206,7 +207,6 @@ Configure your connector with information about your external system by followin
 
       # Subscription params applicable only for poller events
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.pollingInterval: <pollingInterval>
-      connectivitypack.source.<customObject>.CREATED_POLLER.subscription.timezone: <timezone>
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.updatedField: <the field name that contains the timestamp of when the object was updated>
       connectivitypack.source.<customObject>.CREATED_POLLER.subscription.createdField: <the field name that contains the timestamp of when the object was created>
 

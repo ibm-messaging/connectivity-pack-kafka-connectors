@@ -48,7 +48,13 @@ spec:
               {{- if and .Values.certificate.MTLSenable .Values.certificate.clientSecretName (not (lookup "v1" "Secret" (include "ibm-connectivity-pack.namespace" .) .Values.certificate.clientSecretName)) }}
               {{- fail (printf "\nFailed to find certificate secret '%s' in namespace '%s'" .Values.certificate.clientSecretName (include "ibm-connectivity-pack.namespace" .)) }}
               {{- end }}
+              {{- if and .Values.certificate.enable .Values.javaservice.enable .Values.certificate.generate (not .Values.certificate.pkcsPassword ) }}
+              {{- fail (printf "\n'pkcsPassword' is mandatory when 'javaservice.enable' and 'certificate.enable' is set to true") }}
+              {{- end }}
               {{- if and (not .Values.certificate.serverSecretName) (not .Values.certificate.clientSecretName) }}
+                export CLIENT_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelClient" .}}
+                export SERVER_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelServer" .}}
+                export RELEASE_NAMESPACE={{ include "ibm-connectivity-pack.namespace" . }}
                 {{- if .Values.certificate.enable }}
                   export IS_CERT_GENERATE={{ .Values.certificate.generate }}
                   export COMMON_NAME={{ include "ibm-connectivity-pack.service" . }}
@@ -56,17 +62,17 @@ spec:
                   export ROUTE_ENABLED={{ .Values.route.enable }}
                   export DNS3={{ .Values.route.domain }}
                   export RELEASE_NAME={{ .Release.Name }}
-                  export RELEASE_NAMESPACE={{ include "ibm-connectivity-pack.namespace" . }}
                   export CA_CERT_NAME={{ .Values.certificate.caCertPropertyName }}
-                  export CLIENT_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelClient" .}}
                   export CLIENT_CERT_NAME={{ .Values.certificate.clientCertPropertyName }}
                   export CLIENT_KEY_NAME={{ .Values.certificate.clientCertKeyPropertyName }}
                   export CLIENT_PKCS_P12={{ .Values.certificate.clientCertPKCSPropertyName }}
-                  export SERVER_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelServer" .}}
                   export SERVER_CERT_NAME={{ .Values.certificate.serverCertPropertyName }}
                   export SERVER_KEY_NAME={{ .Values.certificate.serverCertKeyPropertyName }}
+                  export SERVER_PKCS_P12={{ .Values.certificate.serverKeyStrorePKCSPropertyName }}
+                  export SERVER_TRUSTSTORE_PKCS_P12={{ .Values.certificate.serverTrustStorePKCSPropertyName }}
                   export PKCS_PASSWORD={{ .Values.certificate.pkcsPassword }}
                   export MTLS_ENABLED={{ .Values.certificate.MTLSenable }}
+                  export JAVA_SERVICE_ENABLED={{ .Values.javaservice.enable }}
                   sh createCert.sh
                   {{- range $key, $value := .Values.annotations }}
                     kubectl annotate secret $CLIENT_SECRET_NAME {{ $key }}="{{ $value }}" -n $RELEASE_NAMESPACE --overwrite
@@ -77,4 +83,4 @@ spec:
                   kubectl delete secret $SERVER_SECRET_NAME  --namespace $RELEASE_NAMESPACE --ignore-not-found=true
                 {{ end }}
               {{ end }}
-{{ end }}
+              {{ end }}

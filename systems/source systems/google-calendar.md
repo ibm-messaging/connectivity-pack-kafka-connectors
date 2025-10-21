@@ -44,7 +44,7 @@ Subscription parameters configure how the Google Calendar connector polls for ev
 
 | Parameter | Description                                                                                                                                                                                                 | KafkaConnector configuration |
 |-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
-| `timeZone`         | The time zone used for subscription of event processing. Default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md). | `connectivitypack.source.events.<event>.subscription.timezone` |
+| `timeZone`         | The time zone used for subscription of event processing. Default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md). | `connectivitypack.source.events.<event>.subscription.timeZone` |
 | `pollingInterval`  | The time interval at which the connector polls for events. Default value is 5 minutes. The permissible values are 1, 5, 10, 15, 30 and 60.                                                                  | `connectivitypack.source.events.<event>.subscription.pollingInterval`
 
 ### Topic
@@ -104,7 +104,7 @@ spec:
     connectivitypack.source.events.events: CREATEDORUPDATED_POLLER
     
     # Subscription params for events-CREATEDORUPDATED_POLLER combination
-    connectivitypack.source.events.CREATEDORUPDATED_POLLER.subscription.timezone: UTC
+    connectivitypack.source.events.CREATEDORUPDATED_POLLER.subscription.timeZone: UTC
     connectivitypack.source.events.CREATEDORUPDATED_POLLER.subscription.pollingInterval: 1
 
     # Optional, sets the format for Kafka topic names created by the connector.

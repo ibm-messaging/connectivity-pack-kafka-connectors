@@ -1,6 +1,8 @@
 # Jira
 
-The Jira connector uses Jira API to stream Jira issue events to Kafka Topics. You can use this connector for real-time tracking of issues in Jira projects.
+The Jira connector uses Jira API to stream Jira issue events to Kafka Topics. You can use this connector for real-time tracking of issues in Jira projects. 
+
+**Note:** The connector supports only the Jira Enterprise version.
 
 
 ## Pre-requisites
@@ -47,7 +49,7 @@ Subscription parameters configure how the jira connector polls for events, ensur
 
 |           **Parameter**            |                                                 **Description**                                                                                                                                        |                  **KafkaConnector configuration**                   |
 |:----------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------:|
-|        `timeZone`         | The time zone used for subscription of event processing. The default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md). |    `connectivitypack.source.Issue.<event>.subscription.timezone`    |
+|        `timeZone`         | The time zone used for subscription of event processing. The default value is UTC. For the complete list of supported time zone values, see [supported time zone values](../connectors/supported-timezones.md). |    `connectivitypack.source.Issue.<event>.subscription.timeZone`    |
 |        `pollingInterval`  |                                   The time interval at which the connector polls for events. The default value is 5 minutes. The permissible values are 1, 5, 10, 15, 30 and 60.                                    |`connectivitypack.source.Issue.<event>.subscription.pollingInterval` |
 
 ### Topic
@@ -105,7 +107,7 @@ spec:
     # Specifies the events (for example, CREATED_POLLER, UPDATED_POLLER) to capture for the Issue object.
     connectivitypack.source.Issue.events: CREATED_POLLER
     # Subscription params for the Issue-CREATED_POLLER combination
-    connectivitypack.source.Issue.CREATED_POLLER.subscription.timezone: UTC
+    connectivitypack.source.Issue.CREATED_POLLER.subscription.timeZone: UTC
     connectivitypack.source.Issue.CREATED_POLLER.subscription.pollingInterval: 1
 
     # Optional, sets the format for Kafka topic names created by the connector.
