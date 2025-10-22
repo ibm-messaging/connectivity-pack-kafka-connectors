@@ -2,7 +2,7 @@
 
 By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable data streaming between external systems and Kafka.
 
-**Note:**  
+**Note:**
 - Connectivity Pack v2.0.0 and earlier are compatible with Event Streams 11.8 and earlier, but not compatible with Kafka Connect 4.0.0.
 - Connectivity Pack v3.0.0 is compatible with Event Streams 12.0.0 and later, and compatible with Kafka Connect 4.0.0.
 
@@ -142,25 +142,25 @@ Configure the Kafka Connect runtime and include the configuration, certificates,
 
 1. Apply the configured `KafkaConnect` custom resource by using the `kubectl apply` command to start the Kafka Connect runtime.
 
-1. When Kafka Connect is successfully created, verify that the connector is available for use by checking the `status.connectorPlugins` section in the `KafkaConnect` custom resource. 
-   - For the Connectivity Pack source connector to work, the following plug-in must be present:
+1. When Kafka Connect is successfully created, verify that the connector is available for use by checking the `status.connectorPlugins` section in the `KafkaConnect` custom resource.
+    - For the Connectivity Pack source connector to work, the following plug-in must be present:
 
-      ```yaml
-      status:
-        connectorPlugins:
-          - class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
-          type: source
-          version: <version>
-      ```
-   - For the Connectivity Pack sink connector to work, the following plug-in must be present:
+       ```yaml
+       status:
+         connectorPlugins:
+           - class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
+           type: source
+           version: <version>
+       ```
+    - For the Connectivity Pack sink connector to work, the following plug-in must be present:
 
-      ```yaml
-      status:
-        connectorPlugins:
-          - class: com.ibm.eventstreams.connect.connectivitypack.sink.ConnectivityPackSinkConnector
-          type: sink
-          version: <version>
-      ```
+       ```yaml
+       status:
+         connectorPlugins:
+           - class: com.ibm.eventstreams.connect.connectivitypack.sink.ConnectivityPackSinkConnector
+           type: sink
+           version: <version>
+       ```
 
 ## Running the Connectors
 
@@ -171,8 +171,8 @@ Configure your connector with information about your external system by followin
 1. Create a `KafkaConnector` custom resource to define your connector configuration. Example custom resources are available in the [`examples`](/examples) folder: [kafka-connector-source.yaml](/examples#kafka-connector-source.yaml) for a source connector and [kafka-connector-sink.yaml](/examples#kafka-connector-sink.yaml) for a sink connector. You can edit these files based on your requirements.
 
 1. Specify the appropriate connector class name:
-   - For a source connector: `com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector`
-   - For a sink connector: `com.ibm.eventstreams.connect.connectivitypack.sink.ConnectivityPackSinkConnector`
+    - For a source connector: `com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector`
+    - For a sink connector: `com.ibm.eventstreams.connect.connectivitypack.sink.ConnectivityPackSinkConnector`
 
 1. Configure the connector properties in the `config` section as described in the respective documentation. See the [source connector documentation](./connectors/source-connector.md#configuration) for source connectors and the [sink connector documentation](./connectors/sink-connector.md#configuration) for sink connectors.
 
