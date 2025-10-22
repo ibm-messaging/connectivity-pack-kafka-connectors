@@ -35,7 +35,7 @@ The connector works with the following types of files:
 
 ### CSV files
 
-- A CSV file can contain multiple records.  
+- A CSV file can contain multiple records.
 - The CSV file must only be in UTF-8 file encoding standard.
 - Each record in a CSV file must end with a line delimiter. The delimiter is configurable, with `\n` (newline) being the default.
 - The first line must contain a header with the field or column names. The connector treats this line as the header. Column names can be plain text, enclosed in double quotes, or escaped by using double quotes if they contain quote characters. For example:
@@ -43,7 +43,7 @@ The connector works with the following types of files:
   - `"Index","Customer Id","First Name","Last Name"`
   - `Index,"Customer Id",First Name,"Last Name"`
   - `"Index","My ""Customer"" Id", "First Name", "Last Name"`
-  
+
 - The value fields in a CSV can be plain text, enclosed in double quotes, or escaped by using double quotes if they contain quote characters.
 - Each CSV file must end with a line delimiter. If the last line does not include a delimiter, the last record will not be sent to the Kafka topic.
 - It is recommended to use a CSV file with a .csv extension.
@@ -70,7 +70,7 @@ This section describes the objects, associated events, and subscription paramete
 
 ### UnstructuredRecord events
 
-The HDFS connector monitors a specified folder for CSV or reference files and streams the data to Kafka topics. For more information about reference files and how to use them, see [reference files](#reference-files).  
+The HDFS connector monitors a specified folder for CSV or reference files and streams the data to Kafka topics. For more information about reference files and how to use them, see [reference files](#reference-files).
 
 The following table describes the supported object and event for HDFS.
 
@@ -126,7 +126,7 @@ You can configure how the connector sends HDFS records to Kafka topics:
 - Specify the name of the Kafka topic: You can explicitly specify a single topic name for all records fetched by the connector by using the `connectivitypack.topic.name.format` parameter.
 
   |           **KafkaConnector configuration**            |                      **Description**                      |
-  |:----------------------------------:|:---------------------------------------------------------:|
+    |:----------------------------------:|:---------------------------------------------------------:|
   |        `connectivitypack.topic.name.format`         | Specifies the Kafka topic name. For example, `customer` |
 
 - Default behavior: If no topic name is configured, the connector automatically uses the file name (without extension) as the topic name. If a file has no extension but its name contains a period (.), the text after the last period will be treated as the file extension.

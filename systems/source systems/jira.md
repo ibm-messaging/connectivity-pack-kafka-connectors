@@ -1,6 +1,6 @@
 # Jira
 
-The Jira connector uses Jira API to stream Jira issue events to Kafka Topics. You can use this connector for real-time tracking of issues in Jira projects. 
+The Jira connector uses Jira API to stream Jira issue events to Kafka Topics. You can use this connector for real-time tracking of issues in Jira projects.
 
 **Note:** The connector supports only the Jira Enterprise version.
 
