@@ -49,7 +49,7 @@ Create the name of the service
 # Function for fetching the license
 {{- define "ibm-connectivity-pack.fetchLicense" -}}
 
-{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-JVUW-LSTB9R" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" -}}
+{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" "L-JNME-56SJTB" "L-SJZL-NMUUCT" -}}
 {{- $licenseListEA := list "L-AUKS-FKVXVL" "L-CYBH-K48BZQ" -}}
 {{- $licenseListIWHI := list "L-SBZZ-CNR329" -}}
 
@@ -89,7 +89,7 @@ Create the name of the service
 # Function for validating the license
 {{- define "ibm-connectivity-pack.validateLicense" -}}
 
-{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-JVUW-LSTB9R" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" -}}
+{{- $licenseListCP4I := list "L-QYVA-B365MB" "L-JVML-UFQVM4" "L-MQQP-KBWMYE" "L-CYPF-CRPF3H" "L-JNME-56SJTB" "L-SJZL-NMUUCT" -}}
 {{- $licenseListEA := list "L-AUKS-FKVXVL" "L-CYBH-K48BZQ" -}}
 {{- $licenseListIWHI := list "L-SBZZ-CNR329" -}}
 

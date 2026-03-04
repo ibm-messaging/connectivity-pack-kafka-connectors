@@ -479,3 +479,26 @@ httpGet:
   scheme: HTTP
 {{- end }}
 {{- end }}
+
+{{/*
+Javaservice probe
+*/}}
+{{- define "ibm-connectivity-pack.javaserviceprobe" -}}
+{{- if .Values.certificate.enable }}
+exec:
+  command:
+    - /bin/sh
+    - -c
+    - |
+{{- if .Values.certificate.MTLSenable }}
+      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:9080/ || exit 1
+{{ else }}
+      curl --silent --fail -k https://localhost:9080/ || exit 1
+{{- end }}
+{{ else }}
+httpGet:
+  path: /
+  port: 9080
+  scheme: HTTP
+{{- end }}
+{{- end }}

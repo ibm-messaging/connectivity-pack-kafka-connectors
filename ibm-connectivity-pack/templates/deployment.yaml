@@ -26,7 +26,8 @@ spec:
       serviceAccountName: {{ include "ibm-connectivity-pack.serviceAccountName" .}}
       terminationGracePeriodSeconds: 60
       imagePullSecrets: 
-        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}   
+        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}  
+        - name : ibm-entitlement-key 
       containers:
         - name: {{ .Values.action.name }}
           resources: 
@@ -75,6 +76,12 @@ spec:
               value: {{ ternary true false (.Values.enableRefreshTokenMode) | quote }}
             - name: CONNECTOR_SERVICE_PORT
               value: "3020"
+            - name: ENABLE_LEGACY_API_VERSIONS
+              value: {{ ternary true false (.Values.enableLegacyApiVersions) | quote }}
+            - name: STRICT_DISCOVERY_ACCOUNT
+              value: {{ ternary true false (.Values.strictdiscoveryaccount) | quote }}
+            - name: OPENAPI_SCHEMA_NO_ANONYMOUS_TYPES
+              value: {{ ternary true false (.Values.openapiSchemaNoAnonymousTypes) | quote }}
             - name: FEATURE_TOGGLES_OVERRIDE
               value: "{\"epic3633-stateless-account\": 1, \"epic3627-ea-connector-service\": 1, \"epic3660-enable-refresh-token-api\": 1, \"epic19598-mssharepoint-claimcheck-src\": 1, \"epic20879-google-bigquery-enable-newschema\": 1, \"epic20879-google-bigquery-enable-upsert\": 1 }"
             - name: LCP_HTTP_PORT
@@ -330,6 +337,25 @@ spec:
         - name: {{ .Values.javaservice.name }}
           resources: 
             {{- toYaml .Values.javaservice.resources | nindent 12 }}
+          readinessProbe:
+            {{- include "ibm-connectivity-pack.javaserviceprobe" . | nindent 12 }}
+            timeoutSeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            {{- include "ibm-connectivity-pack.javaserviceprobe" . | nindent 12 }}
+            timeoutSeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 30
+            initialDelaySeconds: 15          
+          livenessProbe:
+            {{- include "ibm-connectivity-pack.javaserviceprobe" . | nindent 12 }}
+            timeoutSeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3   
           securityContext:
             capabilities:
               drop:
@@ -357,6 +383,9 @@ spec:
           volumeMounts:
             - name: stunnel-server
               mountPath: /etc/stunnel/secrets
+            - name: stunnel-client
+              readOnly: true
+              mountPath: /opt/ibm/app/ssl     
             - name: tls-override
               mountPath: /opt/ol/wlp/usr/servers/defaultServer/configDropins/overrides/
             - name: jvmlogs

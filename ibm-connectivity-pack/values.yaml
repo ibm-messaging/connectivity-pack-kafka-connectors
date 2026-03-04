@@ -13,7 +13,10 @@ license:
 replicaCount: 1 # Replica of the POD
 bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
 environmentVariables: {} # Yaml object ENV to be added on action and event pods
-enableRefreshTokenMode: false
+enableRefreshTokenMode: true
+strictdiscoveryaccount: true
+openapiSchemaNoAnonymousTypes: false
+enableLegacyApiVersions: false
 annotations:
   productID: "0c44732a8b794b2d9e9b842b2dfc8361"
   productName: "IBM Connectivity Pack - Free"
@@ -49,15 +52,15 @@ basicAuth:
   username: 'csuser'
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:6d38a8f6d32750dd832e61dcb484d555fe8d5f66d212d2505200d1c3342103e9
-  tag: 3.1.0
+  digest: sha256:5cd94eff588f81b0ca361dcf926abdd64a6ef8ca88a4b36b0d3293b4fac33f12
+  tag: 3.1.1-beta
 action:
   name: action-connectors
   fileStreamingTimeout: '120000'
   udaPersistentVolumeClaimName: ''
   maxFileSize: '262144000'
   image: action-connectors
-  digest: sha256:74c16dcb6fc04f09f924584979600de15d6ec47dd9206509a0de72375bd19120
+  digest: sha256:28f9c6420cd9b2565715b85a9c04401d244e684a9b3a47e6b58b3b114c3b9a96
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -67,12 +70,12 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 3.1.0
+  tag: 3.1.1-beta
 event:
   enable: true # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:71139de912870c6d072dc42ce6690ce47b6dc809f62275a467c317ae53c4fab7
+  digest: sha256:40a5c0451f5a052ee8945a64c112646cf487aa5a5ee544b0fdd5cc6c4ad2e192
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -82,7 +85,7 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 3.1.0
+  tag: 3.1.1-beta
 javaservice:
   enable: false
 autoScaling:
