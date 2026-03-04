@@ -9,7 +9,7 @@ To use the ServiceNow connector, ensure that you have the required credentials a
 
 ## Connecting to ServiceNow
 
-The `connectivitypack.sink` and the associated ServiceNow resource configurations in the `KafkaConnector` custom resource provide the required information to connect to ServiceNow.  
+The `connectivitypack.sink` and the associated ServiceNow resource configurations in the `KafkaConnector` custom resource provide the required information to connect to ServiceNow.
 
 | Name                      | Value or Description                                                                 |
 |---------------------------|--------------------------------------------------------------------------------------|
@@ -18,7 +18,7 @@ The `connectivitypack.sink` and the associated ServiceNow resource configuration
 
 ## Supported authentication mechanisms
 
-You can configure the following authentication mechanisms for ServiceNow in the `KafkaConnector` custom resource:  
+You can configure the following authentication mechanisms for ServiceNow in the `KafkaConnector` custom resource:
 
 | Authentication Type  | System Type | Use Case  | Required Credentials  | `KafkaConnector` configuration  |
 |----------------------|-------------|-----------|-----------------------|---------------------------------|
@@ -28,7 +28,7 @@ You can configure the following authentication mechanisms for ServiceNow in the 
 
 ## Supported objects and actions
 
-The ServiceNow sink connector supports the following objects and their actions when processing data from Kafka topics:  
+The ServiceNow sink connector supports the following objects and their actions when processing data from Kafka topics:
 
 | Object             | Action | Description                                          | KafkaConnector configuration                                                                                                       |
 |---------------------|--------|------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -66,7 +66,7 @@ The ServiceNow sink connector supports the following objects and their actions w
 |                          | DELETE | Deletes a comment record.                          | `connectivitypack.sink.object: sys_journal_field`<br>`connectivitypack.sink.action: DELETE`<br>`connectivitypack.sink.object.key: sys_id`  |  
 | sys_attachment     | CREATE | Creates a new attachment record.                 | `connectivitypack.sink.object: sys_attachment`<br>`connectivitypack.sink.action: CREATE`<br>`connectivitypack.sink.resource.parentType: <parent_table_name>`<br>`connectivitypack.sink.resource.AttachmentOwnerId: <sys_id of parentType>` <br> **Note:** Parent type value must be `ticket`, `incident`, `problem`, `alm_asset`, `cmn_department`, or `sys_user`. |
 |                       | DELETE | Deletes an attachment record.                   | `connectivitypack.sink.object: sys_attachment`<br>`connectivitypack.sink.action: DELETE`<br>`connectivitypack.sink.object.key: sys_id`                          |
-           
+
 
 ## Example configuration
 
