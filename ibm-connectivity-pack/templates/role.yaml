@@ -11,9 +11,6 @@ rules:
   - verbs:
       - get
       - list
-      - create
-      - patch
-      - delete
     apiGroups:
       - ''
     resources:
@@ -21,48 +18,15 @@ rules:
       - endpoints
   - verbs:
       - get
-    apiGroups:
-      - apps
-    resources:
-      - statefulsets
-  - verbs:
-      - get
       - list
-    apiGroups:
-      - batch
-    resources:
-      - jobs
-  - verbs:
-      - get
-      - list
-      - create
-      - patch
-      - delete
-    apiGroups:
-      - apps
-    resources:
-      - deployments
-  - verbs:
-      - get
       - update
-      - delete
-      - create
       - patch
     apiGroups:
       - ''
     resources:
       - secrets
-  - verbs:
-      - get
-      - update
-      - delete
-      - create
-      - list
-    apiGroups:
-      - appconnect.ibm.com
-    resources:
-      - configurations
-
+    resourceNames: 
+      - {{ include "ibm-connectivity-pack.tokenStore" . | quote }}
 ---
 {{- if eq .Values.skipHooks false }}
 apiVersion: rbac.authorization.k8s.io/v1
@@ -80,5 +44,11 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["create", "get", "list", "update", "patch", "delete"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "update", "patch", "delete"]
+    resourceNames:
+      - {{ include "ibm-connectivity-pack.stunnelClient" . | quote }}
+      - {{ include "ibm-connectivity-pack.stunnelServer" .| quote  }}
 {{ end }}

@@ -15,10 +15,11 @@ spec:
   activeDeadlineSeconds: 300
   template:
     spec:
-      serviceAccountName: {{ include "ibm-connectivity-pack.preHookJob" . }}-sa
+      serviceAccountName: {{ include "ibm-connectivity-pack.preHookJobSa" . }}
       restartPolicy: Never
       imagePullSecrets: 
         - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
+        - name : ibm-entitlement-key 
       containers:
         - name: mtls-cert-generator
           securityContext:
@@ -32,6 +33,13 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.preHook.image }}@{{ .Values.preHook.digest }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
           command:
             - /bin/sh
             - "-c"
