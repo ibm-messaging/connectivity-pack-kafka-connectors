@@ -1,5 +1,7 @@
 # Connectivity Pack sink connector
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Connectivity Pack sink connector reads messages from Kafka topics and writes them to sink systems, such as Google BigQuery. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use the [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to enable the data flow between the Kafka and the sink system.
 
 The connector can be configured to perform `INSERT`, `UPDATE`, or `UPSERT` operations by specifying the sink system, an object and the associated action that is to be performed.
