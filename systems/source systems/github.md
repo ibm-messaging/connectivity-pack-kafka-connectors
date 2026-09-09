@@ -1,5 +1,7 @@
 # GitHub
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The GitHub connector uses GitHub API to stream GitHub issue events to Kafka Topics. You can use this connector to track issues in GitHub repositories.
 
 ## Pre-requisites

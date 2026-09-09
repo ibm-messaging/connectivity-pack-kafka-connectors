@@ -1,5 +1,7 @@
 # Connectivity Pack source connector
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Connectivity Pack source connector enables streaming or polling of data, depending on the type of connector, from source systems, such as Salesforce, into Kafka topics. These [Kafka Connect](http://kafka.apache.org/documentation.html#connect) connectors use the [IBM Connectivity Pack](../ibm-connectivity-pack/README.md) to enable the data flow between the source system and Kafka.
 
 The connector can be configured to stream the required data by specifying the source system, and a list of objects and associated events that are to be streamed.

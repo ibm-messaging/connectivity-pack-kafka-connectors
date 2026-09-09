@@ -1,5 +1,7 @@
 # IBM Connectivity Pack Helm chart
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 This Helm chart installs IBM Connectivity Pack, which acts as an interface to communicate with your external systems.
 
 ## Prerequisites

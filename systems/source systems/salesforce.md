@@ -1,5 +1,7 @@
 # Salesforce
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Salesforce connector enables streaming of Salesforce platform events and Change Data Capture (CDC) events by using the Faye client or Bayeux protocol. It also supports polling for custom objects using API-based polling to stream data from Salesforce, along with discovery of custom objects and properties.
 
 ## Pre-requisites

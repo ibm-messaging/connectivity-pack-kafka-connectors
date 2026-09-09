@@ -1,5 +1,7 @@
 # Jira
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Jira connector uses Jira API to stream Jira issue events to Kafka Topics. You can use this connector for real-time tracking of issues in Jira projects. 
 
 **Note:** The connector supports only the Jira Enterprise version.

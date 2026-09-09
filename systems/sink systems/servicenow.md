@@ -1,5 +1,7 @@
 # ServiceNow
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The ServiceNow sink connector uses the ServiceNow API to write data from Kafka topics into ServiceNow tables. You can use this connector to create, update, upsert, or delete records in ServiceNow objects such as incidents, problems, assets, departments, tickets, system users, and more.
 
 

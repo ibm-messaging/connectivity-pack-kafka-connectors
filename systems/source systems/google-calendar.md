@@ -1,5 +1,7 @@
 # Google Calendar connector
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Google Calendar connector uses Google Calendar API to stream Google Calendar events updates to Kafka Topics. You can use this connector to monitor events from Google Calendar.
 
 ## Pre-requisites

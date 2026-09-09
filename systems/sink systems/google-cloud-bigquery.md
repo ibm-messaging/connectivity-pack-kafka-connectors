@@ -1,5 +1,7 @@
 # Google Cloud BigQuery
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The Google Cloud BigQuery sink connector sends data from Kafka topics to Google BigQuery tables by inserting, updating, or upserting records.
 
 ## Pre-requisites

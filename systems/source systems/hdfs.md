@@ -1,5 +1,7 @@
 # HDFS
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The connector enables streaming data from the Hadoop Distributed File System (HDFS) to Kafka topics. You can use this connector to capture both existing and newly added content from CSV files in a specified HDFS folder and publish them as messages to Kafka topics.
 
 ## Pre-requisites

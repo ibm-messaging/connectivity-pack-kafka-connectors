@@ -1,5 +1,7 @@
 # Connectivity Pack Kafka connectors
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 By using the IBM Connectivity Pack, Connectivity Pack Kafka connectors enable data streaming between external systems and Kafka.
 
 **Note:**  

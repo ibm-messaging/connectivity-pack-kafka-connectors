@@ -1,5 +1,7 @@
 # ServiceNow
 
+**Important:** The IBM Connectivity Pack and its Kafka connectors are deprecated in version 3.1.1 and later, and will be removed in a future release.
+
 The ServiceNow connector uses the ServiceNow API to stream object events to Kafka topics. You can use this connector to track updates from ServiceNow objects such as assets, attachments, comments, departments, incidents, problems, system users, tickets, and more.
 
 ## Pre-requisites
