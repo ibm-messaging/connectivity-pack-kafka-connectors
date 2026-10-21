@@ -1,0 +1,54 @@
+{{/*
+###############################################################################
+# ICP Connection Manager — Deployment
+#
+# Only rendered when connectionManager.enable is true.
+# Separate pod from ibm-connectivity-pack — independent lifecycle and scaling.
+# Reuses parent chart image registry, securityContext, annotations, namespace,
+# serviceAccount, and imagePullSecrets so nothing is duplicated.
+###############################################################################
+*/}}
+{{- if .Values.connectionManager.enable }}
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ include "ibm-connectivity-pack.connectionManagerDeploymentName" . }}
+  namespace: {{ include "ibm-connectivity-pack.namespace" . }}
+  annotations:
+    {{- toYaml .Values.annotations | nindent 4 }}
+  labels:
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
+    app.kubernetes.io/component: connection-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "ibm-connectivity-pack.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: connection-manager
+  template:
+    metadata:
+      annotations:
+        {{- toYaml .Values.annotations | nindent 8 }}
+      labels:
+        {{- include "ibm-connectivity-pack.labels" . | nindent 8 }}
+        app.kubernetes.io/component: connection-manager
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      serviceAccountName: {{ include "ibm-connectivity-pack.serviceAccountName" . }}
+      serviceAccount: {{ include "ibm-connectivity-pack.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
+        - name: ibm-entitlement-key
+      containers:
+        - {{- include "ibm-connectivity-pack.connectionManagerContainerYaml" . | nindent 10 }}
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+{{- end }}

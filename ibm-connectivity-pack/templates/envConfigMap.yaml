@@ -10,4 +10,4 @@ metadata:
     {{- toYaml .Values.annotations | nindent 4 }}
 data:
   {{- toYaml .Values.environmentVariables | nindent 2 }}
-{{ end }}  
+{{ end }}

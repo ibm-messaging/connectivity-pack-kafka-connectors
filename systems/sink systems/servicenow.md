@@ -16,6 +16,8 @@ The `connectivitypack.sink` and the associated ServiceNow resource configuration
 | Name                      | Value or Description                                                                 |
 |---------------------------|--------------------------------------------------------------------------------------|
 | `connectivitypack.sink`   | `servicenow`                                                                         |
+| `connectivitypack.sink.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.sink.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 | `connectivitypack.sink.url` | Base URL of your ServiceNow instance. For example: `https://<instance>.service-now.com`. |
 
 ## Supported authentication mechanisms
@@ -90,6 +92,8 @@ spec:
   config:
     # Which sink system to connect to
     connectivitypack.sink: servicenow
+    connectivitypack.sink.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.sink.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
 
     # Type of authentication to use for the sink system
     connectivitypack.sink.authType: BASIC 

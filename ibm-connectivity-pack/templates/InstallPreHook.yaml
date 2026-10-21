@@ -17,9 +17,9 @@ spec:
     spec:
       serviceAccountName: {{ include "ibm-connectivity-pack.preHookJobSa" . }}
       restartPolicy: Never
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
-        - name : ibm-entitlement-key 
+        - name : ibm-entitlement-key
       containers:
         - name: mtls-cert-generator
           env:
@@ -68,6 +68,22 @@ spec:
               {{- if and .Values.certificate.enable .Values.javaservice.enable .Values.certificate.generate (not .Values.certificate.pkcsPassword ) }}
               {{- fail (printf "\n'pkcsPassword' is mandatory when 'javaservice.enable' and 'certificate.enable' is set to true") }}
               {{- end }}
+              {{- if and .Values.action.auditLogging.enable (not .Values.action.auditLogging.fileExport.logFileName) }}
+              {{- fail (printf "\n'action.auditLogging.fileExport.logFileName' is required when 'action.auditLogging.enable' is true") }}
+              {{- end }}
+              {{- if and .Values.action.auditLogging.enable (not .Values.action.auditLogging.volume) }}
+              {{- fail (printf "\n'action.auditLogging.volume' configuration is required when 'action.auditLogging.enable' is true") }}
+              {{- end }}
+              {{- if and .Values.action.auditLogging.enable (not .Values.action.auditLogging.volume.name) }}
+              {{- fail (printf "\n'action.auditLogging.volume.name' is required when 'action.auditLogging.enable' is true") }}
+              {{- end }}
+              {{- $pvcClaimName := ((.Values.action.auditLogging.volume).persistentVolumeClaim).claimName }}
+              {{- if and .Values.action.auditLogging.enable $pvcClaimName }}
+              {{- $pvcLookup := lookup "v1" "PersistentVolumeClaim" (include "ibm-connectivity-pack.namespace" .) $pvcClaimName }}
+              {{- if not (index $pvcLookup "metadata") }}
+              {{- fail (printf "\nFailed to find PersistentVolumeClaim '%s' in namespace '%s'. Create the PVC before installing or upgrading." $pvcClaimName (include "ibm-connectivity-pack.namespace" .)) }}
+              {{- end }}
+              {{- end }}
               {{- if and (not .Values.certificate.serverSecretName) (not .Values.certificate.clientSecretName) }}
                 export CLIENT_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelClient" .}}
                 export SERVER_SECRET_NAME={{ include "ibm-connectivity-pack.stunnelServer" .}}
@@ -85,7 +101,7 @@ spec:
                   export CLIENT_PKCS_P12={{ .Values.certificate.clientCertPKCSPropertyName }}
                   export SERVER_CERT_NAME={{ .Values.certificate.serverCertPropertyName }}
                   export SERVER_KEY_NAME={{ .Values.certificate.serverCertKeyPropertyName }}
-                  export SERVER_PKCS_P12={{ .Values.certificate.serverKeyStrorePKCSPropertyName }}
+                  export SERVER_PKCS_P12={{ .Values.certificate.serverKeyStorePKCSPropertyName }}
                   export SERVER_TRUSTSTORE_PKCS_P12={{ .Values.certificate.serverTrustStorePKCSPropertyName }}
                   export PKCS_PASSWORD={{ .Values.certificate.pkcsPassword }}
                   export MTLS_ENABLED={{ .Values.certificate.MTLSenable }}
@@ -100,4 +116,4 @@ spec:
                   kubectl delete secret $SERVER_SECRET_NAME  --namespace $RELEASE_NAMESPACE --ignore-not-found=true
                 {{ end }}
               {{ end }}
-              {{ end }}
+{{- end }}

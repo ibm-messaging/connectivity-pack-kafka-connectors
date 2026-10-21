@@ -15,6 +15,8 @@ The `connectivitypack.source` and `connectivitypack.source.endpoint.url` configu
 | **Name** | **Value or Description** |
 | -------- | -------------------------|
 | `connectivitypack.source` | `servicenow` |
+| `connectivitypack.source.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.source.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 | `connectivitypack.source.endpoint.url` | Specifies the base URL of your ServiceNow instance. For example: `https://<instance>.service-now.com`.|
 
 ## Supported authentication mechanisms
@@ -78,6 +80,8 @@ spec:
   class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
   config:
     connectivitypack.source: servicenow
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
     connectivitypack.source.endpoint.url: https://<your-instance>.service-now.com/
     # Credentials to access the data source
     connectivitypack.source.authType: BASIC

@@ -1,0 +1,117 @@
+{{/*
+Common volumes definition
+This file contains the common volume specifications used across deployments
+*/}}
+{{- define "ibm-connectivity-pack.commonVolumesYaml" -}}
+- name: tmp
+  emptyDir:
+    sizeLimit: 10Gi
+- name: workdir
+  emptyDir: {}
+{{ if .Values.javaservice.enable -}}
+- name: jvmlogs
+  emptyDir: {}
+- name: wlpoutput
+  emptyDir: {}
+{{ end }}
+{{ if .Values.mcp.enable -}}
+- name: mcptools
+  secret:
+    secretName: {{ .Values.mcp.toolsSecretName | quote }}
+    items:
+      - key: configuration
+        path: toolsconfig.json
+- name: mcpaccounts
+  secret:
+    secretName: {{ .Values.mcp.accountsSecretName | quote }}
+    items:
+      - key: configuration
+        path: accounts.yaml
+{{ end }}
+{{ if .Values.basicAuth.enable -}}
+- name: cred
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.basicAuthCreds" . }}
+    optional: true
+{{ end }}
+{{ if .Values.certificate.enable -}}
+{{ if .Values.javaservice.enable -}}
+- name: tls-override
+  configMap:
+    name: {{ include "ibm-connectivity-pack.java-server-conf" . }}
+    optional: true
+    items:
+      - key: tls-override.xml
+        path: tls-override.xml
+- name: keystore-password-volume
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.keystore-pass-name" . }}
+    optional: true
+    items:
+      - key: keystore.xml
+        path: keystore.xml
+{{ end }}
+- name: stunnel-server
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
+    items:
+      - key: {{ .Values.certificate.serverCertKeyPropertyName }}
+        path: server.key.pem
+      - key: {{ .Values.certificate.serverCertPropertyName }}
+        path: server.cert.pem
+      - key: {{ .Values.certificate.caCertPropertyName }}
+        path: server.ca.pem
+      {{ if .Values.javaservice.enable -}}
+      - key: {{ .Values.certificate.serverKeyStorePKCSPropertyName }}
+        path: server.p12
+      - key: {{ .Values.certificate.serverTrustStorePKCSPropertyName }}
+        path: truststore.p12
+      {{ end }}
+{{ if .Values.certificate.MTLSenable -}}
+- name: stunnel-client
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelClient" . }}
+    items:
+    - key: {{ .Values.certificate.caCertPropertyName }}
+      path: stunnel.ca.pem
+    - key:  {{ .Values.certificate.clientCertPropertyName }}
+      path: stunnel.cert.pem
+    - key: {{ .Values.certificate.clientCertKeyPropertyName }}
+      path: stunnel.key.pem
+{{- else }}
+- name: stunnel-client
+  secret:
+    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
+    items:
+    - key: {{ .Values.certificate.serverCertKeyPropertyName }}
+      path: stunnel.key.pem
+    - key: {{ .Values.certificate.serverCertPropertyName }}
+      path: stunnel.cert.pem
+    - key: {{ .Values.certificate.caCertPropertyName }}
+      path: stunnel.ca.pem
+{{- end }}
+{{- end }}
+{{- if .Values.action.udaPersistentVolumeClaimName }}
+- name: {{ .Values.action.udaPersistentVolumeClaimName }}-uda-vol
+  persistentVolumeClaim:
+    claimName: {{ .Values.action.udaPersistentVolumeClaimName }}
+{{- else }}
+{{- $root := . }}
+{{- $files := $root.Files.Glob "connectors/*.{json,yaml,yml,car}" }}
+{{- range $path, $file := $files }}
+{{- $filename := base $path }}
+{{- $cleanName := (regexFindAll "[A-Za-z0-9]+" $filename -1) | join "" | lower }}
+{{- $cleanRelease := (regexFindAll "[A-Za-z0-9]+" $root.Release.Name -1) | join "" | lower }}
+- name: {{ $cleanName }}-vol
+  configMap:
+    name: {{ printf "%s-%s-config" $cleanName $cleanRelease }}
+{{- end }}
+{{- end }}
+{{- if .Values.action.auditLogging.enable }}
+{{- if .Values.action.auditLogging.volume }}
+{{- if .Values.action.auditLogging.volume.name }}
+- {{- toYaml .Values.action.auditLogging.volume | nindent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

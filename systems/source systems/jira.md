@@ -20,6 +20,8 @@ The `connectivitypack.source` and `connectivitypack.source.endpoint.endpointUrl`
 | **Name**                        | **Value or Description**                                                                             |
 | ------------------------------- |------------------------------------------------------------------------------------------------------|
 | `connectivitypack.source`  | `jira`                                                                                               |
+| `connectivitypack.source.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.source.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 | `connectivitypack.source.endpoint.endpointUrl` | Specifies the base URL of the source system. For example, `https://<yourdomain>.atlassian.net/jira`. |
 
 
@@ -94,6 +96,8 @@ spec:
   config:
     # Which data source to connect to.
     connectivitypack.source: jira
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
     connectivitypack.source.endpoint.endpointUrl: https://<yourdomain>.atlassian.net/
 
     # Credentials to access the data source using BASIC authentication.

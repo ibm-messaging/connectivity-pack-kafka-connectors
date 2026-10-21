@@ -1,0 +1,120 @@
+{{/*
+Java service container specification with all logic inlined
+This file is the source of truth for the java service container definition
+*/}}
+{{- define "ibm-connectivity-pack.javaContainerYaml" -}}
+name: {{ .Values.javaservice.name }}
+image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.javaservice.image }}@{{ .Values.javaservice.digest }}
+imagePullPolicy: IfNotPresent
+resources:
+  {{- toYaml .Values.javaservice.resources | nindent 2 }}
+readinessProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:9080/ || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:9080/ || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /
+    port: 9080
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+{{- if not .Values.knative.enable }}
+startupProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:9080/ || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:9080/ || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /
+    port: 9080
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 5
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 30
+  initialDelaySeconds: 15
+{{- end }}
+livenessProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:9080/ || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:9080/ || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /
+    port: 9080
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+securityContext:
+  {{- include "ibm-connectivity-pack.securityContext" . | nindent 2 }}
+env:
+  - name: NAMESPACE
+    value: {{ include "ibm-connectivity-pack.namespace" . }}
+  {{ if .Values.certificate.enable -}}
+  - name: SERVER_TLS_KEYSTORE_PATH
+    value: /etc/stunnel/secrets/server.p12
+  {{ if .Values.certificate.MTLSenable -}}
+  - name: SERVER_MTLS_TRUSTSTORE_PATH
+    value: /etc/stunnel/secrets/truststore.p12
+  {{ end }}
+  {{ end }}
+  {{- include "ibm-connectivity-pack.instanaEnvVars" . | nindent 2 }}
+  {{- if .Values.instana.enable }}
+  - name: INSTANA_SERVICE_NAME
+    value: {{ .Values.javaservice.name | quote }}
+  {{- end }}
+volumeMounts:
+  {{ if .Values.certificate.enable -}}
+  - name: stunnel-server
+    mountPath: /etc/stunnel/secrets
+  - name: stunnel-client
+    readOnly: true
+    mountPath: /opt/ibm/app/ssl
+  - name: tls-override
+    mountPath: /opt/ol/wlp/usr/servers/defaultServer/configDropins/overrides/tls-override.xml
+    subPath: tls-override.xml
+  - name: keystore-password-volume
+    mountPath: /opt/ol/wlp/usr/servers/defaultServer/configDropins/overrides/keystore.xml
+    subPath: keystore.xml
+  {{ end }}
+  - name: jvmlogs
+    mountPath: /logs/
+  - name: wlpoutput
+    mountPath: /opt/ol/wlp/output
+ports:
+  - name: javaservice
+    containerPort: 9080
+    protocol: TCP
+{{- end }}

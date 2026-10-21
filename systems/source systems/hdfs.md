@@ -18,6 +18,9 @@ The `connectivitypack.source` and related configurations in the `KafkaConnector`
 | **Name**                      | **Value or Description**                                                                                                       |
 | ----------------------------- |--------------------------------------------------------------------------------------------------------------------------------|
 | `connectivitypack.source`     | `hdfs`                                                                                                                         |
+| `connectivitypack.source.authType` | `BASIC_KERBEROS`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.source.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.source.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 | `connectivitypack.source.endpoint.kdcServer` | Specifies the Kerberos KDC server host name. Required when Kerberos authentication is enabled. For example, `kdc.example.com`. |
 | `connectivitypack.source.endpoint.apiUrl` | Specifies the API URL of the HDFS endpoint. For example, `http://<hdfs_host>:<port>`.                                          |
 
@@ -29,7 +32,7 @@ You can configure the following parameters in the `KafkaConnector` custom resour
 
 | **Authentication Type** |  **Use Case** | **Required Credentials**  | **KafkaConnector configuration**  |
 | ----------------------- | ------------- | --------------------------| --------------------------------- | 
-| BASIC_KERBEROS    | Kerberos authentication for HDFS access. | `Principal`: The Kerberos principal used to authenticate with the HDFS service. <br> `keytab`: The keytab file containing encrypted credentials for the Principal.| `connectivitypack.source.credentials.authType: BASIC_KERBEROS` <br> `connectivitypack.source.credentials.principalName: <principal>` <br> `connectivitypack.source.credentials.keytab: <keytab>`|
+| BASIC_KERBEROS    | Kerberos authentication for HDFS access. | `Principal`: The Kerberos principal used to authenticate with the HDFS service. <br> `keytab`: The keytab file containing encrypted credentials for the Principal.| `connectivitypack.source.authType: BASIC_KERBEROS` (required in Connectivity Pack 3.2.0 and later) <br> `connectivitypack.source.credentials.authType: BASIC_KERBEROS` <br> `connectivitypack.source.credentials.principalName: <principal>` <br> `connectivitypack.source.credentials.keytab: <keytab>`|
 
 ## Supported file types for the connector
 
@@ -230,7 +233,10 @@ spec:
   class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
   config:
     connectivitypack.source: hdfs
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
     # Authentication params
+    connectivitypack.source.authType: BASIC_KERBEROS # Required in Connectivity Pack 3.2.0 and later
     connectivitypack.source.credentials.authType: BASIC_KERBEROS
     connectivitypack.source.credentials.principalName: '${file:/mnt/hdfs-credential:hdfs-basic-kerberos-principalName}'
     connectivitypack.source.credentials.keytab: '${file:/mnt/hdfs-credential:hdfs-basic-kerberos-keytab}'
@@ -267,7 +273,10 @@ spec:
   class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
   config:
     connectivitypack.source: hdfs
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
     # Authentication params
+    connectivitypack.source.authType: BASIC_KERBEROS # Required in Connectivity Pack 3.2.0 and later
     connectivitypack.source.credentials.authType: BASIC_KERBEROS
     connectivitypack.source.credentials.principalName: hdfs_user@example.com
     connectivitypack.source.credentials.keytab: '${file:/mnt/hdfs-credential:hdfs-basic-kerberos-keytab}'
@@ -310,7 +319,10 @@ spec:
   class: com.ibm.eventstreams.connect.connectivitypack.source.ConnectivityPackSourceConnector
   config:
     connectivitypack.source: hdfs
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
     # Authentication params
+    connectivitypack.source.authType: BASIC_KERBEROS # Required in Connectivity Pack 3.2.0 and later
     connectivitypack.source.credentials.authType: BASIC_KERBEROS
     connectivitypack.source.credentials.principalName: '${file:/mnt/hdfs-credential:hdfs-basic-kerberos-principalName}'
     connectivitypack.source.credentials.keytab: '${file:/mnt/hdfs-credential:hdfs-basic-kerberos-keytab}'

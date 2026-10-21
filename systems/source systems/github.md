@@ -31,7 +31,8 @@ The `connectivitypack.source.applicationType` configuration specifies the applic
 
 | **Name**                                  | **Value or Description**                                                                |
 | ----------------------------------------- | --------------------------------------------------------------------------------------- |
-| `connectivitypack.source.applicationType` | `online` for Github Cloud or `onprem` for Gihub Enterprise Server. Default is `online`. |
+| `connectivitypack.source.applicationType` | `online` for GitHub Cloud or `onprem` for GitHub Enterprise Server. Default is `online`. |
+| `connectivitypack.source.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 
 ## Supported authentication mechanisms
 
@@ -103,7 +104,8 @@ spec:
     # Which data source to connect to.
     connectivitypack.source: github
     connectivitypack.source.url: https://github.com
-    connectivitypack.source.applicationType: online
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
 
     # Credentials to access the data source using BASIC authentication.
     connectivitypack.source.authType: BASIC

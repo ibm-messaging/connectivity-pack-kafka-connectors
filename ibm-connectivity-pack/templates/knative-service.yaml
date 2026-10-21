@@ -36,7 +36,10 @@ spec:
         - name: {{ include "ibm-connectivity-pack.imagePullSecretname" . }}
         - name: ibm-entitlement-key
       containers:
-        - {{- include "ibm-connectivity-pack.actionContainer" . | nindent 10 }}
+        - {{- include "ibm-connectivity-pack.actionContainerYaml" . | nindent 10 }}
+        {{ if .Values.javaservice.enable -}}
+        - {{- include "ibm-connectivity-pack.javaContainerYaml" . | nindent 10 }}
+        {{ end }}
       volumes:
-        {{- include "ibm-connectivity-pack.commonVolumes" . | nindent 8 }}
+        {{- include "ibm-connectivity-pack.commonVolumesYaml" . | nindent 8 }}
 {{- end }}

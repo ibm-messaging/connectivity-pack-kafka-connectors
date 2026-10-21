@@ -10,6 +10,24 @@ Return releaseNameOverride
 {{- end }}
 
 {{/*
+Security context for containers - filters out 'privileged' field for Knative
+Knative doesn't support the 'privileged' field in securityContext
+*/}}
+{{- define "ibm-connectivity-pack.securityContext" -}}
+{{- if .Values.knative.enable -}}
+allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+capabilities:
+  {{- toYaml .Values.securityContext.capabilities | nindent 2 }}
+readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+seccompProfile:
+  {{- toYaml .Values.securityContext.seccompProfile | nindent 2 }}
+{{- else -}}
+{{- toYaml .Values.securityContext -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "ibm-connectivity-pack.name" -}}
@@ -270,51 +288,6 @@ Create the name for stunnel client cert secret
 {{- end }}
 
 
-{{- define "ibm-connectivity-pack.stunnelvolume" -}}
-{{ if .Values.certificate.enable -}}
-- name: stunnel-server
-  secret:
-    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
-    items:
-      - key: {{ .Values.certificate.serverCertKeyPropertyName }}
-        path: server.key.pem
-      - key: {{ .Values.certificate.serverCertPropertyName }}
-        path: server.cert.pem
-      - key: {{ .Values.certificate.caCertPropertyName }}
-        path: server.ca.pem
-      {{ if .Values.javaservice.enable -}}
-      - key: {{ .Values.certificate.serverKeyStrorePKCSPropertyName }}
-        path: server.p12
-      - key: {{ .Values.certificate.serverTrustStorePKCSPropertyName }}
-        path: truststore.p12
-      {{ end }}
-{{ if .Values.certificate.MTLSenable -}}
-- name: stunnel-client
-  secret:
-    secretName: {{ include "ibm-connectivity-pack.stunnelClient" . }}
-    items:
-    - key: {{ .Values.certificate.caCertPropertyName }}
-      path: stunnel.ca.pem     
-    - key:  {{ .Values.certificate.clientCertPropertyName }}
-      path: stunnel.cert.pem
-    - key: {{ .Values.certificate.clientCertKeyPropertyName }}
-      path: stunnel.key.pem
-{{- else }}
-- name: stunnel-client
-  secret:
-    secretName: {{ include "ibm-connectivity-pack.stunnelServer" . }}
-    items:
-    - key: {{ .Values.certificate.serverCertKeyPropertyName }}
-      path: stunnel.key.pem
-    - key: {{ .Values.certificate.serverCertPropertyName }}
-      path: stunnel.cert.pem
-    - key: {{ .Values.certificate.caCertPropertyName }}
-      path: stunnel.ca.pem   
-{{- end }}
-{{- end }}
-{{- end }}
-
-
 {{/*
 Create the name for Horizontal Pod Autoscaler
 */}}
@@ -398,132 +371,21 @@ Create the name of the java service TLS
 {{- end }}
 {{- end }}
 
-
 {{/*
-Create UDA connector configmap volume
+Create the name of the java service Keystore password name
 */}}
-{{- define "ibm-connectivity-pack.udaConnectors" -}}
-{{- if .Values.action.udaPersistentVolumeClaimName }}
-- name: {{ .Values.action.udaPersistentVolumeClaimName }}-uda-vol
-  persistentVolumeClaim:
-    claimName: {{ .Values.action.udaPersistentVolumeClaimName }}
-{{- else }}
-{{- $root := . }}
-{{- $files := $root.Files.Glob "connectors/*.{json,yaml,yml,car}" }}
-{{- range $path, $file := $files }}
-- name: {{ base $path | replace "." "-" | lower }}-vol
-  configMap:
-    name: {{ base $path | replace "." "-" | lower }}-{{- default  $root.Release.Name  }}-config
-{{- end }}
+{{- define "ibm-connectivity-pack.keystore-pass-name" -}}
+{{- if include "ibm-connectivity-pack.releaseNameOverride" . }}
+{{- default (include "ibm-connectivity-pack.releaseNameOverride" .) }}-java-keystore-pass
 {{- end }}
 {{- end }}
 
 {{/*
-Create UDA connector configmap volume mount
+Create the name of the java service Keystore password secret
 */}}
-{{- define "ibm-connectivity-pack.udaConnectorsMount" -}}
-{{- if .Values.action.udaPersistentVolumeClaimName }}
-- name: {{ .Values.action.udaPersistentVolumeClaimName }}-uda-vol
-  mountPath: /opt/ibm/app/connectors
-{{- else }}
-{{- $files := .Files.Glob "connectors/*.{json,yaml,yml,car}" }}
-{{- range $path, $file := $files }}
-- name: {{ base $path | replace "." "-" | lower }}-vol
-  mountPath: /opt/ibm/app/connectors/{{ base $path }}
-  subPath: {{ base $path }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{/*
-Render environment variables for node-runtime-metrics
-*/}}
-{{- define "ibm-connectivity-pack.nodeRuntimeMetrics" }}
-{{- if hasKey .Values.action "enableMetrics" }}
-- name: ENABLE_METRICS
-  value: {{ ternary "true" "false" (eq .Values.action.enableMetrics "true") | quote }}
-{{- end }}
-{{- if hasKey .Values.action "metricsRotationWindowSec" }}
-- name: METRICS_ROTATION_WINDOW_SEC
-  value: {{ .Values.action.metricsRotationWindowSec | quote }}
-{{- end }}
-{{- if hasKey .Values.action "metricsDirectory" }}
-- name: METRICS_DIRECTORY
-  value: {{ .Values.action.metricsDirectory | quote }}
-{{- end }}
-{{- if hasKey .Values.action "metricsCollectIntervalMs" }}
-- name: METRICS_COLLECT_INTERVAL_MS
-  value: {{ .Values.action.metricsCollectIntervalMs | quote }}
-{{- end }}
-{{- end }}
-
-
-{{/*
-Action probe
-*/}}
-{{- define "ibm-connectivity-pack.actionProbe" -}}
-{{- if .Values.certificate.enable }}
-exec:
-  command:
-    - /bin/sh
-    - -c
-    - |
-{{- if .Values.certificate.MTLSenable }}
-      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3020/admin/ready || exit 1
-{{ else }}
-      curl --silent --fail -k https://localhost:3020/admin/ready || exit 1
-{{- end }}
-{{ else }}
-httpGet:
-  path: /admin/ready
-  port: 3020
-  scheme: HTTP
-{{- end }}
-{{- end }}
-
-{{/*
-Event probe
-*/}}
-{{- define "ibm-connectivity-pack.eventProbe" -}}
-{{- if .Values.certificate.enable }}
-exec:
-  command:
-    - /bin/sh
-    - -c
-    - |
-{{- if .Values.certificate.MTLSenable }}    
-      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3004/admin/ready || exit 1
-{{ else }}
-      curl --silent --fail -k https://localhost:3004/admin/ready || exit 1
-{{- end }}
-{{ else }}
-httpGet:
-  path: /admin/ready
-  port: 3004
-  scheme: HTTP
-{{- end }}
-{{- end }}
-
-{{/*
-Javaservice probe
-*/}}
-{{- define "ibm-connectivity-pack.javaserviceprobe" -}}
-{{- if .Values.certificate.enable }}
-exec:
-  command:
-    - /bin/sh
-    - -c
-    - |
-{{- if .Values.certificate.MTLSenable }}
-      curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:9080/ || exit 1
-{{ else }}
-      curl --silent --fail -k https://localhost:9080/ || exit 1
-{{- end }}
-{{ else }}
-httpGet:
-  path: /
-  port: 9080
-  scheme: HTTP
+{{- define "ibm-connectivity-pack.keystore-pass" -}}
+{{- if include "ibm-connectivity-pack.releaseNameOverride" . }}
+{{- printf "<server><keyStore id=\"defaultKeyStore\" location=\"${server.output.dir}/resources/security/key.p12\" type=\"PKCS12\" password=\"%s\" /></server>" .Values.certificate.pkcsPassword  }}
 {{- end }}
 {{- end }}
 
@@ -543,5 +405,44 @@ Common Instana environment variables
   value: {{ .Values.instana.disableUseOpentelemetry | quote }}
 - name: INSTANA_PROCESS_NAME
   value: {{ .Release.Name | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
+Feature toggles override value
+*/}}
+{{- define "ibm-connectivity-pack.featureToggles" -}}
+{"epic26330-interceptor-code-options": 1, "epic3633-stateless-account": 1, "epic3627-ea-connector-service": 1, "epic3660-enable-refresh-token-api": 1, "epic19598-mssharepoint-claimcheck-src": 1, "epic20879-google-bigquery-enable-newschema": 1, "epic20879-google-bigquery-enable-upsert": 1, "epic22677-large-file-support": 1, "epic28701-acp-claim-check": 1, "epic22146-enable-acp-events": 1, "epic22730-enable-proxy": 1 }
+{{- end }}
+
+{{/*
+Connection Manager deployment name.
+*/}}
+{{- define "ibm-connectivity-pack.connectionManagerDeploymentName" -}}
+{{- include "ibm-connectivity-pack.releaseNameOverride" . }}-connection-manager-deployment
+{{- end }}
+
+{{/*
+Connection Manager service name.
+*/}}
+{{- define "ibm-connectivity-pack.connectionManagerService" -}}
+{{- include "ibm-connectivity-pack.releaseNameOverride" . }}-connection-manager-service
+{{- end }}
+
+{{/*
+Connection Manager data secret name.
+Holds all connection/credential data written at runtime via @kubernetes/client-node.
+*/}}
+{{- define "ibm-connectivity-pack.connectionManagerDataSecret" -}}
+{{- include "ibm-connectivity-pack.releaseNameOverride" . }}-cm-data
+{{- end }}
+
+{{/*
+Connection Manager cluster-internal URL.
+Auto-derived — no manual input needed from the consumer.
+*/}}
+{{- define "ibm-connectivity-pack.connectionManagerUrl" -}}
+{{- if .Values.connectionManager.enable }}
+{{- printf "http://%s.%s.svc.cluster.local:3000" (include "ibm-connectivity-pack.connectionManagerService" .) (include "ibm-connectivity-pack.namespace" .) }}
 {{- end }}
 {{- end }}
