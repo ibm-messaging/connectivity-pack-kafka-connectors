@@ -1,0 +1,87 @@
+{{/*
+###############################################################################
+# ConnPack Connection Manager — Container specification
+#
+# Env vars are named exactly as the app reads them (verified from source):
+#   K8S_NAMESPACE       → K8sSecretAccountStore reads process.env['K8S_NAMESPACE']
+#   K8S_SECRET_NAME     → K8sSecretAccountStore reads process.env['K8S_SECRET_NAME']
+#   PORT                → appHelpers.resolvePort reads nconf 'PORT' (default 3000)
+#   USE_IN_MEMORY_STORE → app.ts reads nconf 'USE_IN_MEMORY_STORE'
+#                         Declared explicitly in the chart so behaviour is
+#                         self-documenting and not dependent on app.json defaults.
+#
+# CONTAINER_NAME is intentionally omitted — not read by connpack-connection-manager.
+# (Only action/event containers use it for Bunyan log correlation.)
+#
+# Reuses parent chart values:
+#   image.registry / image.path  → same registry as action/event containers
+#   securityContext              → same security policy
+#   annotations                  → same product annotations
+#   bunyan                       → same log configuration
+###############################################################################
+*/}}
+{{- define "ibm-connectivity-pack.connectionManagerContainerYaml" -}}
+name: {{ .Values.connectionManager.name }}
+image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.connectionManager.image }}@{{ .Values.connectionManager.digest }}
+imagePullPolicy: IfNotPresent
+resources:
+  {{- toYaml .Values.connectionManager.resources | nindent 2 }}
+readinessProbe:
+  httpGet:
+    path: /admin/ready
+    port: 3000
+    scheme: HTTP
+  timeoutSeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  httpGet:
+    path: /admin/ready
+    port: 3000
+    scheme: HTTP
+  timeoutSeconds: 1
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 120
+livenessProbe:
+  httpGet:
+    path: /admin/ready
+    port: 3000
+    scheme: HTTP
+  timeoutSeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+env:
+  # Port — appHelpers.resolvePort reads nconf 'PORT', default 3000
+  - name: PORT
+    value: "3000"
+  # K8s Secret store — K8sSecretAccountStore reads these exact env var names
+  - name: K8S_NAMESPACE
+    value: {{ include "ibm-connectivity-pack.namespace" . | quote }}
+  - name: K8S_SECRET_NAME
+    value: {{ include "ibm-connectivity-pack.connectionManagerDataSecret" . | quote }}
+  # Store mode — declared explicitly so chart is self-documenting
+  - name: USE_IN_MEMORY_STORE
+    value: {{ .Values.connectionManager.useInMemoryStore | quote }}
+  # Standard app identity / logging
+  - name: NAMESPACE
+    value: {{ include "ibm-connectivity-pack.namespace" . | quote }}
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: metadata.name
+  - name: bunyan
+    value: {{ .Values.bunyan }}
+ports:
+  - name: http
+    containerPort: 3000
+    protocol: TCP
+securityContext:
+  {{- include "ibm-connectivity-pack.securityContext" . | nindent 2 }}
+volumeMounts:
+  - name: tmp
+    mountPath: /tmp
+{{- end }}

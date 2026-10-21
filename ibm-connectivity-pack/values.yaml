@@ -50,7 +50,7 @@ certificate:
   serverCertPropertyName: 'tls.crt'
   serverCertKeyPropertyName: 'tls.key'
   caCertPropertyName: 'ca.crt'
-  serverKeyStrorePKCSPropertyName: 'server.p12'
+  serverKeyStorePKCSPropertyName: 'server.p12'
   serverTrustStorePKCSPropertyName: 'truststore.p12'
   pkcsPassword: '' # pkcs.p12 password
 basicAuth:
@@ -71,7 +71,7 @@ securityContext:
 ###############################################################################
 bunyan: "'{\"loglevel\" : \"info\", \"logsrc\" : true, \"logstdouttext\" : {}}'" # Override Log configuration
 environmentVariables: {} # Yaml object ENV to be added on action and event pods
-enableRefreshTokenMode: false
+enableRefreshTokenMode: true
 strictdiscoveryaccount: true
 openapiSchemaNoAnonymousTypes: false
 enableLegacyApiVersions: false
@@ -84,18 +84,50 @@ csCommon:
 ###############################################################################
 preHook:
   image: connectivity-pack-prehook
-  digest: sha256:1cfadad24f0c751a9f7255c8db66bf2bb0209d7a42f3bd296baf64c2034c8c4b
-  tag: 3.1.1
+  digest: sha256:051d17c033dd57d85637d3aa7a756fddb0be94944deb3ae7ea2789b4eefe90f2
+  tag: 3.2.0
 ###############################################################################
 # Action Connectors Configuration
 ###############################################################################
 action:
   name: action-connectors
   image: action-connectors
-  digest: sha256:673ccb18af32377e539fcbe6403203ff17bee5dcbb21cde7dffb33c79b4bd2b8
+  digest: sha256:9a871bc10a9879f33bdd38394279f8c25fb3731d955a7e7af1cbd29eedf1dcd9
   fileStreamingTimeout: '120000'
   maxFileSize: '262144000'
   udaPersistentVolumeClaimName: ''
+  # Audit Logging Configuration
+  auditLogging:
+    enable: false # Enable audit logging for action connectors
+    # Volume configuration - consumer provides complete volume definition
+    # Supports any Kubernetes volume type (PVC, emptyDir, hostPath)
+    volume: {}
+    # Example - PersistentVolumeClaim:
+    # volume:
+    #   name: audit-logs
+    #   persistentVolumeClaim:
+    #     claimName: audit-logs-pvc
+    #
+    # Example - emptyDir:
+    # volume:
+    #   name: audit-logs
+    #   emptyDir:
+    #     sizeLimit: 5Gi
+    #
+    # Example - hostPath:
+    # volume:
+    #   name: audit-logs
+    #   hostPath:
+    #     path: /mnt/audit-logs
+    #     type: DirectoryOrCreate
+    #
+
+    # File export configuration (always active when auditLogging.enable is true)
+    # Audit logs are always mounted at /data/log/audit inside the container
+    fileExport:
+      logFileName: 'action-audit.log' # Log file name (full path will be mountPath/logFileName)
+      maxSize: '5' # Maximum file size in MB before rotation
+      backup: '1' # Number of backup files to keep (minimum 1)
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -105,7 +137,7 @@ action:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 3.1.1
+  tag: 3.2.0
 ###############################################################################
 # Event Connectors Configuration
 ###############################################################################
@@ -113,7 +145,7 @@ event:
   enable: true # Set to true if Event container is needed
   name: event-connectors
   image: event-connectors # Update image
-  digest: sha256:a55eac241c5b206d9e98f1c294c8a5fcfee40712a4a932183b074053dc78e4df
+  digest: sha256:bab0b091e95c92e4b89c9bcdf49d240befe364e631ee9cb6e4af4a23c2258074
   resources: # Update below value for vertical scaling of container
     limits:
       cpu: '1'
@@ -123,7 +155,7 @@ event:
       cpu: 250m
       ephemeral-storage: 5Gi
       memory: 400Mi
-  tag: 3.1.1
+  tag: 3.2.0
 ###############################################################################
 # Java Service Configuration
 ###############################################################################
@@ -170,3 +202,39 @@ mcp:
 instana:
   enable: false # Set to true to enable Instana monitoring
   disableUseOpentelemetry: true # Disable OpenTelemetry integration
+###############################################################################
+# ConnPack Connection Manager (connpack-connection-manager)
+#
+# When enable is false (default):
+#   - ibm-connectivity-pack deploys standalone, exactly as before.
+#   - Consumers must pass x-ibm-application-credential on every runtime call.
+#
+# When enable is true:
+#   - A separate Deployment + Service for connpack-connection-manager is created
+#     inside this same Helm release — same namespace, same image registry,
+#     same securityContext, same annotations.
+#   - CONNECTION_MANAGER_URL is injected into action/event containers so
+#     ibm-connectivity-pack can resolve connectionIds at runtime.
+#   - Consumers store connections once and pass only a connectionId in calls.
+#
+# Environment variables injected into the container (from the app source):
+#   K8S_NAMESPACE     — namespace the K8s Secret lives in (auto-set to release namespace)
+#   K8S_SECRET_NAME   — name of the K8s Secret that stores accounts (auto-set below)
+#   PORT              — HTTP listen port (fixed: 3000)
+#   USE_IN_MEMORY_STORE — set to 'true' for local dev / CI (no K8s), 'false' for production
+###############################################################################
+connectionManager:
+  enable: false # Set to true to deploy connpack-connection-manager alongside ibm-connectivity-pack
+  name: connpack-connection-manager
+  image: connpack-connection-manager # Image name (appended to image.registry/image.path)
+  digest: '' # Image digest (sha256:...)
+  useInMemoryStore: false # true = in-memory store (dev/CI, no K8s), false = K8s Secret (production)
+  resources:
+    limits:
+      cpu: '500m'
+      ephemeral-storage: 5Gi
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      ephemeral-storage: 1Gi
+      memory: 256Mi

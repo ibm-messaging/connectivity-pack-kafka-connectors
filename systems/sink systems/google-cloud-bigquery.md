@@ -17,7 +17,9 @@ The `connectivitypack.sink` and the associated `BigQuery` resource configuration
 
 | Name                        | Value or Description |
 |-----------------------------|----------------------|
-| `connectivitypack.sink`     | googlebigquery       |
+| `connectivitypack.sink`     | `googlebigquery`     |
+| `connectivitypack.sink.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.sink.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 
 
 ## Supported authentication mechanisms
@@ -106,6 +108,8 @@ spec:
    config:
       # Which sink system to connect to
       connectivitypack.sink: googlebigquery
+      connectivitypack.sink.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+      connectivitypack.sink.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
 
       # Credentials to access the sink system using BASIC authentication.
       connectivitypack.sink.authType: BASIC

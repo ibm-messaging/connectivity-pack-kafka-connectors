@@ -16,6 +16,8 @@ The `connectivitypack.source` and `connectivitypack.source.resource.id` configur
 | Name  | Value or Description |
 |-------|--------------------|
 | `connectivitypack.source` |  `googlecalendar`  |
+| `connectivitypack.source.applicationType` | `online`. This property is required in Connectivity Pack 3.2.0 and later. |
+| `connectivitypack.source.applicationVersion` | `v1`. This property is required in Connectivity Pack 3.2.0 and later. |
 | `connectivitypack.source.resource.id` | Specifies the ID of the calendar being polled.|
 
 ## Supported authentication mechanisms
@@ -88,6 +90,8 @@ spec:
   config:
     # Which data source to connect to.
     connectivitypack.source: googlecalendar
+    connectivitypack.source.applicationType: online # Required in Connectivity Pack 3.2.0 and later
+    connectivitypack.source.applicationVersion: v1 # Required in Connectivity Pack 3.2.0 and later
 
     # Credentials to access the data source using BASIC_OAUTH authentication.
     connectivitypack.source.authType: BASIC_OAUTH

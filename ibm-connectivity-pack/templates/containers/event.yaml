@@ -1,0 +1,204 @@
+{{/*
+Event container specification with all logic inlined
+This file is the source of truth for the event container definition
+*/}}
+{{- define "ibm-connectivity-pack.eventContainerYaml" -}}
+name: {{ .Values.event.name }}
+image: {{ .Values.image.registry }}/{{ .Values.image.path }}/{{ .Values.event.image }}@{{ .Values.event.digest }}
+imagePullPolicy: IfNotPresent
+resources:
+  {{- toYaml .Values.event.resources | nindent 2 }}
+readinessProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /admin/ready
+    port: 3004
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 4
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 1
+{{- if not .Values.knative.enable }}
+startupProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /admin/ready
+    port: 3004
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 1
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 120
+{{- end }}
+livenessProbe:
+  {{- if .Values.certificate.enable }}
+  exec:
+    command:
+      - /bin/sh
+      - -c
+      - |
+  {{- if .Values.certificate.MTLSenable }}
+        curl --cert /opt/ibm/app/ssl/stunnel.cert.pem --key /opt/ibm/app/ssl/stunnel.key.pem --cacert /opt/ibm/app/ssl/stunnel.ca.pem --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- else }}
+        curl --silent --fail -k https://localhost:3004/admin/ready || exit 1
+  {{- end }}
+  {{- else }}
+  httpGet:
+    path: /admin/ready
+    port: 3004
+    scheme: HTTP
+  {{- end }}
+  timeoutSeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 1
+envFrom:
+  - configMapRef:
+      optional: true
+      name: {{ include "ibm-connectivity-pack.envConfig" . }}
+env:
+  - name: ECP_IPC_PATH
+    value: '3004'
+  - name: ENABLE_DYNAMIC_CREDENTIALS_MODE
+    value: 'true'
+  - name: ENABLE_REFRESH_TOKEN_MODE
+    value: {{ ternary true false (.Values.enableRefreshTokenMode) | quote }}
+  - name: FIREFLY_ROUTE_LOOPBACK_CONNECTOR_PROVIDER
+    value: {{ include "ibm-connectivity-pack.actionServiceRoute" .}}
+  - name: FEATURE_TOGGLES_OVERRIDE
+    value: {{ include "ibm-connectivity-pack.featureToggles" . | quote }}
+  - name: CONNECTOR_SERVICE_EVENTS
+    value: {{ .Values.event.enable | quote }}
+  - name: DESIGNER_FLOWS_OPERATION_MODE
+    value: local
+  - name: FIREFLY_USERID
+    value: default
+  - name: NAMESPACE
+    value: {{ include "ibm-connectivity-pack.namespace" . }}
+  - name: SERVICE_NAME
+    value: {{ include "ibm-connectivity-pack.service" .}}
+  - name: ECP_SERVICE_ROUTE
+    value: {{ include "ibm-connectivity-pack.eventServiceRoute" .}}
+  - name: WCP_IPC_PATH
+    value: "3009"
+  - name: WEBHOOK_PROVIDER_BASEURL
+    value: {{ include "ibm-connectivity-pack.webhookServiceRoute" .}}
+  - name: LEADER_ELECTION_PORT
+    value: "3003"
+  - name: CS_WEB_SOCKET_SERVER_PORT
+    value: "3022"
+  - name: APPLICATION_MEM_LIMIT
+    value: {{ .Values.event.resources.limits.memory }}
+  - name: WORKING_DIRECTORY
+    value: /opt/ibm/app/workdir
+  - name: CONNECTOR_SERVICE_EVENTS_ALLOWLIST
+    value: {{ .Values.csCommon.eventList | quote }}
+  - name: CONNECTOR_SERVICE_ENABLE_WS
+    value: 'true'
+  - name: CONNECTOR_ACCOUNT
+    value: /opt/ibm/app/accounts
+  {{- if not .Values.knative.enable }}
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        apiVersion: v1
+        fieldPath: metadata.name
+  - name: POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
+  {{- end }}
+{{- include "ibm-connectivity-pack.instanaEnvVars" . | nindent 2 }}
+  {{- if .Values.instana.enable }}
+  - name: INSTANA_SERVICE_NAME
+    value: {{ .Values.event.name | quote }}
+  {{- end }}
+  - name: SERVER_NAME
+    value: {{ .Release.Name }}
+  - name: bunyan
+    value: {{ .Values.bunyan }}
+  - name: TOKEN_STORE_SECRET_NAME
+    value: {{ include "ibm-connectivity-pack.tokenStore" .}}
+  - name: MQSI_DISABLE_SALESFORCE_CONNECTOR
+    value: '1'
+  - name: DEVELOPMENT_MODE
+    value: 'false'
+  - name: SUBSCRIBE_PERSISTENCE
+    value: k8s
+  - name: SINGLE_REPLICA
+    value: 'true'
+  - name: CONNECTOR_SERVICE_AUTH_CREDS_FILE
+    value: "/opt/ibm/app/creds"
+  - name: CONNECTOR_SERVICE_ENABLE_WS_PRODUCER
+    value: 'true'
+  {{- if .Values.certificate.enable }}
+  - name: SERVER_TLS_KEY_PATH
+    value: /etc/stunnel/secrets/server.key.pem
+  - name: SERVER_TLS_CERT_PATH
+    value: /etc/stunnel/secrets/server.cert.pem
+  {{- if .Values.certificate.MTLSenable }}
+  - name: SERVER_MTLS_CA_PATH
+    value: /etc/stunnel/secrets/server.ca.pem
+  - name: MUTUAL_AUTH
+    value: {{ include "ibm-connectivity-pack.mutualAuthServiceRoute" .}}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.connectionManager.enable }}
+  - name: CONNECTION_MANAGER_URL
+    value: {{ include "ibm-connectivity-pack.connectionManagerUrl" . | quote }}
+  {{- end }}
+securityContext:
+  {{- include "ibm-connectivity-pack.securityContext" . | nindent 2 }}
+ports:
+  - name: event
+    containerPort: 3004
+    protocol: TCP
+  - name: ecpleadelect
+    containerPort: 3003
+    protocol: UDP
+  - name: webhook
+    containerPort: 3009
+    protocol: TCP
+volumeMounts:
+  - name: tmp
+    mountPath: /tmp
+  - name: workdir
+    readOnly: true
+    mountPath: /opt/ibm/app/workdir
+  {{- if .Values.certificate.enable }}
+  - name: stunnel-client
+    readOnly: true
+    mountPath: /opt/ibm/app/ssl
+  - name: stunnel-server
+    mountPath: /etc/stunnel/secrets
+  {{- end }}
+  {{- if .Values.basicAuth.enable }}
+  - name: cred
+    readOnly: true
+    mountPath: "/opt/ibm/app/creds"
+  {{- end }}
+{{- end }}

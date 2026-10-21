@@ -22,7 +22,7 @@ metadata:
   name: {{ include "ibm-connectivity-pack.preHookJobRoleBinding" . }}
   namespace: {{ include "ibm-connectivity-pack.namespace" . }}
   labels:
-    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}  
+    {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install, pre-upgrade, post-delete
     "helm.sh/hook-weight": "-1"

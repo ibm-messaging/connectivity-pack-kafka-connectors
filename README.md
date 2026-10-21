@@ -42,7 +42,7 @@ helm install <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> --set license.lic
 Where:
 
 - `<RELEASE-NAME>` is the release name of your choice. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.1.1/ibm-connectivity-pack-3.1.1.tgz`
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL of the latest version of the Connectivity Pack Helm chart. For example: `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.2.0/ibm-connectivity-pack-3.2.0.tgz`
 - `license.licenseId=<LICENSE-ID>` is the license identifier (ID) for the program that you purchased. For more information, see [licensing reference](https://ibm.github.io/event-automation/support/licensing/).
 - `license.accept` determines whether the license is accepted (default is `false` if not specified).
 - `<NAMESPACE>` is the namespace where you want to install the Connectivity Pack. This must be in the same namespace where an Event Streams instance is deployed.
@@ -65,7 +65,9 @@ The upgrade path for Connectivity Pack depends on the version of IBM Event Strea
 When upgrading from Connectivity Pack v2.x to v3.x, ensure that your Event Streams instance is also upgraded to version 12.0.0 or later before upgrading the Connectivity Pack.
 
 
-**Important:** If you are upgrading from Connectivity Pack 3.1.0 to 3.1.1, the Salesforce Connector no longer supports the `updatedField` parameter in the subscription configuration. Remove this parameter from your connector configuration before upgrading to avoid errors. For more information, see the [troubleshooting documentation](./troubleshooting/upgrading-3.1.0-to-3.1.1.md).
+**Important:**
+- If you are upgrading from Connectivity Pack 3.1.0 to 3.1.1, the Salesforce Connector no longer supports the `updatedField` parameter in the subscription configuration. Remove this parameter from your connector configuration before upgrading to avoid errors. For more information, see the [troubleshooting documentation](./troubleshooting/upgrading-3.1.0-to-3.1.1.md).
+- If you are upgrading from Connectivity Pack 3.1.1 to 3.2.0, add the `applicationType` and `applicationVersion` properties to the configuration of the GitHub, Google Calendar, HDFS, Jira, and ServiceNow connectors to ensure that the connectors continue to work correctly after the upgrade. For the HDFS source connector, also add the `authType` property and set it to `BASIC_KERBEROS`. For more information, see the [troubleshooting documentation](./troubleshooting/upgrading-3.1.1-to-3.2.0.md).
 
 ### Upgrade by using Helm
 
@@ -76,13 +78,13 @@ helm upgrade <RELEASE-NAME> <CONNECTIVITY-PACK-HELM-CHART-URL> -n <NAMESPACE>
 ```
 For example:
 ```bash
-helm upgrade ibm-connectivity-pack ibm-connectivity-pack-3.1.1.tgz -n deploy-es-scram-nocs
+helm upgrade ibm-connectivity-pack ibm-connectivity-pack-3.2.0.tgz -n deploy-es-scram-nocs
 ```
 
 Where:
 
 - `<RELEASE-NAME>` is the existing release name of your Connectivity Pack installation. For example, `ibm-connectivity-pack`
-- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL or path to the Helm chart package for the version that you want to upgrade to. For example, `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.1.1/ibm-connectivity-pack-3.1.1.tgz` or a local file path such as `ibm-connectivity-pack-3.1.1.tgz`.
+- `<CONNECTIVITY-PACK-HELM-CHART-URL>` is the URL or path to the Helm chart package for the version that you want to upgrade to. For example, `https://github.com/ibm-messaging/connectivity-pack-kafka-connectors/releases/download/3.2.0/ibm-connectivity-pack-3.2.0.tgz` or a local file path such as `ibm-connectivity-pack-3.2.0.tgz`.
 - `<NAMESPACE>` is the namespace where the Connectivity Pack is currently installed. This must be the same namespace where your Event Streams instance is deployed.
 
 ## Starting Kafka Connect

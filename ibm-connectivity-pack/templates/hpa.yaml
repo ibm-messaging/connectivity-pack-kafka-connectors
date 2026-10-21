@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "ibm-connectivity-pack.labels" . | nindent 4 }}
   annotations:
-    {{- toYaml .Values.annotations | nindent 4 }}    
+    {{- toYaml .Values.annotations | nindent 4 }}
 spec:
   scaleTargetRef:
     kind: Deployment

@@ -13,8 +13,8 @@ data:
     {{ if .Values.certificate.MTLSenable -}}
     <server>
         <ssl id="mtlsSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="trustStore" clientAuthentication="true" />
-        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
-        <keyStore id="trustStore" location="${env.SERVER_MTLS_TRUSTSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
+        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" type="PKCS12" />
+        <keyStore id="trustStore" location="${env.SERVER_MTLS_TRUSTSTORE_PATH}" type="PKCS12" />
         <httpEndpoint id="defaultHttpEndpoint" httpPort="-1" httpsPort="9080">
             <sslOptions sslRef="mtlsSSLConfig" />
         </httpEndpoint>
@@ -22,7 +22,7 @@ data:
     {{ else }}
     <server>
         <ssl id="tlsSSLConfig" keyStoreRef="defaultKeyStore" />
-        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" password="${env.PKCS_PASSWORD}" type="PKCS12" />
+        <keyStore id="defaultKeyStore" location="${env.SERVER_TLS_KEYSTORE_PATH}" type="PKCS12" />
         <httpEndpoint id="defaultHttpEndpoint" httpPort="-1" httpsPort="9080">
             <sslOptions sslRef="tlsSSLConfig" />
         </httpEndpoint>

@@ -30,7 +30,7 @@ spec:
     - name: websocket
       protocol: TCP
       port: 3022
-      targetPort: 3022    
+      targetPort: 3022
     - name: javaservice
       protocol: TCP
       port: 9080
